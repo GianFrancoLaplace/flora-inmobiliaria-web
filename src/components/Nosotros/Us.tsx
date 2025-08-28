@@ -59,7 +59,7 @@ export default function Us() {
 
                             Me apasiona mi trabajo, el cual se trata ayudar a las personas a encontrar su hogar soñado o a cerrar de forma segura una operación inmobiliaria.
                             Mi compromiso es acompañarte de la mano en cada paso del proceso, escuchando tus necesidades y haciendo que todo sea fácil, claro y especialmente que sea siempre una linda experiencia!
-                            Con mi  conocimiento en el mercado inmobiliario, y la característica de mantenerme siempre actualizada en el sector, puedo ofrecerte:
+                            Con mi  conocimiento en el mercado inmobiliario, y la característica de mantenerme siempre actualizada en el sector, puedo ofrecerte: asesoramiento, negociación, asistencia y acceso a una amplia red de contactos y propiedades!
 
                         </p>
                     </div>
