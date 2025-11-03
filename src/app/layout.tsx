@@ -5,13 +5,88 @@ import NavBar from "@/components/NavBar/NavBar";
 import Footer from "@/components/Footer/Footer";
 import WhatsAppRedirection from "@/components/WhatsAppRedirection/WhatsAppRedirection";
 
+// export const metadata: Metadata = {
+//   title: "Flora Cordeiro Inmobiliaria",
+//   description: "Created by Magno",
+//   icons: {
+//     icon: '/logos/footerLogo.png',
+//   },
+// };
+
 export const metadata: Metadata = {
-  title: "Flora Cordeiro Inmobiliaria",
-  description: "Created by Magno",
-  icons: {
-    icon: '/logos/footerLogo.png',
-  },
-};
+	metadataBase: new URL('https://flora-cordeiro-inmobiliaria.vercel.app/'),
+
+	title: {
+		default: 'Flora Cordeiro - Inmobiliaria en Tandil | Casas, Departamentos, Terrenos',
+		template: '%s | Flora Cordeiro Inmobiliaria'
+	},
+
+	description: 'Inmobiliaria especializada en Tandil. Más de 10 años de experiencia en compra, venta y alquiler de propiedades. Atención personalizada por Flora Cordeiro.',
+
+	keywords: [
+		'inmobiliaria tandil',
+		'propiedades tandil',
+		'casas en venta tandil',
+		'departamentos tandil',
+		'alquiler tandil',
+		'flora cordeiro',
+		'bienes raíces tandil'
+	],
+
+	authors: [{ name: 'Flora Cordeiro' }],
+	creator: 'Flora Cordeiro Inmobiliaria',
+	publisher: 'Flora Cordeiro',
+
+	formatDetection: {
+		email: false,
+		address: false,
+		telephone: false,
+	},
+
+	// Open Graph (Facebook, WhatsApp, LinkedIn)
+	openGraph: {
+		type: 'website',
+		locale: 'es_AR',
+		url: 'https://flora-cordeiro-inmobiliaria.vercel.app/',
+		siteName: 'Flora Cordeiro Inmobiliaria',
+		title: 'Flora Cordeiro - Tu Inmobiliaria de Confianza en Tandil',
+		description: 'Encontrá tu próxima propiedad en Tandil. Casas, departamentos, terrenos y más. Atención personalizada.',
+		images: [
+			{
+				url: '/og-image.jpg', // Crear
+				width: 1200,
+				height: 630,
+				alt: 'Flora Cordeiro Inmobiliaria - Tandil',
+			}
+		],
+	},
+
+	// Verificación de plataformas (si las usas)
+	verification: {
+		google: 'tu-codigo-google-search-console', // Agregar cuando tengas
+		// facebook: 'tu-codigo-facebook',
+	},
+
+	robots: {
+		index: true,
+		follow: true,
+		googleBot: {
+			index: true,
+			follow: true,
+			'max-video-preview': -1,
+			'max-image-preview': 'large',
+			'max-snippet': -1,
+		},
+	},
+
+	icons: {
+		icon: [
+			{ url: '/favicon.ico' },
+			{ url: '/icon.png', type: 'image/png', sizes: '32x32' }
+		],
+		apple: '/apple-icon.png',
+	},
+}
 
 export default function RootLayout({
   children,

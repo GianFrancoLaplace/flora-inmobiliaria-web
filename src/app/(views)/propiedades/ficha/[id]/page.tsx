@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { use } from 'react';
 import TechnicalSheet from '@/components/TechnicalFile/TechnicalSheet';
 import { Property } from "@/types/Property";
+import {PropertySchema} from "@/components/SEO/PropertySchema";
 
 type PageProps = {
 	params: Promise<{ id: string }>;
@@ -77,6 +78,7 @@ export default function FichaPropiedadPage({ params }: PageProps) {
 
 	return (
 		<main>
+			<PropertySchema property={property} />
 			<TechnicalSheet mode="view" property={property} />
 		</main>
 	);
