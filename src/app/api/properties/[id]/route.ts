@@ -1,13 +1,13 @@
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { mapPropertyType, mapOperationToState } from '@/helpers/PropertyMapper';
-import { Property, PropertyUpdateData } from '@/types/Property';
-import { Characteristic } from "@/types/Characteristic";
-import { PropertyService } from "@/services/propertyService";
-import { getIconByCategory, mapPrismaCharacteristicCategory } from "@/helpers/IconMapper"
+import {NextRequest, NextResponse} from 'next/server';
+import {prisma} from '@/lib/prisma';
+import {mapOperationToState, mapPropertyType} from '@/helpers/PropertyMapper';
+import {Property, PropertyState, PropertyUpdateData} from '@/types/Property';
+import {Characteristic} from "@/types/Characteristic";
+import {PropertyService} from "@/services/propertyService";
+import {getIconByCategory, mapPrismaCharacteristicCategory} from "@/helpers/IconMapper"
 
 export async function GET(
     request: NextRequest,
@@ -85,6 +85,7 @@ export async function GET(
                         iconUrl: iconUrl,
                     };
                 }),
+	        transition: PropertyState.RENT
         };
 
         return NextResponse.json(propiedadFormateada);

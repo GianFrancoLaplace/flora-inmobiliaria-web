@@ -1,7 +1,5 @@
-// app/(views)/propiedades/page.tsx
-
 'use client';
-import { Suspense } from 'react'; // 1. IMPORTA Suspense
+import { Suspense } from 'react';
 import ContactInformation from "@/components/features/ContactInformation/ContactInformation";
 import styles from './propertiesstyles.module.css';
 import '../ui/fonts';

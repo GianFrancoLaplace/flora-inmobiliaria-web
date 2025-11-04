@@ -6,21 +6,19 @@ import EditableNumericField from "@/components/TechnicalFile/EditableField/Edita
 import EditButton from '@/components/TechnicalFile/EditButton'
 import Image from 'next/image';
 import styles from './TechnicalSheet.module.css'
-import { cactus } from "@/app/(views)/ui/fonts";
-import { Property, PropertyState, PropertyType } from "@/types/Property";
-import { useRouter } from "next/navigation";
-import React, { useState, useEffect, useCallback } from "react";
+import {cactus} from "@/app/(views)/ui/fonts";
+import {Property, PropertyState, PropertyType} from "@/types/Property";
+import {useRouter} from "next/navigation";
+import React, {useCallback, useEffect, useState} from "react";
 import CarrouselFotos from "./Carrousel/CarrouselFotos";
 import Item from "@/components/TechnicalFile/PropertiesItem";
-import { useUpdateProperty } from "@/hooks/useUpdateProperty"
-import { useUpdateCharacteristic } from "@/hooks/useUpdateCharacteristic"
+import {useUpdateProperty} from "@/hooks/useUpdateProperty"
+import {useUpdateCharacteristic} from "@/hooks/useUpdateCharacteristic"
 import CharacteristicsForm from "./characteristicsForm/characteristicsForm";
-import { useCreateProperty } from "@/hooks/CreateProperty";
-import { enrichCharacteristic } from '@/helpers/CharacteristicHelper';
-import { useCreateCharacteristic } from '@/hooks/useCreateCharacteristic';
-import { Characteristic, CharacteristicCreate } from '@/types/Characteristic';
-
-import useAdminImages from "@/hooks/AdminImages";
+import {useCreateProperty} from "@/hooks/CreateProperty";
+import {enrichCharacteristic} from '@/helpers/CharacteristicHelper';
+import {useCreateCharacteristic} from '@/hooks/useCreateCharacteristic';
+import {Characteristic, CharacteristicCreate} from '@/types/Characteristic';
 import Link from "next/link";
 
 type TechnicalSheetProps = {
@@ -32,19 +30,25 @@ export default function TechnicalSheet({ mode, property }: TechnicalSheetProps) 
     const router = useRouter();
 
     const { createProperty, isCreating, status, clearStatus } = useCreateProperty();
+	let initialProperty: Property;
 
-    const initialProperty = property || {
-        images: [],
-        address: "Dirección",
-        characteristics: [],
-        city: "Ciudad",
-        description: "Descripción",
-        id: 0,
-        price: 0,
-        state: PropertyState.RENT,
-        type: PropertyType.HOME,
-        ubication: " "
-    };
+	if (property) {
+		initialProperty = property;
+	} else {
+		initialProperty = {
+			images: [],
+			address: "Dirección",
+	        characteristics: [],
+	        city: "Ciudad",
+	        description: "Descripción",
+	        id: 0,
+	        price: 0,
+	        state: PropertyState.RENT,
+	        type: PropertyType.HOME,
+	        ubication: " ",
+			transition: PropertyState.RENT
+		}
+	}
 
     const [editingField, setEditingField] = useState<string | null>(null);
     const [localProperty, setLocalProperty] = useState<Property>(initialProperty);
