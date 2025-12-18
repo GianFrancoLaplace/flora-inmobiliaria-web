@@ -1,6 +1,8 @@
 import { MetadataRoute } from 'next'
 import { getBaseUrl } from '@/lib/baseURL'
 
+export const dynamic = 'force-dynamic'
+
 async function getAllPropertyIds(): Promise<string[]> {
 	try {
 		const response = await fetch(`${getBaseUrl()}/api/properties`, {
