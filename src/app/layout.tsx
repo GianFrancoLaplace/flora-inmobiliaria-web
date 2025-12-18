@@ -1,20 +1,17 @@
 import type { Metadata } from "next";
 import './(views)/ui/globals.css';
+// Asegúrate que la ruta de la fuente sea correcta
 import { cactus } from "@/app/(views)/ui/fonts";
 import NavBar from "@/components/NavBar/NavBar";
 import Footer from "@/components/Footer/Footer";
 import WhatsAppRedirection from "@/components/WhatsAppRedirection/WhatsAppRedirection";
 
-// export const metadata: Metadata = {
-//   title: "Flora Cordeiro Inmobiliaria",
-//   description: "Created by Magno",
-//   icons: {
-//     icon: '/logos/footerLogo.png',
-//   },
-// };
+// URL base definida para evitar repeticiones
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL : "";
+
 
 export const metadata: Metadata = {
-	metadataBase: new URL('https://flora-cordeiro-inmobiliaria.vercel.app/'),
+	metadataBase: new URL(BASE_URL),
 
 	title: {
 		default: 'Flora Cordeiro - Inmobiliaria en Tandil | Casas, Departamentos, Terrenos',
@@ -37,23 +34,16 @@ export const metadata: Metadata = {
 	creator: 'Flora Cordeiro Inmobiliaria',
 	publisher: 'Flora Cordeiro',
 
-	formatDetection: {
-		email: false,
-		address: false,
-		telephone: false,
-	},
-
-	// Open Graph (Facebook, WhatsApp, LinkedIn)
 	openGraph: {
 		type: 'website',
 		locale: 'es_AR',
-		url: 'https://flora-cordeiro-inmobiliaria.vercel.app/',
+		url: BASE_URL,
 		siteName: 'Flora Cordeiro Inmobiliaria',
 		title: 'Flora Cordeiro - Tu Inmobiliaria de Confianza en Tandil',
 		description: 'Encontrá tu próxima propiedad en Tandil. Casas, departamentos, terrenos y más. Atención personalizada.',
 		images: [
 			{
-				url: '/og-image.jpg', // Crear
+				url: '/og-image.jpg', // TODO: Subir imagen
 				width: 1200,
 				height: 630,
 				alt: 'Flora Cordeiro Inmobiliaria - Tandil',
@@ -61,10 +51,9 @@ export const metadata: Metadata = {
 		],
 	},
 
-	// Verificación de plataformas (si las usas)
+	// Verificación de plataformas
 	verification: {
-		google: 'tu-codigo-google-search-console', // Agregar cuando tengas
-		// facebook: 'tu-codigo-facebook',
+		google: '5XxYTljI-V7ytErFMbV1yrAL6QzawUMcHoEZhvU7iHg',
 	},
 
 	robots: {
@@ -89,51 +78,58 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
+	                                   children,
+                                   }: Readonly<{
+	children: React.ReactNode;
 }>) {
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "RealEstateAgent",
-    "name": "Flora Cordeiro Inmobiliaria",
-    "image": "https://flora-cordeiro-inmobiliaria.vercel.app/logos/footerLogo.png",
-    "@id": "",
-    "url": "https://flora-cordeiro-inmobiliaria.vercel.app/",
-    "telephone": "+54 9 2494 208037",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "14 de Julio 796",
-      "addressLocality": "Tandil",
-      "addressRegion": "Buenos Aires",
-      "postalCode": "7000",
-      "addressCountry": "AR"
-    },
-    "openingHours": "Mo-Fr 09:00-18:00",
-    "sameAs": [
-      "https://facebook.com/inmob.flora.cordeiro",
-      "https://instagram.com/floracordeiro_inmobiliaria"
-    ]
-  };
+	// JSON-LD optimizado
+	const structuredData = {
+		"@context": "https://schema.org",
+		"@type": "RealEstateAgent",
+		"name": "Flora Cordeiro Inmobiliaria",
+		"image": `${BASE_URL}/logos/footerLogo.png`,
+		"@id": BASE_URL,
+		"url": BASE_URL,
+		"telephone": "+54 9 2494 208037",
+		"address": {
+			"@type": "PostalAddress",
+			"streetAddress": "14 de Julio 796",
+			"addressLocality": "Tandil",
+			"addressRegion": "Buenos Aires",
+			"postalCode": "7000",
+			"addressCountry": "AR"
+		},
+		"openingHoursSpecification": [
+			{
+				"@type": "OpeningHoursSpecification",
+				"dayOfWeek": [
+					"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"
+				],
+				"opens": "09:00",
+				"closes": "18:00"
+			}
+		],
+		"sameAs": [
+			"https://facebook.com/inmob.flora.cordeiro",
+			"https://instagram.com/floracordeiro_inmobiliaria"
+		]
+	};
 
-  return (
-    <html lang="es">
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="google-site-verification" content="5XxYTljI-V7ytErFMbV1yrAL6QzawUMcHoEZhvU7iHg" />
+	return (
+		<html lang="es">
+		<body className={`${cactus.className}`}>
+		{/* Script JSON-LD inyectado correctamente en el body */}
+		<script
+			type="application/ld+json"
+			dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+		/>
 
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
-      </head>
-      <body className={`${cactus.className}`}>
-        <NavBar />
-        {children}
-        <WhatsAppRedirection />
-        <Footer />
-      </body>
-    </html>
-  );
+		<NavBar />
+		{children}
+		<WhatsAppRedirection />
+		<Footer />
+		</body>
+		</html>
+	);
 }
