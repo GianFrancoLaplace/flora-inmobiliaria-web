@@ -7,8 +7,11 @@ import Footer from "@/components/Footer/Footer";
 import WhatsAppRedirection from "@/components/WhatsAppRedirection/WhatsAppRedirection";
 
 // URL base definida para evitar repeticiones
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL : "";
+let BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL : "";
 
+if (!BASE_URL) {
+	BASE_URL = 'https://flora-inmobiliaria-web.vercel.app/';  // TODO: HARDCODEADO
+}
 
 export const metadata: Metadata = {
 	metadataBase: new URL(BASE_URL),
