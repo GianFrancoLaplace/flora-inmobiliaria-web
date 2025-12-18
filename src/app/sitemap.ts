@@ -1,5 +1,5 @@
-import { MetadataRoute } from 'next'
 import { getBaseUrl } from '@/lib/baseURL'
+import { MetadataRoute } from "next";
 
 export const dynamic = 'force-dynamic'
 
