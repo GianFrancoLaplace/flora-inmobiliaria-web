@@ -53,9 +53,10 @@ export interface PropertyUpdateData {
     type?: PropertyType;
 }
 export interface Image {
-    id_image: number;
-    id_property: number;
+    idImage: number;
+    idProperty: number;
     url: string;
+	altText: string;
 }
 
 export enum PropertyState {

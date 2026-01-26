@@ -1,8 +1,9 @@
 import cloudinary from "@/lib/cloudinary";
-import {Image} from "@/types/property.types";
+import {Image, ImageMetadata} from "@/types/property.types";
+import {prisma } from "@/lib/prisma";
 
 class ImageService {
-	async create(file: File) {
+	async create(file: File, imageMetadata: ImageMetadata): Promise<Image> {
 		const arrayBuffer = await file.arrayBuffer();
 		const buffer = Buffer.from(arrayBuffer);
 
@@ -16,6 +17,14 @@ class ImageService {
 			).end(buffer);
 		});
 
-		return Response.json(result);
+		const image = prisma.image.create({
+			data: {
+				idProperty: imageMetadata.idProperty,
+				url: imageMetadata.url,
+				alt_text: imageMetadata.altText
+			},
+		})
+
+		return image;
 	}
 }
