@@ -1,6 +1,6 @@
-import { Property } from "@/types/Property";
+import { PropertyTypes } from "@/types/property.types";
 
-export async function getPropertyById(id: string): Promise<Property | null> {
+export async function getPropertyById(id: string): Promise<PropertyTypes | null> {
     try {
         const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
 

@@ -4,12 +4,12 @@ import styles from './BigCard.module.css'
 import {cactus} from "@/app/(views)/ui/fonts";
 import BigCard from "@/components/BigCards/BigCard";
 import React, { useEffect, useState } from "react";
-import { Property } from "@/types/Property";
+import { PropertyTypes } from "@/types/property.types";
 import { CharacteristicCategory } from "@/types/Characteristic";
 import { useSearchParams } from 'next/navigation';
 
 export default function BigCardsGrid() {
-    const [properties, setProperties] = useState<Property[]>([]);
+    const [properties, setProperties] = useState<PropertyTypes[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const searchParams = useSearchParams();
@@ -28,7 +28,7 @@ export default function BigCardsGrid() {
                     throw new Error('Error al cargar propiedades');
                 }
 
-                const data: Property[] = await response.json();
+                const data: PropertyTypes[] = await response.json();
                 setProperties(data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Error desconocido');
@@ -41,7 +41,7 @@ export default function BigCardsGrid() {
     }, [searchParams]);
 
     // Función helper para extraer valor de característica
-    const getCharacteristicValue = (property: Property, category: CharacteristicCategory): number => {
+    const getCharacteristicValue = (property: PropertyTypes, category: CharacteristicCategory): number => {
         const characteristic = property.characteristics.find(c => c.category === category);
         return characteristic?.value_integer || 0;
     };

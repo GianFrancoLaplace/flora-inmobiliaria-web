@@ -16,17 +16,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 	const property = await response.json();
 
+	let url = property.description.substring(0, 160);
+
 	return {
 		title: `${property.type} en ${property.state} - ${property.address}`,
-		description: property.description.substring(0, 160),
+		description: url,
 		openGraph: {
 			title: `${property.type} - $${property.price.toLocaleString('es-AR')}`,
 			description: property.description,
 			images: property.images?.[0]?.url ? [property.images[0].url] : [],
-			url: `${getBaseUrl()}/propiedades/ficha/${id}`,
+			url: `${getBaseUrl()}/propiedades/ficha/${url}`,
 		},
 		alternates: {
-			canonical: `${getBaseUrl()}/propiedades/ficha/${id}`,
+			canonical: `${getBaseUrl()}/propiedades/ficha/${url}`,
 		},
 	};
 }

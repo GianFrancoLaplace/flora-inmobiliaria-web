@@ -1,47 +1,38 @@
 import Image from "next/image";
 import styles from './SmallCard.module.css';
 import Link from "next/link";
+import {PropertyTypes, PropertyState} from "@/types/property.types";
 
 type Props = {
-    id:number,
     imageSrc: string;
-    price: number;
-    transaction: string;
-    adress: string;
-    city: string;
+    property: PropertyTypes;
     rooms: number;
     dorms: number;
     bathrooms: number;
     showLabel?: boolean;
 };
 
-export default function SmallCard({id, imageSrc, price, transaction, adress, city, rooms, dorms, bathrooms}:Props){
-    const showLabel =
-        transaction === "VENDIDA" ||
-        transaction === "ALQUILADA" ||
-        transaction === "Alquilada" ||
-        transaction === "alquilada" ||
-        transaction === "Vendida" ||
-        transaction === "vendida"
-    ;
+export default function SmallCard({imageSrc, property, rooms, dorms, bathrooms}:Props){
+
+	const showLabel = Object.values(PropertyState).includes(property.state)
 
     return (
         <main className={styles.card}>
-            {showLabel && <div className={styles.addedLabel}>{transaction}</div>}
-            <Link href={`/propiedades/ficha/${id}`}>
+            {showLabel && <div className={styles.addedLabel}>{property.state}</div>}
+            <Link href={`/propiedades/ficha/${property.slug}`}>
                 <Image
                     src={imageSrc}
-                    alt={`Imagen de la propiedad en ${adress}`}
+                    alt={`Imagen de la propiedad en ${property.state}`}
                     fill
                     className={styles.cardImage}
                 />
             </Link>
             <div className={styles.cardOverlay}>
                 <h3 className={styles['cardPriceStatus']}>
-                    USD {price} | {transaction}
+                    USD {property.price} | {property.state}
                 </h3>
                 <h5 className={styles.cardAddress}>
-                    {adress}, {city}
+                    {property.address}, {property.city}
                 </h5>
                 <h6 className={styles.cardFeatures}>
                     {rooms} ambientes

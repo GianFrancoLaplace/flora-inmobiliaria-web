@@ -26,9 +26,19 @@ export default function BigCard({id, imageSrc, price, transaction, adress, city,
         transaction === "vendida"
     ;
 
+	let parts = [];
+
+	if (rooms) parts.push(`${rooms} ambientes`);
+	if (dorms) parts.push(`${dorms} dormitorios`);
+	if (bathrooms) parts.push(`${bathrooms} baños`);
+
+	let description = parts.join(" | ");
+
+	console.log(description);
+
     return (
         <main className={`${styles.page} ${cactus.className}`} style={{position: 'relative'}}>
-            {showLabel && <div className={styles.addedLabel}>{transaction}</div>}
+            {showLabel && <div className={styles.addedLabel}>{transaction.toUpperCase()}</div>}
 
             <Link href={`/propiedades/ficha/${id}`}>
                 <Image
@@ -40,10 +50,10 @@ export default function BigCard({id, imageSrc, price, transaction, adress, city,
             </Link>
 
             <div className={styles.detailsProperties}>
-                <h3>USD {price} | {transaction}</h3>
+                <h3>USD {price} | {transaction.toUpperCase()}</h3>
                 <div>
                     <h5>{adress}, {city}</h5>
-                    <h6>{rooms} ambientes | {dorms} dormitorios | {bathrooms} baños</h6>
+                    <h6>{description}</h6>
                 </div>
             </div>
         </main>

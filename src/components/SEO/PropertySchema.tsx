@@ -1,8 +1,8 @@
-import { Property } from '@/types/Property'
+import { PropertyTypes } from '@/types/property.types'
 import {getBaseUrl} from "@/lib/baseURL";
 
 interface PropertySchemaProps {
-	property: Property
+	property: PropertyTypes
 }
 
 export function PropertySchema({ property }: PropertySchemaProps) {

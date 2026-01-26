@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Property, PropertyUpdateData } from '@/types/Property';
+import { PropertyTypes, PropertyUpdateData } from '@/types/property.types';
 
 type UpdateStatus = {
     message: string;
@@ -43,7 +43,7 @@ export const useUpdateProperty = () => {
             // Opcional: Refrescar la página para ver los cambios
             router.refresh();
 
-            return result.property as Property;
+            return result.property as PropertyTypes;
 
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Error desconocido al actualizar la propiedad.';

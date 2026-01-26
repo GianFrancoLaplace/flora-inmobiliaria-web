@@ -1,4 +1,4 @@
-import { PropertyState, PropertyType } from "@/types/Property";
+import { PropertyState, PropertyType } from "@/types/property.types";
 
 export function mapOperationToState(operation: string): PropertyState {
   switch (operation) {

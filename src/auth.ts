@@ -5,7 +5,7 @@ import type { User as NextAuthUser } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { authConfig } from './auth.config';
 import { z } from 'zod';
-import type { User as AppUser } from '@/types/Property';
+import type { User as AppUser } from '@/types/property.types';
 import bcrypt from 'bcryptjs';
 import postgres from 'postgres';
 

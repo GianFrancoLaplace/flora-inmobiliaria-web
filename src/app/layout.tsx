@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import './(views)/ui/globals.css';
-// Asegúrate que la ruta de la fuente sea correcta
 import { cactus } from "@/app/(views)/ui/fonts";
 import NavBar from "@/components/NavBar/NavBar";
 import Footer from "@/components/Footer/Footer";
@@ -46,7 +45,7 @@ export const metadata: Metadata = {
 		description: 'Encontrá tu próxima propiedad en Tandil. Casas, departamentos, terrenos y más. Atención personalizada.',
 		images: [
 			{
-				url: '/og-image.jpg', // TODO: Subir imagen
+				url: '/homeBackground.jpg', // TODO: Subir imagen
 				width: 1200,
 				height: 630,
 				alt: 'Flora Cordeiro Inmobiliaria - Tandil',

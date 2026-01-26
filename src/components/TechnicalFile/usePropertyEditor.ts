@@ -1,9 +1,9 @@
 'use client';
 import {useCallback, useEffect, useState} from "react";
-import {Property} from "@/types/Property"
+import {PropertyTypes} from "@/types/property.types"
 
 
-export const usePropertyEditor = (mode: 'view' | 'create' | 'edit', initialProperty: Property) => {
+export const usePropertyEditor = (mode: 'view' | 'create' | 'edit', initialProperty: PropertyTypes) => {
     // Estado principal
     const [property, setProperty] = useState(initialProperty);
 
@@ -25,7 +25,7 @@ export const usePropertyEditor = (mode: 'view' | 'create' | 'edit', initialPrope
     // Confirmar edición de un campo
     const confirmEdit = useCallback((fieldName: string) => {
         // const result = Service.updateAsync
-        console.log(`Guardando edición de: ${fieldName}`, property[fieldName as keyof Property]);
+        console.log(`Guardando edición de: ${fieldName}`, property[fieldName as keyof PropertyTypes]);
 
         const isSuccess = true;
         if(isSuccess) // result.isSuccess

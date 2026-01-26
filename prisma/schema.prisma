@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Property {
+model PropertyTypes {
   idProperty      Int              @id @default(autoincrement()) @map("id_property")
   description     String?
   price           Int
@@ -47,6 +47,7 @@ model image {
   idImage    Int       @id @default(autoincrement()) @map("id_image")
   url        String?
   idProperty Int?      @map("id_property")
+  alt_text   String?
   property   Property? @relation(fields: [idProperty], references: [idProperty], onDelete: Cascade, map: "fk_image_propery")
 }
 
@@ -63,8 +64,6 @@ enum PropertyTypeEnum {
 enum OperationEnum {
   alquiler
   venta
-  alquilada
-  vendida
 
   @@map("operation_enum")
 }
@@ -95,4 +94,11 @@ enum CharacteristicCategoryEnum {
   otros
 
   @@map("characteristic_category_enum")
+}
+
+enum property_status_enum {
+  activa
+  reservada
+  vendida
+  suspendida
 }

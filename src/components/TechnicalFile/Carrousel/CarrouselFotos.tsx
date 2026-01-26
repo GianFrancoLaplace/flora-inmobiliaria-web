@@ -3,12 +3,12 @@
 import Image from 'next/image';
 import { useState, useEffect } from "react";
 import styles from "./CarrouselFotos.module.css";
-import { Property } from "@/types/Property";
+import { PropertyTypes } from "@/types/property.types";
 import useAdminImages from '@/hooks/AdminImages';
 
 type Prop = {
     isEditableFile: boolean;
-    property: Property;
+    property: PropertyTypes;
     isEmptyFile: boolean;
     onImagesChange?: (images: any[]) => void;
 };

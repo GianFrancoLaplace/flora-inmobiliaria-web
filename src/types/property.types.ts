@@ -6,9 +6,10 @@ export type User = {
     admin_password: string;
 };
 
-export interface Property {
+export interface PropertyTypes {
   id: number;
   address: string;
+  slug: string;
   city: string;
   state: PropertyState;
   price: number;
@@ -19,18 +20,28 @@ export interface Property {
   type?: PropertyType;
 }
 
-export interface PropertyInput {
-    address: string;
-    city: string;
-    state: PropertyState;
-    price: number;
-    description: string;
-    ubication: string;
-    characteristics: Characteristic[];
-    images: { id: number; url: string }[];
-    type: PropertyType;
-    category: PropertyState;
+/**
+ * DTO para crear una propiedad (sin imágenes)
+ * Representa los datos de texto del formulario
+ */
+export interface CreatePropertyDTO {
+	address: string;
+	city: string;
+	state: PropertyState;
+	price: number;
+	description: string;
+	ubication: string;
+	type: PropertyType;
 }
+
+/**
+ * Metadata de imagen enviada por el cliente
+ */
+export interface ImageMetadata {
+	position: number;
+	isMain: boolean;
+}
+
 
 export interface PropertyUpdateData {
     address?: string;

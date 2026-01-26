@@ -4,7 +4,7 @@ export const revalidate = 0;
 import {NextRequest, NextResponse} from 'next/server';
 import {prisma} from '@/lib/prisma';
 import {mapOperationToState, mapPropertyType} from '@/helpers/PropertyMapper';
-import {Property, PropertyState, PropertyUpdateData} from '@/types/Property';
+import {PropertyTypes, PropertyState, PropertyUpdateData} from '@/types/property.types';
 import {Characteristic} from "@/types/Characteristic";
 import {PropertyService} from "@/services/propertyService";
 import {getIconByCategory, mapPrismaCharacteristicCategory} from "@/helpers/IconMapper"
@@ -37,7 +37,7 @@ export async function GET(
             );
         }
 
-        const propiedadFormateada: Property = {
+        const propiedadFormateada: PropertyTypes = {
             id: propiedad.idProperty,
             address: propiedad.address || '',
             city: '',

@@ -1,18 +1,13 @@
-// app/api/propiedades/route.ts
-//probar filtros: http://localhost:3000/api/properties?tipo=departamento
-
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+import {PropertyService} from "@/services/property.service";
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { PropertyService } from '@/services/propertyService';
-import { PropertyInput,Property, PropertyState } from '@/types/Property';
+import { CreatePropertyDTO, PropertyTypes, PropertyState } from '@/types/property.types';
 import { Characteristic } from "@/types/Characteristic";
 import { mapOperationToState, mapPropertyType } from '@/helpers/PropertyMapper';
 import { mapPrismaCharacteristicCategory } from '@/helpers/IconMapper';
-import {ValidationError} from "@/helpers/UpdateProperty";
-import { array, property } from 'zod/v4';
 
 type PriceFilter = {
     lte?: number;
@@ -51,7 +46,7 @@ export async function GET(request: Request) {
         });
 
         console.log("después del find many");
-        const properties: Property[] = propertiesRaw.map((p) => ({
+        const properties: PropertyTypes[] = propertiesRaw.map((p) => ({
             id: p.idProperty,
             address: p.address || '',
             city: '',
@@ -88,11 +83,13 @@ export async function GET(request: Request) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body: PropertyInput = await request.json();
-    const service = new PropertyService([], []);
+    const body: CreatePropertyDTO = await request.json();
+    const service = new PropertyService();
 
-    const validationErrors = service.verifyFields(body);
-    if (validationErrors.length > 0) {
+	await service.create(body);
+	const resultValidation = service.validation;
+
+    if (resultValidation.errors.length > 0) {
       return NextResponse.json(
         { message: "Datos de propiedad inválidos", errors: validationErrors },
         { status: 400 }

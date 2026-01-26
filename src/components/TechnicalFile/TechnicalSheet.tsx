@@ -7,7 +7,7 @@ import EditButton from '@/components/TechnicalFile/EditButton'
 import Image from 'next/image';
 import styles from './TechnicalSheet.module.css'
 import {cactus} from "@/app/(views)/ui/fonts";
-import {Property, PropertyState, PropertyType} from "@/types/Property";
+import {PropertyTypes, PropertyState, PropertyType} from "@/types/property.types";
 import {useRouter} from "next/navigation";
 import React, {useCallback, useEffect, useState} from "react";
 import CarrouselFotos from "./Carrousel/CarrouselFotos";
@@ -23,14 +23,14 @@ import Link from "next/link";
 
 type TechnicalSheetProps = {
     mode: 'view' | 'create' | 'edit';
-    property: Property | null;
+    property: PropertyTypes | null;
 };
 
 export default function TechnicalSheet({ mode, property }: TechnicalSheetProps) {
     const router = useRouter();
 
     const { createProperty, isCreating, status, clearStatus } = useCreateProperty();
-	let initialProperty: Property;
+	let initialProperty: PropertyTypes;
 
 	if (property) {
 		initialProperty = property;
@@ -51,7 +51,7 @@ export default function TechnicalSheet({ mode, property }: TechnicalSheetProps) 
 	}
 
     const [editingField, setEditingField] = useState<string | null>(null);
-    const [localProperty, setLocalProperty] = useState<Property>(initialProperty);
+    const [localProperty, setLocalProperty] = useState<PropertyTypes>(initialProperty);
     const encodedAddress = encodeURIComponent(
         localProperty.address || 'Tandil, Buenos Aires, Argentina'
     );
@@ -251,7 +251,7 @@ export default function TechnicalSheet({ mode, property }: TechnicalSheetProps) 
     const isEmptyFile = mode === "create";
     const isEditableFile = mode === "edit";
 
-    const handleStartEdit = (fieldName: keyof Property) => {
+    const handleStartEdit = (fieldName: keyof PropertyTypes) => {
         console.log(`Iniciando edición de: ${fieldName}`);
         setEditingField(fieldName);
     };
@@ -259,7 +259,7 @@ export default function TechnicalSheet({ mode, property }: TechnicalSheetProps) 
     const handleStartEditHeader = () => setEditingField('address-header');
     const handleStartEditMain = () => setEditingField('address-main');
 
-    const handleSaveField = async (fieldName: keyof Property, value: string | number) => {
+    const handleSaveField = async (fieldName: keyof PropertyTypes, value: string | number) => {
         console.log("handle save field");
         console.log(`Guardando ${fieldName}:`, value);
         setLocalProperty(prev => ({ ...prev, [fieldName]: value }));

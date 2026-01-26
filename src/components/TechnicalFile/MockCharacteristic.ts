@@ -1,4 +1,4 @@
-import {  Property } from "@/types/Property";
+import {  PropertyTypes } from "@/types/property.types";
 import { CharacteristicCategory, Characteristic } from "@/types/Characteristic"
 
 export interface CharacteristicConfig {
@@ -133,7 +133,7 @@ export const CHARACTERISTIC_CONFIGS: CharacteristicConfig[] = [
 
 export const createCharacteristicFromCategory = (
     category: CharacteristicCategory,
-    property: Property | null
+    property: PropertyTypes | null
 ): Characteristic => {
     const config = CHARACTERISTIC_CONFIGS.find(cfg => cfg.category === category);
 
@@ -186,7 +186,7 @@ export const getCharacteristicConfig = (category: CharacteristicCategory): Chara
     return CHARACTERISTIC_CONFIGS.find(cfg => cfg.category === category);
 };
 
-export const getDataGridCharacteristics = (property: Property | null): Characteristic[] => {
+export const getDataGridCharacteristics = (property: PropertyTypes | null): Characteristic[] => {
     const dataGridCategories = [
         CharacteristicCategory.BANOS,
         CharacteristicCategory.ANTIGUEDAD,
@@ -199,7 +199,7 @@ export const getDataGridCharacteristics = (property: Property | null): Character
     );
 };
 
-export const getTechnicalSheetCharacteristics = (property: Property | null): Characteristic[] => {
+export const getTechnicalSheetCharacteristics = (property: PropertyTypes | null): Characteristic[] => {
     return CHARACTERISTIC_CONFIGS.map(config =>
         createCharacteristicFromCategory(config.category, property)
     );

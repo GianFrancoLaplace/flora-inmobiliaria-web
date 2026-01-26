@@ -38,7 +38,7 @@ function PropertiesContent() {
         if (mappedProperties.length === 0) {
             return <div className={styles.noPropertiesContainer}><p>No se encontraron propiedades.</p></div>;
         }
-        return <PropertyGrid properties={mappedProperties} />;
+        return <PropertyGrid />;
     };
 
     return (

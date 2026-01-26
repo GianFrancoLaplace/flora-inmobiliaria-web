@@ -6,6 +6,7 @@
     "skipLibCheck": true,
     "allowJs": true,
     "strict": true,
+    "types": ["vitest/globals"],
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -24,6 +25,13 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/auth.ts" ],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/auth.ts",
+    "node_modules/.pnpm/vitest@4.0.18_@types+node@2_0ea10e71f83c99cf9f435032e86665ea/node_modules/vitest/globals.d.ts"
+  ],
   "exclude": ["node_modules"]
 }

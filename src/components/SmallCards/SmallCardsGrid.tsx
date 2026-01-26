@@ -4,11 +4,11 @@ import styles from './SmallCardsGrid.module.css';
 import React, {useEffect, useState} from "react";
 import {usePathname, useSearchParams} from 'next/navigation';
 import {CharacteristicCategory} from "@/types/Characteristic";
-import { Property } from "@/types/Property";
+import { PropertyTypes } from "@/types/property.types";
 import {cactus} from "@/app/(views)/ui/fonts";
 
 export default function SmallCardsGrid() {
-    const [properties, setProperties] = useState<Property[]>([]);
+    const [properties, setProperties] = useState<PropertyTypes[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const searchParams = useSearchParams();
@@ -27,7 +27,7 @@ export default function SmallCardsGrid() {
                     throw new Error('Error al cargar propiedades');
                 }
 
-                const data: Property[] = await response.json();
+                const data: PropertyTypes[] = await response.json();
                 setProperties(data);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Error desconocido');
@@ -37,7 +37,8 @@ export default function SmallCardsGrid() {
         };
         fetchProperties();
     }, [searchParams]);
-    const getCharacteristicValue = (property: Property, category: CharacteristicCategory): number => {
+
+    const getCharacteristicValue = (property: PropertyTypes, category: CharacteristicCategory): number => {
         const characteristic = property.characteristics.find(c => c.category === category);
         return characteristic?.value_integer || 0;
     };
@@ -67,12 +68,8 @@ export default function SmallCardsGrid() {
         {properties.map((property) => (
                 <SmallCard
                     key={property.id}
-                    id={property.id}
+                    property={property}
                     imageSrc={property.images[0]?.url?.trim() || "/backgrounds/notImage.jpg"}
-                    price={property.price}
-                    transaction={property.state}
-                    adress={property.address}
-                    city={property.city || "Tandil"}
                     rooms={getCharacteristicValue(property, CharacteristicCategory.AMBIENTES)}
                     dorms={getCharacteristicValue(property, CharacteristicCategory.DORMITORIOS)}
                     bathrooms={getCharacteristicValue(property, CharacteristicCategory.BANOS)}
