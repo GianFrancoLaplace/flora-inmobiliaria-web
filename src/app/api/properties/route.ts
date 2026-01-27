@@ -111,13 +111,9 @@ export async function POST(request: NextRequest) {
 			  {status: 400}
 		  );
 	  }
-	  const images: CreateImage[] = imageFiles.map((file, index) => ({
-		  file,
-		  ...imageMetadata[index],
-	  }));
 
 	  const property = await propertyService.create(
-		  { data: createPropertyDTO, images: images }
+		  createPropertyDTO, imageFiles, imageMetadata
 	  );
 
 	return NextResponse.json(property, { status: 201 });

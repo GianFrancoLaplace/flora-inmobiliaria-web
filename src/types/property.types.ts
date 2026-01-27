@@ -40,8 +40,6 @@ export interface CreatePropertyDTO {
 export interface ImageMetadata {
 	position: number;
 	isMain: boolean;
-	url: string;
-	altText: string;
 }
 
 
