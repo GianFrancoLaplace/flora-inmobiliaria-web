@@ -34,7 +34,7 @@ export class PropertyService {
 
 			return await prisma.$transaction(async (tx) => {
 
-				const property = await prisma.property.create({
+				const property = await tx.property.create({
 					data: {
 						address: validated.address,
 						city: validated.city,
@@ -55,10 +55,9 @@ export class PropertyService {
 				await tx.image.createMany({
 					data: uploadedImages.map((img, idx) => ({
 						url: img.url,
-						publicId: img.publicId,
 						position: imageMetadata[idx].position,
 						isMain: imageMetadata[idx].isMain,
-						propertyId: property.idProperty
+						idProperty: property.idProperty
 					}))
 				});
 

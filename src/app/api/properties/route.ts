@@ -105,6 +105,11 @@ export async function POST(request: NextRequest) {
 		  formData.get("imageMetadata") as string
 	  );
 
+	  console.log(imageFiles);
+	  console.log(imageMetadata);
+
+	  console.log(imageFiles.length !== imageMetadata.length);
+
 	  if (imageFiles.length !== imageMetadata.length) {
 		  return NextResponse.json(
 			  {error: "Cantidad de imágenes y metadata no coincide"},

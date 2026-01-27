@@ -16,6 +16,7 @@ model Property {
   address         String?
   ubication       String?
   city            String?
+  slug            String?          @unique @db.VarChar(160)
   characteristics Characteristic[]
   images          image[]
 
@@ -48,6 +49,8 @@ model image {
   url        String?
   idProperty Int?      @map("id_property")
   alt_text   String?
+  position   Int
+  isMain     Boolean   @map("is_main")
   property   Property? @relation(fields: [idProperty], references: [idProperty], onDelete: Cascade, map: "fk_image_propery")
 }
 
@@ -62,9 +65,9 @@ enum PropertyTypeEnum {
 }
 
 enum OperationEnum {
-  alquilada
   alquiler
   venta
+  alquilada
   vendida
 
   @@map("operation_enum")
