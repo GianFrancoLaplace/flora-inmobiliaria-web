@@ -2,7 +2,7 @@ import cloudinary from "@/lib/cloudinary";
 import {Image, ImageMetadata} from "@/types/property.types";
 import {prisma } from "@/lib/prisma";
 
-class ImageService {
+export class ImageService {
 	async create(file: File, imageMetadata: ImageMetadata): Promise<Image> {
 		const arrayBuffer = await file.arrayBuffer();
 		const buffer = Buffer.from(arrayBuffer);

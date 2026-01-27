@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model PropertyTypes {
+model Property {
   idProperty      Int              @id @default(autoincrement()) @map("id_property")
   description     String?
   price           Int
@@ -62,8 +62,10 @@ enum PropertyTypeEnum {
 }
 
 enum OperationEnum {
+  alquilada
   alquiler
   venta
+  vendida
 
   @@map("operation_enum")
 }

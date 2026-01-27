@@ -40,6 +40,8 @@ export interface CreatePropertyDTO {
 export interface ImageMetadata {
 	position: number;
 	isMain: boolean;
+	url: string;
+	altText: string;
 }
 
 
@@ -52,11 +54,22 @@ export interface PropertyUpdateData {
     description?: string;
     type?: PropertyType;
 }
+
 export interface Image {
     idImage: number;
     idProperty: number;
     url: string;
 	altText: string;
+	isMain: boolean;
+	position: number;
+}
+
+export interface CreateImage {
+	url: string;
+	altText: string;
+	isMain: boolean;
+	position: number;
+	file: File;
 }
 
 export enum PropertyState {

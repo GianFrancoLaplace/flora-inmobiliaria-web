@@ -4,11 +4,13 @@ export const revalidate = 0;
 import {ZodError} from "zod";
 import {PropertyService} from "@/services/property.service";
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { CreatePropertyDTO, PropertyTypes, PropertyState } from '@/types/property.types';
-import { Characteristic } from "@/types/Characteristic";
-import { mapOperationToState, mapPropertyType } from '@/helpers/PropertyMapper';
-import { mapPrismaCharacteristicCategory } from '@/helpers/IconMapper';
+import {
+	CreatePropertyDTO,
+	PropertyState,
+	PropertyType,
+	ImageMetadata,
+	CreateImage
+} from '@/types/property.types';
 
 type PriceFilter = {
     lte?: number;
@@ -85,9 +87,38 @@ const propertyService = new PropertyService();
 
 export async function POST(request: NextRequest) {
   try {
-    const body: CreatePublicationDTO = await request.json();
+	  const formData = await request.formData();
 
-	const property = await propertyService.create(body);
+	  const createPropertyDTO: CreatePropertyDTO = {
+		  address: formData.get("address") as string,
+		  city: formData.get("city") as string,
+		  state: formData.get("state") as PropertyState,
+		  price: Number(formData.get("price")),
+		  description: formData.get("description") as string,
+		  ubication: formData.get("ubication") as string,
+		  type: formData.get("type") as PropertyType,
+	  };
+
+	  const imageFiles = formData.getAll("images") as File[];
+
+	  const imageMetadata: ImageMetadata[] = JSON.parse(
+		  formData.get("imageMetadata") as string
+	  );
+
+	  if (imageFiles.length !== imageMetadata.length) {
+		  return NextResponse.json(
+			  {error: "Cantidad de imágenes y metadata no coincide"},
+			  {status: 400}
+		  );
+	  }
+	  const images: CreateImage[] = imageFiles.map((file, index) => ({
+		  file,
+		  ...imageMetadata[index],
+	  }));
+
+	  const property = await propertyService.create(
+		  { data: createPropertyDTO, images: images }
+	  );
 
 	return NextResponse.json(property, { status: 201 });
 
