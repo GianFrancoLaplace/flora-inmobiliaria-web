@@ -1,10 +1,45 @@
-import {CreateImage, CreatePropertyDTO, ImageMetadata} from '@/types/property.types'
+import {
+	CreatePropertyDTO,
+	ImageMetadata,
+	PropertyState,
+	PropertyType,
+	PropertyTypes
+} from '@/types/property.types'
+import { Characteristic } from "@/types/Characteristic";
 import {prisma} from "@/lib/prisma";
 import {createPropertySchema} from "@/lib/constants";
 import { crearSlug } from "@/lib/generateSlug"
 import {ImageService} from "@/services/image.service";
-import {OperationEnum} from "@prisma/client"
+import {OperationEnum, PropertyTypeEnum} from "@prisma/client"
 import {CloudinaryResult} from "@/types/cloudinary.types";
+import {Prisma} from "@prisma/client/extension";
+import {stateMap, typeMap} from "@/helpers/PropertyMapper";
+
+/**
+ * Filtros para búsqueda de propiedades
+ */
+interface PropertyFilters {
+	types?: PropertyType[];
+	operations?: PropertyState[];
+	minPrice?: number;
+	maxPrice?: number;
+}
+
+/**
+ * Objeto WHERE para filtrar propiedades en Prisma
+ */
+interface WhereClause {
+	type?: {
+		in: PropertyTypeEnum[];
+	};
+	category?: {
+		in: OperationEnum[];
+	};
+	price?: {
+		gte?: number;
+		lte?: number;
+	};
+}
 
 export class PropertyService {
 
@@ -75,7 +110,94 @@ export class PropertyService {
 		}
 	}
 
-	async buildWhereClause() {
-		return await prisma.property.findMany({})
+	/**
+	 * Buscar propiedades con filtros opcionales
+	 */
+	async findMany(filters?: PropertyFilters): Promise<PropertyTypes[]> {
+		const where = this.buildWhereClause(filters);
+
+		const properties = await prisma.property.findMany({
+			where: Object.keys(where).length > 0 ? where : undefined,
+			include: {
+				characteristics: true,
+				images: true,
+			},
+		});
+
+		return this.mapToPropertyTypes(properties);
+	}
+
+	/**
+	 * Construye objeto WHERE para Prisma
+	 */
+	private buildWhereClause(filters?: PropertyFilters): WhereClause {
+		const where: WhereClause = {};
+
+		if (!filters) return where;
+
+		if (filters.types && filters.types.length > 0) {
+			where.type = {
+				in: filters.types as PropertyTypeEnum[]
+			};
+		}
+
+		if (filters.operations && filters.operations.length > 0) {
+			where.category = {
+				in: filters.operations as OperationEnum[]
+			};
+		}
+
+		if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+			where.price = {};
+
+			if (filters.minPrice !== undefined) {
+				where.price.gte = filters.minPrice;
+			}
+
+			if (filters.maxPrice !== undefined) {
+				where.price.lte = filters.maxPrice;
+			}
+		}
+
+		return where;
+	}
+
+	/**
+	 * Convierte propiedades de Prisma al formato de la aplicación
+	 */
+	private mapToPropertyTypes(properties: any[]): PropertyTypes[] {
+		return properties.map((p): PropertyTypes => {
+
+			const mappedCharacteristics: Characteristic[] = p.characteristics.map((c: any): Characteristic => {
+				return {
+					id: c.idCharacteristic,
+					characteristic: c.characteristic,
+					data_type: c.dataType === 'integer' ? 'integer' : 'text',
+					value_integer: c.valueInteger ?? undefined,
+					value_text: c.valueText?.trim() || undefined,
+					category: c.category ?? undefined,
+				};
+			});
+
+			const mappedImages: { id: number; url: string }[] = p.images.length > 0
+				? [{ id: p.images[0].idImage, url: p.images[0].url }]
+				: [];
+
+			const result: PropertyTypes = {
+				id: p.idProperty,
+				address: p.address,
+				city: p.city,
+				slug: p.slug,
+				state: stateMap[p.category as OperationEnum],
+				price: p.price,
+				description: p.description,
+				type: typeMap[p.type as PropertyTypeEnum],
+				ubication: p.ubication,
+				characteristics: mappedCharacteristics,
+				images: mappedImages,
+			};
+
+			return result;
+		});
 	}
 }
