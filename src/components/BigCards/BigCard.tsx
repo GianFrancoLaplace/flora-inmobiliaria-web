@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from "next/link";
 
 type Props = {
-    id:number,
+    slug: string,
     imageSrc: string;
     price: number;
     transaction: string;
@@ -16,7 +16,7 @@ type Props = {
     showLabel?: boolean;
 };
 
-export default function BigCard({id, imageSrc, price, transaction, adress, city, rooms, dorms, bathrooms}: Props) {
+export default function BigCard({slug, imageSrc, price, transaction, adress, city, rooms, dorms, bathrooms}: Props) {
     const showLabel =
         transaction === "VENDIDA" ||
         transaction === "ALQUILADA" ||
@@ -40,7 +40,7 @@ export default function BigCard({id, imageSrc, price, transaction, adress, city,
         <main className={`${styles.page} ${cactus.className}`} style={{position: 'relative'}}>
             {showLabel && <div className={styles.addedLabel}>{transaction.toUpperCase()}</div>}
 
-            <Link href={`/propiedades/ficha/${id}`}>
+            <Link href={`/${slug}`}>
                 <Image
                     src={imageSrc}
                     alt={'imagen propiedad'}
