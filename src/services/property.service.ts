@@ -44,11 +44,9 @@ export class PropertyService {
 						ubication: validated.ubication,
 						type: validated.type,
 						// Genera slug - algo como: "venta-casa-tandil-123"
-						// slug: crearSlug(
-						// 	validated.description +
-						// 	validated.state +
-						// 	validated.type
-						// )
+						slug: crearSlug(
+							validated.description
+						)
 					}
 				});
 

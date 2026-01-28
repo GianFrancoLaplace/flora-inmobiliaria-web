@@ -9,14 +9,14 @@ datasource db {
 
 model Property {
   idProperty      Int              @id @default(autoincrement()) @map("id_property")
-  description     String?
+  description     String
   price           Int
   type            PropertyTypeEnum
   category        OperationEnum
-  address         String?
-  ubication       String?
-  city            String?
-  slug            String?          @unique @db.VarChar(160)
+  address         String
+  ubication       String
+  city            String
+  slug            String           @unique @db.VarChar(160)
   characteristics Characteristic[]
   images          image[]
 
