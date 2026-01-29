@@ -1,10 +1,13 @@
 import {
 	CreatePropertyDTO,
 	ImageMetadata,
-	PropertyState,
-	PropertyType,
 	PropertyTypes
 } from '@/types/property.types'
+import {
+	PropertyFilters,
+	WhereClause
+} from '@/types/property.filter.types'
+
 import { Characteristic } from "@/types/Characteristic";
 import {prisma} from "@/lib/prisma";
 import {createPropertySchema} from "@/lib/constants";
@@ -12,34 +15,7 @@ import { crearSlug } from "@/lib/generateSlug"
 import {ImageService} from "@/services/image.service";
 import {OperationEnum, PropertyTypeEnum} from "@prisma/client"
 import {CloudinaryResult} from "@/types/cloudinary.types";
-import {Prisma} from "@prisma/client/extension";
 import {stateMap, typeMap} from "@/helpers/PropertyMapper";
-
-/**
- * Filtros para búsqueda de propiedades
- */
-interface PropertyFilters {
-	types?: PropertyType[];
-	operations?: PropertyState[];
-	minPrice?: number;
-	maxPrice?: number;
-}
-
-/**
- * Objeto WHERE para filtrar propiedades en Prisma
- */
-interface WhereClause {
-	type?: {
-		in: PropertyTypeEnum[];
-	};
-	category?: {
-		in: OperationEnum[];
-	};
-	price?: {
-		gte?: number;
-		lte?: number;
-	};
-}
 
 export class PropertyService {
 
@@ -73,13 +49,14 @@ export class PropertyService {
 					data: {
 						address: validated.address,
 						city: validated.city,
-						category: validated.state as OperationEnum, // TODO: Desharcodear
+						category: validated.state,
 						price: validated.price,
 						description: validated.description,
 						ubication: validated.ubication,
 						type: validated.type,
 						// Genera slug - algo como: "venta-casa-tandil-123"
 						slug: crearSlug(
+							validated.state +
 							validated.description
 						)
 					}
@@ -110,9 +87,6 @@ export class PropertyService {
 		}
 	}
 
-	/**
-	 * Buscar propiedades con filtros opcionales
-	 */
 	async findMany(filters?: PropertyFilters): Promise<PropertyTypes[]> {
 		const where = this.buildWhereClause(filters);
 
@@ -127,9 +101,6 @@ export class PropertyService {
 		return this.mapToPropertyTypes(properties);
 	}
 
-	/**
-	 * Construye objeto WHERE para Prisma
-	 */
 	private buildWhereClause(filters?: PropertyFilters): WhereClause {
 		const where: WhereClause = {};
 

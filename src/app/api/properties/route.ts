@@ -59,7 +59,6 @@ export async function GET(request: Request) {
 	}
 }
 
-
 export async function POST(request: NextRequest) {
   try {
 	  const formData = await request.formData();
