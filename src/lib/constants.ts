@@ -21,6 +21,7 @@ export const MAX_IMAGES = 10;
 /** Tipos MIME permitidos */
 export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'] as const;
 
+
 // ============================================================================
 // SCHEMAS DE VALIDACIÓN
 // ============================================================================

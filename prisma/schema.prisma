@@ -8,17 +8,21 @@ datasource db {
 }
 
 model Property {
-  idProperty      Int              @id @default(autoincrement()) @map("id_property")
-  description     String
-  price           Int
-  type            PropertyTypeEnum
-  category        OperationEnum
-  address         String
-  ubication       String
-  city            String
-  slug            String           @unique @db.VarChar(160)
-  characteristics Characteristic[]
-  images          image[]
+  idProperty       Int              @id @default(autoincrement()) @map("id_property")
+  description      String?
+  price            Int
+  type             PropertyTypeEnum
+  category         OperationEnum
+  address          String?
+  ubication        String?
+  city             String?
+  surface          Int
+  bedrooms         Int?
+  bathrooms        Int?
+  garage           Int?
+  floors           Int?
+  constructed_area Int?
+  images           image[]
 
   @@map("property")
 }
@@ -31,27 +35,23 @@ model Admin {
   @@map("admin")
 }
 
-model Characteristic {
-  idCharacteristic Int                         @id @default(autoincrement()) @map("id_characteristic")
-  characteristic   String                      @db.VarChar(255)
-  propertyId       Int                         @map("property_id")
-  category         CharacteristicCategoryEnum? @default(otros)
-  dataType         String                      @map("data_type") @db.VarChar(20)
-  valueInteger     Int?                        @map("value_integer")
-  valueText        String?                     @map("value_text")
-  property         Property                    @relation(fields: [propertyId], references: [idProperty], onDelete: Cascade, map: "Characteristic_property_id_fkey")
-
-  @@map("characteristic")
-}
-
 model image {
   idImage    Int       @id @default(autoincrement()) @map("id_image")
   url        String?
   idProperty Int?      @map("id_property")
-  alt_text   String?
-  position   Int
-  isMain     Boolean   @map("is_main")
   property   Property? @relation(fields: [idProperty], references: [idProperty], onDelete: Cascade, map: "fk_image_propery")
+}
+
+model services {
+  id   Int     @id
+  name String?
+}
+
+model services_property {
+  id_property Int
+  id_service  Int
+
+  @@id([id_property, id_service])
 }
 
 enum PropertyTypeEnum {
@@ -67,8 +67,6 @@ enum PropertyTypeEnum {
 enum OperationEnum {
   alquiler
   venta
-  alquilada
-  vendida
 
   @@map("operation_enum")
 }
@@ -99,11 +97,4 @@ enum CharacteristicCategoryEnum {
   otros
 
   @@map("characteristic_category_enum")
-}
-
-enum property_status_enum {
-  activa
-  reservada
-  vendida
-  suspendida
 }
