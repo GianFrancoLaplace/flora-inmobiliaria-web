@@ -45,6 +45,11 @@ export class PropertyService {
 				validatedImageMetadata
 			);
 
+			const slug = crearSlug(
+				validatedProperty.state +
+				validatedProperty.description
+			)
+
 			return await prisma.$transaction(async (tx) => {
 
 				const property = await tx.property.create({
@@ -57,10 +62,7 @@ export class PropertyService {
 						ubication: validatedProperty.ubication,
 						type: validatedProperty.type,
 						// Genera slug - algo como: "venta-casa-tandil-123"
-						slug: crearSlug(
-							validatedProperty.state +
-							validatedProperty.description
-						)
+						slug: slug
 					}
 				});
 

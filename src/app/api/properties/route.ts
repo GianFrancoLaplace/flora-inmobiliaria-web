@@ -79,9 +79,6 @@ export async function POST(request: NextRequest) {
 		  formData.get("imageMetadata") as string
 	  );
 
-	  console.log(imageFiles);
-	  console.log(imageMetadata);
-
 	  console.log(imageFiles.length !== imageMetadata.length);
 
 	  if (imageFiles.length !== imageMetadata.length) {
@@ -104,6 +101,8 @@ export async function POST(request: NextRequest) {
 			  { status: 400 }
 		  );
 	  }
+
+	  console.error('Error en POST /api/properties:', error);
 
 	  return NextResponse.json(
 		  { error: 'Error interno' },
