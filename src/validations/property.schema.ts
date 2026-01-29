@@ -5,24 +5,12 @@
 import { z } from 'zod';
 import {PropertyState, PropertyType} from "@/types/property.types";
 
-/**
- * Tamaño máximo permitido por imagen (5MB)
- */
 export const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB en bytes
 
-/**
- * Cantidad mínima de imágenes requeridas
- */
 export const MIN_IMAGES = 1;
 
-/**
- * Cantidad máxima de imágenes permitidas
- */
 export const MAX_IMAGES = 10;
 
-/**
- * Tipos MIME permitidos para imágenes
- */
 export const ALLOWED_IMAGE_TYPES = [
 	'image/jpeg',
 	'image/jpg',
@@ -30,9 +18,6 @@ export const ALLOWED_IMAGE_TYPES = [
 	'image/webp',
 ] as const;
 
-/**
- * Schema para validar metadata individual de imagen
- */
 export const imageMetadataSchema = z.object({
 	position: z
 		.number()
