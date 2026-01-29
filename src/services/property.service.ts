@@ -16,6 +16,7 @@ import {ImageService} from "@/services/image.service";
 import {OperationEnum, PropertyTypeEnum} from "@prisma/client"
 import {CloudinaryResult} from "@/types/cloudinary.types";
 import {stateMap, typeMap} from "@/helpers/PropertyMapper";
+import {imageMetadataArraySchema} from "@/validations/property.schema";
 
 export class PropertyService {
 
@@ -31,7 +32,8 @@ export class PropertyService {
 		imageMetadata: ImageMetadata[]) {
 
 		// Parse & validate en una línea - throws ZodError si falla
-		const validated = createPropertySchema.parse(dto);
+		const validatedProperty = createPropertySchema.parse(dto);
+		const validatedImageMetadata = imageMetadataArraySchema.parse(imageMetadata);
 
 		let uploadedImages: CloudinaryResult[] = [];
 
@@ -40,24 +42,24 @@ export class PropertyService {
 			uploadedImages = await this.imageService.uploadMultiple(
 				files,
 				0, // propertyId temporal - lo reemplazamos después
-				imageMetadata
+				validatedImageMetadata
 			);
 
 			return await prisma.$transaction(async (tx) => {
 
 				const property = await tx.property.create({
 					data: {
-						address: validated.address,
-						city: validated.city,
-						category: validated.state,
-						price: validated.price,
-						description: validated.description,
-						ubication: validated.ubication,
-						type: validated.type,
+						address: validatedProperty.address,
+						city: validatedProperty.city,
+						category: validatedProperty.state,
+						price: validatedProperty.price,
+						description: validatedProperty.description,
+						ubication: validatedProperty.ubication,
+						type: validatedProperty.type,
 						// Genera slug - algo como: "venta-casa-tandil-123"
 						slug: crearSlug(
-							validated.state +
-							validated.description
+							validatedProperty.state +
+							validatedProperty.description
 						)
 					}
 				});
@@ -65,8 +67,8 @@ export class PropertyService {
 				await tx.image.createMany({
 					data: uploadedImages.map((img, idx) => ({
 						url: img.url,
-						position: imageMetadata[idx].position,
-						isMain: imageMetadata[idx].isMain,
+						position: validatedImageMetadata[idx].position,
+						isMain: validatedImageMetadata[idx].isMain,
 						idProperty: property.idProperty
 					}))
 				});
