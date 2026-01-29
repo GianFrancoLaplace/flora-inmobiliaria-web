@@ -1,0 +1,239 @@
+.section {
+    background-color: var(--secondary-color-1);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--25px);
+    box-shadow: var(--shadow-sm);
+}
+
+.sectionTitle {
+    font-size: var(--h3-size);
+    font-weight: var(--font-weight-bold);
+    color: var(--primary-color-5);
+    margin-bottom: var(--20px);
+    padding-bottom: var(--15px);
+    border-bottom: 2px solid var(--secondary-color-3);
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--25px);
+}
+
+/* Zona de carga */
+.uploadArea {
+    width: 100%;
+}
+
+.dropzone {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--40px) var(--20px);
+    text-align: center;
+    background-color: var(--background-color);
+    cursor: pointer;
+    transition: all var(--normal-transition);
+    position: relative;
+}
+
+.dropzone:hover {
+    border-color: var(--secondary-color-5);
+    background-color: var(--focus-color);
+}
+
+.dropzoneContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--10px);
+}
+
+.uploadIcon {
+    width: 48px;
+    height: 48px;
+    color: var(--primary-color-3);
+}
+
+.dropzoneText {
+    font-size: var(--h5-size);
+    font-weight: var(--font-weight-medium);
+    color: var(--primary-color-4);
+}
+
+.dropzoneHint {
+    font-size: var(--h6-size);
+    color: var(--secondary-text-color);
+}
+
+.fileInput {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Galería */
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--15px);
+}
+
+@media (max-width: 768px) {
+    .gallery {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.imageCard {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background-color: var(--primary-color-2);
+}
+
+.imageWrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.imageOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--transparent-black-07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--10px);
+    opacity: 0;
+    transition: opacity var(--fast-transition);
+}
+
+.imageWrapper:hover .imageOverlay {
+    opacity: 1;
+}
+
+.imageBtn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--background-color);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--fast-transition);
+    padding: 0;
+    margin: 0;
+    box-shadow: var(--shadow-md);
+}
+
+.imageBtn:hover {
+    transform: scale(1.1);
+    background-color: var(--secondary-color-2);
+    box-shadow: var(--shadow-lg);
+}
+
+.imageBtn svg {
+    width: 20px;
+    height: 20px;
+    color: var(--primary-color-5);
+}
+
+.mainBadge {
+    position: absolute;
+    top: var(--10px);
+    left: var(--10px);
+    background-color: var(--secondary-color-5);
+    color: var(--primary-color-5);
+    font-size: var(--h6-size);
+    font-weight: var(--font-weight-bold);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Tarjeta para agregar más */
+.addMoreCard {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--10px);
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    background-color: var(--background-color);
+    cursor: pointer;
+    transition: all var(--fast-transition);
+}
+
+.addMoreCard:hover {
+    border-color: var(--secondary-color-5);
+    background-color: var(--focus-color);
+}
+
+.plusIcon {
+    width: 32px;
+    height: 32px;
+    color: var(--primary-color-3);
+}
+
+.addMoreCard p {
+    font-size: var(--h6-size);
+    color: var(--primary-color-4);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Input de video */
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--10px);
+}
+
+.label {
+    font-size: var(--h5-size);
+    font-weight: var(--font-weight-medium);
+    color: var(--primary-color-5);
+}
+
+.input {
+    padding: var(--10px) var(--15px);
+    font-size: var(--h5-size);
+    color: var(--primary-text-color);
+    background-color: var(--background-color);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    transition: all var(--fast-transition);
+    font-family: var(--primary-font);
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--secondary-color-5);
+    background-color: var(--focus-color);
+    box-shadow: 0 0 0 3px var(--secondary-color-2);
+}
+
+.hint {
+    font-size: var(--h6-size);
+    color: var(--secondary-text-color);
+}

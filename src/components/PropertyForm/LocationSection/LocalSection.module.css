@@ -1,0 +1,140 @@
+.section {
+    background-color: var(--secondary-color-1);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--25px);
+    box-shadow: var(--shadow-sm);
+}
+
+.sectionTitle {
+    font-size: var(--h3-size);
+    font-weight: var(--font-weight-bold);
+    color: var(--primary-color-5);
+    margin-bottom: var(--20px);
+    padding-bottom: var(--15px);
+    border-bottom: 2px solid var(--secondary-color-3);
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--25px);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--20px);
+}
+
+@media (min-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--10px);
+}
+
+.fullWidth {
+    grid-column: 1 / -1;
+}
+
+.label {
+    font-size: var(--h5-size);
+    font-weight: var(--font-weight-medium);
+    color: var(--primary-color-5);
+}
+
+.required {
+    color: var(--error-color);
+}
+
+.input,
+.select {
+    padding: var(--10px) var(--15px);
+    font-size: var(--h5-size);
+    color: var(--primary-text-color);
+    background-color: var(--background-color);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    transition: all var(--fast-transition);
+    font-family: var(--primary-font);
+}
+
+.input:focus,
+.select:focus {
+    outline: none;
+    border-color: var(--secondary-color-5);
+    background-color: var(--focus-color);
+    box-shadow: 0 0 0 3px var(--secondary-color-2);
+}
+
+.inputReadonly {
+    composes: input;
+    background-color: var(--primary-color-2);
+    color: var(--primary-color-3);
+    cursor: not-allowed;
+}
+
+.hint {
+    font-size: var(--h6-size);
+    color: var(--secondary-text-color);
+}
+
+/* Mapa */
+.mapContainer {
+    width: 100%;
+    height: 400px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.mapPlaceholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color-1) 0%, var(--secondary-color-2) 100%);
+    gap: var(--15px);
+}
+
+.mapIcon {
+    width: 64px;
+    height: 64px;
+    color: var(--primary-color-4);
+}
+
+.mapText {
+    font-size: var(--h5-size);
+    font-weight: var(--font-weight-medium);
+    color: var(--primary-color-4);
+}
+
+.mapHint {
+    font-size: var(--h6-size);
+    color: var(--primary-color-3);
+}
+
+/* Coordenadas */
+.coordinatesGroup {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--15px);
+    padding: var(--15px);
+    background-color: var(--primary-color-1);
+    border-radius: var(--radius-sm);
+    border: 1px dashed var(--border-color);
+}
+
+@media (max-width: 768px) {
+    .coordinatesGroup {
+        grid-template-columns: 1fr;
+    }
+}
