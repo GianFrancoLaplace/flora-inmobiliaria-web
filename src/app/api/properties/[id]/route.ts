@@ -6,7 +6,7 @@ import {prisma} from '@/lib/prisma';
 import {mapOperationToState, mapPropertyType} from '@/helpers/PropertyMapper';
 import {PropertyTypes, PropertyState, PropertyUpdateData} from '@/types/property.types';
 import {Characteristic} from "@/types/Characteristic";
-import {PropertyService} from "@/services/propertyService";
+import {PropertyService} from "@/services/property.service";
 import {getIconByCategory, mapPrismaCharacteristicCategory} from "@/helpers/IconMapper"
 
 export async function GET(
@@ -50,6 +50,7 @@ export async function GET(
                 id: img.idImage,
                 url: img.url !== null ? img.url : "",
             })),
+	        slug: propiedad.slug || '',
 
             characteristics: propiedad.characteristics
                 .filter((c) => {
@@ -85,7 +86,6 @@ export async function GET(
                         iconUrl: iconUrl,
                     };
                 }),
-	        transition: PropertyState.RENT
         };
 
         return NextResponse.json(propiedadFormateada);
@@ -115,15 +115,15 @@ export async function PUT(
         }
 
         const body: PropertyUpdateData = await request.json();
-        const service = new PropertyService([], []);
+        const service = new PropertyService();
 
-        const validationErrors = service.verifyFields(body);
-        if (validationErrors.length > 0) {
-            return NextResponse.json(
-                { message: "Datos inválidos", errors: validationErrors },
-                { status: 400 }
-            );
-        }
+        // const validationErrors = service.verifyFields(body);
+        // if (validationErrors.length > 0) {
+        //     return NextResponse.json(
+        //         { message: "Datos inválidos", errors: validationErrors },
+        //         { status: 400 }
+        //     );
+        // }
 
         const existingProperty = await prisma.property.findUnique({
             where: { idProperty: propertyId },
