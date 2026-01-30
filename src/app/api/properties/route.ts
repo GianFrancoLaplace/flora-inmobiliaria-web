@@ -71,12 +71,43 @@ export async function POST(request: NextRequest) {
 		  description: formData.get("description") as string,
 		  ubication: formData.get("ubication") as string,
 		  type: formData.get("type") as PropertyType,
+		  surface: Number(formData.get("surface")),
+
+		  // opcionales
+		  garage: formData.get("garage")
+			  ? Number(formData.get("garage"))
+			  : undefined,
+
+		  bedrooms: formData.get("bedrooms")
+			  ? Number(formData.get("bedrooms"))
+			  : undefined,
+
+		  bathrooms: formData.get("bathrooms")
+			  ? Number(formData.get("bathrooms"))
+			  : undefined,
+
+		  floors: formData.get("floors")
+			  ? Number(formData.get("floors"))
+			  : undefined,
+
+		  constructedArea: formData.get("constructed_area")
+			  ? Number(formData.get("constructed_area"))
+			  : undefined,
 	  };
 
 	  const imageFiles = formData.getAll("images") as File[];
 
+	  const rawMetadata = formData.get("imageMetadata");
+
+	  if (!rawMetadata || typeof rawMetadata !== "string") {
+		  return NextResponse.json(
+			  { error: "imageMetadata inválido" },
+			  { status: 400 }
+		  );
+	  }
+
 	  const imageMetadata: ImageMetadata[] = JSON.parse(
-		  formData.get("imageMetadata") as string
+		  rawMetadata
 	  );
 
 	  console.log(imageFiles.length !== imageMetadata.length);

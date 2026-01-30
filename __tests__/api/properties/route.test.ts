@@ -36,6 +36,7 @@ describe('POST /api/properties', () => {
 		description: 'Casa hermosa',
 		ubication: '-37.3217, -59.1332',
 		type: 'casa' as const,
+		surface: 150
 	};
 
 	const validImageMetadata = [

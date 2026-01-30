@@ -9,22 +9,18 @@ import { PropertyType, PropertyState } from '@/types/property.types';
 // CONSTANTES DE VALIDACIÓN
 // ============================================================================
 
-/** Tamaño máximo por imagen: 5MB */
 export const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
-/** Cantidad mínima de imágenes */
 export const MIN_IMAGES = 1;
 
-/** Cantidad máxima de imágenes */
 export const MAX_IMAGES = 10;
 
-/** Tipos MIME permitidos */
-export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'] as const;
-
-
-// ============================================================================
-// SCHEMAS DE VALIDACIÓN
-// ============================================================================
+export enum AllowedImageType {
+	JPEG = "image/jpeg",
+	JPG = "image/jpg",
+	PNG = "image/png",
+	WEBP = "image/webp",
+}
 
 /**
  * Schema para validar datos de la propiedad
@@ -62,6 +58,47 @@ export const createPropertySchema = z.object({
 		.string()
 		.min(2, 'La ciudad debe tener al menos 2 caracteres')
 		.max(100, 'La ciudad no puede exceder 100 caracteres'),
+
+	surface: z
+		.number()
+		.positive('La superficie debe ser mayor a 0')
+		.max(999999, 'La superficie excede el límite permitido (999,999 m²)')
+		.finite('La superficie debe ser un número válido'),
+
+	garage: z
+		.number()
+		.int('El número de garajes debe ser entero')
+		.min(0, 'El número de garajes no puede ser negativo')
+		.max(50, 'El número de garajes excede el límite (50)')
+		.optional(),
+
+	bedrooms: z
+		.number()
+		.int('El número de habitaciones debe ser entero')
+		.min(0, 'El número de habitaciones no puede ser negativo')
+		.max(50, 'El número de habitaciones excede el límite (50)')
+		.optional(),
+
+	bathrooms: z
+		.number()
+		.int('El número de baños debe ser entero')
+		.min(0, 'El número de baños no puede ser negativo')
+		.max(50, 'El número de baños excede el límite (50)')
+		.optional(),
+
+	floors: z
+		.number()
+		.int('El número de pisos debe ser entero')
+		.min(0, 'El número de pisos no puede ser negativo')
+		.max(200, 'El número de pisos excede el límite (200)')
+		.optional(),
+
+	constructedArea: z
+		.number()
+		.positive('El área construida debe ser mayor a 0')
+		.max(999999, 'El área construida excede el límite (999,999 m²)')
+		.finite('El área construida debe ser un número válido')
+		.optional(),
 });
 
 /**

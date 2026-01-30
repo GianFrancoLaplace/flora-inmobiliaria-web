@@ -56,14 +56,19 @@ export class PropertyService {
 					data: {
 						address: validatedProperty.address,
 						city: validatedProperty.city,
-						category: validatedProperty.state,
+						category: validatedProperty.state as OperationEnum, // ojo: state → category
 						price: validatedProperty.price,
 						description: validatedProperty.description,
 						ubication: validatedProperty.ubication,
 						type: validatedProperty.type,
-						// Genera slug - algo como: "venta-casa-tandil-123"
-						slug: slug
-					}
+						surface: validatedProperty.surface,
+						garage: validatedProperty.garage,
+						bedrooms: validatedProperty.bedrooms,
+						bathrooms: validatedProperty.bathrooms,
+						floors: validatedProperty.floors,
+						constructedArea: validatedProperty.constructedArea,
+						slug: slug,
+					},
 				});
 
 				await tx.image.createMany({
@@ -97,7 +102,6 @@ export class PropertyService {
 		const properties = await prisma.property.findMany({
 			where: Object.keys(where).length > 0 ? where : undefined,
 			include: {
-				characteristics: true,
 				images: true,
 			},
 		});

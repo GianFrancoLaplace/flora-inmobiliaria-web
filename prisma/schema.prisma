@@ -8,21 +8,22 @@ datasource db {
 }
 
 model Property {
-  idProperty       Int              @id @default(autoincrement()) @map("id_property")
-  description      String?
-  price            Int
-  type             PropertyTypeEnum
-  category         OperationEnum
-  address          String?
-  ubication        String?
-  city             String?
-  surface          Int
-  bedrooms         Int?
-  bathrooms        Int?
-  garage           Int?
-  floors           Int?
-  constructed_area Int?
-  images           image[]
+  idProperty      Int              @id @default(autoincrement()) @map("id_property")
+  description     String?
+  price           Int
+  type            PropertyTypeEnum
+  category        OperationEnum
+  address         String?
+  ubication       String?
+  city            String?
+  surface         Int
+  bedrooms        Int?
+  bathrooms       Int?
+  garage          Int?
+  floors          Int?
+  constructedArea Int?             @map("constructed_area")
+  images          image[]
+  slug            String
 
   @@map("property")
 }
@@ -38,6 +39,9 @@ model Admin {
 model image {
   idImage    Int       @id @default(autoincrement()) @map("id_image")
   url        String?
+  alt_text   String?
+  position   Int
+  isMain     Boolean   @map("is_main")
   idProperty Int?      @map("id_property")
   property   Property? @relation(fields: [idProperty], references: [idProperty], onDelete: Cascade, map: "fk_image_propery")
 }
