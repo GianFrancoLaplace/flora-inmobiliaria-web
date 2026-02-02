@@ -2,12 +2,12 @@ import { PropertyTypeEnum, OperationEnum } from './prisma';
 
 /**
  * Datos del formulario de creación/edición de propiedad
- * Usado exclusivamente en PropertyForm component
+ * type y category en undefined en caso de crear (no hay un predeterminado)
  */
 export interface PropertyFormInput {
 	// Básicos
-	type: PropertyTypeEnum;
-	category: OperationEnum;
+	type?: PropertyTypeEnum;
+	category?: OperationEnum;
 	price: number;
 	surface: number;
 
@@ -28,6 +28,7 @@ export interface PropertyFormInput {
 
 	// Imágenes (solo en frontend)
 	images: File[];
+	imageMetadata: ImageMetadata;
 }
 
 /**
@@ -40,8 +41,6 @@ export interface PropertyFormProps {
 	initialData?: Partial<PropertyFormInput>;
 	onSubmit: (
 		data: PropertyFormInput,
-		images: File[],
-		metadata: ImageMetadata[]
 	) => Promise<void>;
 }
 

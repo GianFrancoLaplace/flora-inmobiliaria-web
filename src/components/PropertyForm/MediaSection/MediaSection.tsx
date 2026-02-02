@@ -13,6 +13,7 @@ interface MediaSectionProps {
 interface ImagePreview {
 	file: File;
 	preview: string;
+	position: number;
 	isMain: boolean;
 }
 
@@ -27,7 +28,7 @@ export default function MediaSection({ formData, onChange, errors }: MediaSectio
 		const validFiles: File[] = [];
 		const newPreviews: ImagePreview[] = [];
 
-		Array.from(files).forEach(file => {
+		Array.from(files).forEach((file, index) => {
 			// Validar tipo
 			if (!file.type.startsWith('image/')) {
 				alert(`${file.name} no es una imagen válida`);
@@ -47,6 +48,7 @@ export default function MediaSection({ formData, onChange, errors }: MediaSectio
 			reader.onload = (e) => {
 				const preview: ImagePreview = {
 					file,
+					position: index,
 					preview: e.target?.result as string,
 					isMain: imagePreviews.length === 0 && newPreviews.length === 0
 				};

@@ -7,7 +7,7 @@ import LocationSection from "@/components/PropertyForm/LocationSection/LocationS
 import DetailsSection from "@/components/PropertyForm/DetailsSection/DetailsSection";
 import BasicInfoSection from "@/components/PropertyForm/BasicInfoSection/BasicInfoSection";
 import MediaSection from "@/components/PropertyForm/MediaSection/MediaSection";
-import {PropertyData, PropertyFormProps} from "@/types/property.types";
+import { PropertyFormInput, PropertyFormProps } from "@/types/property-form.types";
 import {createPropertySchema} from "@/validations/property.schema";
 
 
@@ -19,9 +19,9 @@ export default function PropertyForm({
 	                                     onSubmit
                                      }: PropertyFormProps) {
 
-	const [formData, setFormData] = useState<PropertyData>({
-		type: '',
-		category: 'sale',
+	const [formData, setFormData] = useState<PropertyFormInput>({
+		type: undefined,
+		category: undefined,
 		price: 0,
 		surface: 0,
 		address: '',
