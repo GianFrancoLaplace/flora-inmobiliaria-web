@@ -66,7 +66,7 @@ export interface CreatePropertyDTO {
 }
 
 /**
- * Metadata de imagen enviada por el cliente
+ * Metadata de posicionamiento de imagen enviada por el cliente
  */
 export interface ImageMetadata {
 	position: number;
