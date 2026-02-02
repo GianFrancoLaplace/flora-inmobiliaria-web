@@ -55,8 +55,14 @@ export interface CreatePropertyDTO {
 	state: PropertyState;
 	price: number;
 	description: string;
+	surface: number;
 	ubication: string;
 	type: PropertyType;
+	garage?: number;
+	bedrooms?: number;
+	bathrooms?: number;
+	floors?: number
+	constructedArea?: number;
 }
 
 /**

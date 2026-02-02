@@ -1,10 +1,13 @@
 import {
 	CreatePropertyDTO,
 	ImageMetadata,
-	PropertyState,
-	PropertyType,
 	PropertyTypes
 } from '@/types/property.types'
+import {
+	PropertyFilters,
+	WhereClause
+} from '@/types/property.filter.types'
+
 import { Characteristic } from "@/types/Characteristic";
 import {prisma} from "@/lib/prisma";
 import {createPropertySchema} from "@/lib/constants";
@@ -12,34 +15,8 @@ import { crearSlug } from "@/lib/generateSlug"
 import {ImageService} from "@/services/image.service";
 import {OperationEnum, PropertyTypeEnum} from "@prisma/client"
 import {CloudinaryResult} from "@/types/cloudinary.types";
-import {Prisma} from "@prisma/client/extension";
 import {stateMap, typeMap} from "@/helpers/PropertyMapper";
-
-/**
- * Filtros para búsqueda de propiedades
- */
-interface PropertyFilters {
-	types?: PropertyType[];
-	operations?: PropertyState[];
-	minPrice?: number;
-	maxPrice?: number;
-}
-
-/**
- * Objeto WHERE para filtrar propiedades en Prisma
- */
-interface WhereClause {
-	type?: {
-		in: PropertyTypeEnum[];
-	};
-	category?: {
-		in: OperationEnum[];
-	};
-	price?: {
-		gte?: number;
-		lte?: number;
-	};
-}
+import {imageMetadataArraySchema} from "@/validations/property.schema";
 
 export class PropertyService {
 
@@ -55,7 +32,8 @@ export class PropertyService {
 		imageMetadata: ImageMetadata[]) {
 
 		// Parse & validate en una línea - throws ZodError si falla
-		const validated = createPropertySchema.parse(dto);
+		const validatedProperty = createPropertySchema.parse(dto);
+		const validatedImageMetadata = imageMetadataArraySchema.parse(imageMetadata);
 
 		let uploadedImages: CloudinaryResult[] = [];
 
@@ -64,32 +42,40 @@ export class PropertyService {
 			uploadedImages = await this.imageService.uploadMultiple(
 				files,
 				0, // propertyId temporal - lo reemplazamos después
-				imageMetadata
+				validatedImageMetadata
 			);
+
+			const slug = crearSlug(
+				validatedProperty.state +
+				validatedProperty.description
+			)
 
 			return await prisma.$transaction(async (tx) => {
 
 				const property = await tx.property.create({
 					data: {
-						address: validated.address,
-						city: validated.city,
-						category: validated.state as OperationEnum, // TODO: Desharcodear
-						price: validated.price,
-						description: validated.description,
-						ubication: validated.ubication,
-						type: validated.type,
-						// Genera slug - algo como: "venta-casa-tandil-123"
-						slug: crearSlug(
-							validated.description
-						)
-					}
+						address: validatedProperty.address,
+						city: validatedProperty.city,
+						category: validatedProperty.state as OperationEnum, // ojo: state → category
+						price: validatedProperty.price,
+						description: validatedProperty.description,
+						ubication: validatedProperty.ubication,
+						type: validatedProperty.type,
+						surface: validatedProperty.surface,
+						garage: validatedProperty.garage,
+						bedrooms: validatedProperty.bedrooms,
+						bathrooms: validatedProperty.bathrooms,
+						floors: validatedProperty.floors,
+						constructedArea: validatedProperty.constructedArea,
+						slug: slug,
+					},
 				});
 
 				await tx.image.createMany({
 					data: uploadedImages.map((img, idx) => ({
 						url: img.url,
-						position: imageMetadata[idx].position,
-						isMain: imageMetadata[idx].isMain,
+						position: validatedImageMetadata[idx].position,
+						isMain: validatedImageMetadata[idx].isMain,
 						idProperty: property.idProperty
 					}))
 				});
@@ -110,16 +96,12 @@ export class PropertyService {
 		}
 	}
 
-	/**
-	 * Buscar propiedades con filtros opcionales
-	 */
 	async findMany(filters?: PropertyFilters): Promise<PropertyTypes[]> {
 		const where = this.buildWhereClause(filters);
 
 		const properties = await prisma.property.findMany({
 			where: Object.keys(where).length > 0 ? where : undefined,
 			include: {
-				characteristics: true,
 				images: true,
 			},
 		});
@@ -127,9 +109,6 @@ export class PropertyService {
 		return this.mapToPropertyTypes(properties);
 	}
 
-	/**
-	 * Construye objeto WHERE para Prisma
-	 */
 	private buildWhereClause(filters?: PropertyFilters): WhereClause {
 		const where: WhereClause = {};
 
