@@ -22,7 +22,7 @@ model Property {
   garage          Int?
   floors          Int?
   constructedArea Int?             @map("constructed_area")
-  images          image[]
+  images          Image[]
   slug            String
 
   @@map("property")
@@ -36,7 +36,7 @@ model Admin {
   @@map("admin")
 }
 
-model image {
+model Image {
   idImage    Int       @id @default(autoincrement()) @map("id_image")
   url        String?
   alt_text   String?
@@ -44,6 +44,8 @@ model image {
   isMain     Boolean   @map("is_main")
   idProperty Int?      @map("id_property")
   property   Property? @relation(fields: [idProperty], references: [idProperty], onDelete: Cascade, map: "fk_image_propery")
+
+  @@map("image")
 }
 
 model services {
