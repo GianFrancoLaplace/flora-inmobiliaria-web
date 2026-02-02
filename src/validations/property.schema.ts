@@ -69,13 +69,16 @@ export const imageMetadataArraySchema = z
 	);
 
 /**
- * Schema para validar datos de la propiedad
+ * Schema base para validar datos de la propiedad
+ * Incluye campos obligatorios y opcionales con sus validaciones básicas
+ * Las validaciones condicionales (según tipo de propiedad) se aplican en .superRefine()
  */
 export const createPropertySchema = z.object({
+	// Campos obligatorios para TODOS los tipos
 	description: z
 		.string()
-		.min(10, 'La descripción debe tener al menos 10 caracteres')
-		.max(2000, 'La descripción no puede exceder 2000 caracteres'),
+		.min(10, 'La descripción debe tener al menos 50 caracteres')
+		.max(200, 'La descripción no puede exceder 200 caracteres'),
 	price: z
 		.number()
 		.positive('El precio debe ser mayor a 0')
@@ -90,56 +93,138 @@ export const createPropertySchema = z.object({
 		.string()
 		.min(5, 'La dirección debe tener al menos 5 caracteres')
 		.max(200, 'La dirección no puede exceder 200 caracteres'),
-	ubication: z
-		.string()
-		.min(3, 'La ubicación debe tener al menos 3 caracteres')
-		.max(100, 'La ubicación no puede exceder 100 caracteres'),
-	city: z
-		.string()
-		.min(2, 'La ciudad debe tener al menos 2 caracteres')
-		.max(100, 'La ciudad no puede exceder 100 caracteres'),
-
 	surface: z
 		.number()
 		.positive('La superficie debe ser mayor a 0')
 		.max(999999, 'La superficie excede el límite permitido (999,999 m²)')
 		.finite('La superficie debe ser un número válido'),
 
-	garage: z
-		.number()
-		.int('El número de garajes debe ser entero')
-		.min(0, 'El número de garajes no puede ser negativo')
-		.max(50, 'El número de garajes excede el límite (50)')
+	// Campos opcionales (pueden ser undefined)
+	ubication: z
+		.string()
+		.min(3, 'La ubicación debe tener al menos 3 caracteres')
+		.max(100, 'La ubicación no puede exceder 100 caracteres')
 		.optional(),
-
-	bedrooms: z
-		.number()
-		.int('El número de habitaciones debe ser entero')
-		.min(0, 'El número de habitaciones no puede ser negativo')
-		.max(50, 'El número de habitaciones excede el límite (50)')
+	city: z
+		.string()
+		.min(2, 'La ciudad debe tener al menos 2 caracteres')
+		.max(100, 'La ciudad no puede exceder 100 caracteres')
 		.optional(),
-
-	bathrooms: z
-		.number()
-		.int('El número de baños debe ser entero')
-		.min(0, 'El número de baños no puede ser negativo')
-		.max(50, 'El número de baños excede el límite (50)')
-		.optional(),
-
-	floors: z
-		.number()
-		.int('El número de pisos debe ser entero')
-		.min(0, 'El número de pisos no puede ser negativo')
-		.max(200, 'El número de pisos excede el límite (200)')
-		.optional(),
-
 	constructedArea: z
 		.number()
 		.positive('El área construida debe ser mayor a 0')
 		.max(999999, 'El área construida excede el límite (999,999 m²)')
 		.finite('El área construida debe ser un número válido')
 		.optional(),
-});
+	bedrooms: z
+		.number()
+		.int('El número de dormitorios debe ser entero')
+		.min(1, 'Debe haber al menos 1 dormitorio')
+		.max(50, 'El número de dormitorios excede el límite (50)')
+		.optional(),
+	bathrooms: z
+		.number()
+		.int('El número de baños debe ser entero')
+		.min(1, 'Debe haber al menos 1 baño')
+		.max(50, 'El número de baños excede el límite (50)')
+		.optional(),
+	floors: z
+		.number()
+		.int('El número de pisos debe ser entero')
+		.min(1, 'Debe haber al menos 1 piso')
+		.max(200, 'El número de pisos excede el límite (200)')
+		.optional(),
+	garage: z
+		.number()
+		.int('El número de cocheras debe ser entero')
+		.min(0, 'El número de cocheras no puede ser negativo')
+		.max(50, 'El número de cocheras excede el límite (50)')
+		.optional(),
+})
+	.superRefine((data, ctx) => {
+		/**
+		 * VALIDACIONES CONDICIONALES PARA CASAS (house)
+		 * - constructedArea es obligatorio
+		 * - bedrooms es obligatorio (≥1)
+		 * - bathrooms es obligatorio (≥1)
+		 * - floors es opcional
+		 * - garage es opcional
+		 * - Regla de negocio: constructedArea <= surface
+		 */
+		if (data.type === PropertyType.HOME) {
+			// constructedArea obligatorio para casas
+			if (!data.constructedArea || data.constructedArea <= 0) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					path: ['constructedArea'],
+					message: 'El área construida es obligatoria para casas'
+				});
+			}
+
+			// bedrooms obligatorio para casas (mínimo 1)
+			if (!data.bedrooms || data.bedrooms < 1) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					path: ['bedrooms'],
+					message: 'Las casas deben tener al menos 1 dormitorio'
+				});
+			}
+
+			// bathrooms obligatorio para casas (mínimo 1)
+			if (!data.bathrooms || data.bathrooms < 1) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					path: ['bathrooms'],
+					message: 'Las casas deben tener al menos 1 baño'
+				});
+			}
+
+			// Regla de negocio: área construida no puede ser mayor al lote
+			if (data.constructedArea && data.surface && data.constructedArea > data.surface) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					path: ['constructedArea'],
+					message: 'El área construida no puede ser mayor que la superficie del lote'
+				});
+			}
+		}
+
+		/**
+		 * VALIDACIONES CONDICIONALES PARA DEPARTAMENTOS (apartment)
+		 * - bedrooms es obligatorio (≥1)
+		 * - bathrooms es obligatorio (≥1)
+		 * - garage es opcional
+		 * - constructedArea NO aplica
+		 * - floors NO aplica
+		 */
+		if (data.type === PropertyType.APARTMENT) {
+			// bedrooms obligatorio para departamentos (mínimo 1)
+			if (!data.bedrooms || data.bedrooms < 1) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					path: ['bedrooms'],
+					message: 'Los departamentos deben tener al menos 1 dormitorio'
+				});
+			}
+
+			// bathrooms obligatorio para departamentos (mínimo 1)
+			if (!data.bathrooms || data.bathrooms < 1) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					path: ['bathrooms'],
+					message: 'Los departamentos deben tener al menos 1 baño'
+				});
+			}
+		}
+
+		/**
+		 * VALIDACIONES CONDICIONALES PARA TERRENOS (land)
+		 * - Solo requiere campos base (type, category, price, address, surface, description)
+		 * - Ningún campo adicional es obligatorio
+		 * - bedrooms, bathrooms, constructedArea, floors, garage NO aplican
+		 */
+		// Para terrenos no hay validaciones adicionales - solo campos base
+	});
 
 /**
  * Tipo inferido del schema de validación
