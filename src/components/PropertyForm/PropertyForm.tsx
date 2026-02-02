@@ -8,6 +8,7 @@ import DetailsSection from "@/components/PropertyForm/DetailsSection/DetailsSect
 import BasicInfoSection from "@/components/PropertyForm/BasicInfoSection/BasicInfoSection";
 import MediaSection from "@/components/PropertyForm/MediaSection/MediaSection";
 import {PropertyData, PropertyFormProps} from "@/types/property.types";
+import {createPropertySchema} from "@/validations/property.schema";
 
 
 export default function PropertyForm({
@@ -46,46 +47,39 @@ export default function PropertyForm({
 	};
 
 	const validate = (): boolean => {
-		const newErrors: Record<string, string> = {};
+		// Preparar datos para validación - convertir strings vacíos a undefined
+		const dataToValidate = {
+			...formData,
+			city: formData.city?.trim() || undefined,
+			ubication: formData.ubication?.trim() || undefined,
+			constructedArea: formData.constructedArea || undefined,
+			bedrooms: formData.bedrooms || undefined,
+			bathrooms: formData.bathrooms || undefined,
+			floors: formData.floors || undefined,
+			garage: formData.garage || undefined,
+		};
 
-		// Validaciones básicas
-		if (!formData.type) {
-			newErrors.type = 'Selecciona un tipo de propiedad';
-		}
-		if (!formData.price || formData.price <= 0) {
-			newErrors.price = 'El precio debe ser mayor a 0';
-		}
-		if (!formData.surface || formData.surface <= 0) {
-			newErrors.surface = 'La superficie debe ser mayor a 0';
-		}
-		if (!formData.address || formData.address.trim().length < 5) {
-			newErrors.address = 'Ingresa una dirección válida';
-		}
-		if (!formData.description || formData.description.trim().length < 50) {
-			newErrors.description = 'La descripción debe tener al menos 50 caracteres';
-		}
+		// Validar con Zod
+		const result = createPropertySchema.safeParse(dataToValidate);
 
-		// Validaciones específicas por tipo de propiedad
-		if (formData.type === 'house' || formData.type === 'apartment') {
-			if (!formData.bedrooms || formData.bedrooms < 1) {
-				newErrors.bedrooms = 'Ingresa al menos 1 dormitorio';
-			}
-			if (!formData.bathrooms || formData.bathrooms < 1) {
-				newErrors.bathrooms = 'Ingresa al menos 1 baño';
-			}
-		}
+		if (!result.success) {
+			// Convertir errores de Zod al formato del formulario
+			const fieldErrors = result.error.flatten().fieldErrors;
 
-		if (formData.type === 'house') {
-			if (!formData.constructedArea || formData.constructedArea <= 0) {
-				newErrors.constructedArea = 'La superficie construida es obligatoria para casas';
-			}
-			if (formData.constructedArea && formData.surface && formData.constructedArea > formData.surface) {
-				newErrors.constructedArea = 'La superficie construida no puede ser mayor al lote';
-			}
+			const formattedErrors: Record<string, string> = {};
+			Object.entries(fieldErrors).forEach(([field, messages]) => {
+				if (messages && messages.length > 0) {
+					formattedErrors[field] = messages[0]; // Tomar solo el primer error
+				}
+			});
+
+			setErrors(formattedErrors);
+			return false;
 		}
 
-		setErrors(newErrors);
-		return Object.keys(newErrors).length === 0;
+		// Validación exitosa
+		setErrors({});
+		return true;
 	};
 
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {

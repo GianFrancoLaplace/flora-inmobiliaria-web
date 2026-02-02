@@ -1,6 +1,3 @@
-"use client"
-
-import { useState, useEffect } from 'react';
 import styles from './DescriptionSection.module.css';
 
 interface DescriptionSectionProps {
@@ -11,16 +8,11 @@ interface DescriptionSectionProps {
 
 export default function DescriptionSection({ formData, onChange, errors }: DescriptionSectionProps) {
 	const maxCharacters = 200;
-	const [charCount, setCharCount] = useState(0);
-
-	useEffect(() => {
-		setCharCount(formData.description?.length || 0);
-	}, [formData.description]);
+	const charCount = formData.description?.length || 0;
 
 	const handleDescriptionChange = (value: string) => {
 		if (value.length <= maxCharacters) {
 			onChange('description', value);
-			setCharCount(value.length);
 		}
 	};
 

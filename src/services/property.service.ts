@@ -10,7 +10,7 @@ import {
 
 import { Characteristic } from "@/types/Characteristic";
 import {prisma} from "@/lib/prisma";
-import {createPropertySchema} from "@/lib/constants";
+import {createPropertySchema} from "@/validations/property.schema";
 import { crearSlug } from "@/lib/generateSlug"
 import {ImageService} from "@/services/image.service";
 import {OperationEnum, PropertyTypeEnum} from "@prisma/client"
@@ -46,7 +46,7 @@ export class PropertyService {
 			);
 
 			const slug = crearSlug(
-				validatedProperty.state +
+				validatedProperty.category +
 				validatedProperty.description
 			)
 
@@ -56,7 +56,7 @@ export class PropertyService {
 					data: {
 						address: validatedProperty.address,
 						city: validatedProperty.city,
-						category: validatedProperty.state as OperationEnum, // ojo: state → category
+						category: validatedProperty.category as OperationEnum, // ojo: state → category
 						price: validatedProperty.price,
 						description: validatedProperty.description,
 						ubication: validatedProperty.ubication,

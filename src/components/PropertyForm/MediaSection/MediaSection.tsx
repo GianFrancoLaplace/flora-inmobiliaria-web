@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useRef, DragEvent, ChangeEvent } from 'react';
 import styles from './MediaSection.module.css';
 
