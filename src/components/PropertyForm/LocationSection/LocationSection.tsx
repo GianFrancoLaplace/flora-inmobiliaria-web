@@ -1,7 +1,8 @@
 import styles from './LocalSection.module.css';
+import {PropertyData} from "@/types/property.types";
 
 interface LocationSectionProps {
-	formData: any;
+	formData: PropertyData;
 	onChange: (field: string, value: any) => void;
 	errors: Record<string, string>;
 }

@@ -2,9 +2,10 @@
 
 import { useState, useRef, DragEvent, ChangeEvent } from 'react';
 import styles from './MediaSection.module.css';
+import {PropertyData} from "@/types/property.types";
 
 interface MediaSectionProps {
-	formData: any;
+	formData: PropertyData;
 	onChange: (field: string, value: any) => void;
 	errors: Record<string, string>;
 }

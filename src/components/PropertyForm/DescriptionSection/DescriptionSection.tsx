@@ -1,7 +1,8 @@
 import styles from './DescriptionSection.module.css';
+import {PropertyData} from "@/types/property.types";
 
 interface DescriptionSectionProps {
-	formData: any;
+	formData: PropertyData;
 	onChange: (field: string, value: any) => void;
 	errors: Record<string, string>;
 }

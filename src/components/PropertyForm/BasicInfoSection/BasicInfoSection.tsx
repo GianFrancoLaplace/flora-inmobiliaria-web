@@ -1,7 +1,8 @@
 import styles from './BasicInfoSection.module.css';
+import {PropertyData} from "@/types/property.types";
 
 interface BasicInfoSectionProps {
-	formData: any;
+	formData: PropertyData;
 	onChange: (field: string, value: any) => void;
 	errors: Record<string, string>;
 }
