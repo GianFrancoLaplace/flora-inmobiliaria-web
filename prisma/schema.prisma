@@ -9,11 +9,11 @@ datasource db {
 
 model Property {
   idProperty      Int              @id @default(autoincrement()) @map("id_property")
-  description     String?
+  description     String
   price           Int
   type            PropertyTypeEnum
   category        OperationEnum
-  address         String?
+  address         String
   ubication       String?
   city            String?
   surface         Int
@@ -23,7 +23,7 @@ model Property {
   floors          Int?
   constructedArea Int?             @map("constructed_area")
   images          Image[]
-  slug            String
+  slug            String           @unique
 
   @@map("property")
 }
