@@ -20,6 +20,31 @@ export interface PropertyTypes {
   type?: PropertyType;
 }
 
+export interface PropertyData {
+	type: 'house' | 'apartment' | 'land' | '';
+	category: 'sale' | 'rent';
+	price: number;
+	surface: number;
+	constructedArea?: number;
+	bedrooms?: number;
+	bathrooms?: number;
+	floors?: number;
+	garage?: number;
+	address: string;
+	city?: string;
+	ubication?: string;
+	description: string;
+	images: File[];
+}
+
+export interface PropertyFormProps {
+	mode: 'create' | 'edit';
+	propertyTitle?: string;
+	propertyId?: string;
+	initialData?: Partial<PropertyData>;
+	onSubmit: (data: PropertyData) => Promise<void>;
+}
+
 /**
  * DTO para crear una propiedad (sin imágenes)
  * Representa los datos de texto del formulario

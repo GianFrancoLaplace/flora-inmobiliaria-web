@@ -9,9 +9,11 @@ interface DetailsSectionProps {
 export default function DetailsSection({ formData, onChange, errors }: DetailsSectionProps) {
 	const type = formData.type;
 
+	// Estado vacío si no hay tipo seleccionado
 	if (!type) {
 		return (
 			<section className={styles.section}>
+				<h2 className={styles.sectionTitle}>Detalles de la Propiedad</h2>
 				<div className={styles.emptyState}>
 					<p className={styles.emptyText}>
 						Selecciona un tipo de propiedad para continuar
@@ -27,72 +29,81 @@ export default function DetailsSection({ formData, onChange, errors }: DetailsSe
 
 			<div className={styles.grid}>
 
-				{/* SUPERFICIE */}
+				{/* SUPERFICIE - Todos los tipos */}
 				<div className={styles.formGroup}>
-					<label className={styles.label}>
+					<label className={styles.label} htmlFor="surface">
 						{type === 'land' ? 'Superficie del terreno (m²)' :
 							type === 'house' ? 'Superficie del lote (m²)' :
 								'Superficie total (m²)'}
 						<span className={styles.required}>*</span>
 					</label>
 					<input
+						id="surface"
 						type="number"
+						min="0"
 						placeholder="0"
 						value={formData.surface || ''}
 						onChange={(e) => onChange('surface', Number(e.target.value))}
 						className={errors.surface ? styles.inputError : styles.input}
 					/>
 					{errors.surface && (
-						<p className={styles.error}>⚠️ {errors.surface}</p>
+						<p className={styles.error}>{errors.surface}</p>
 					)}
 				</div>
 
-				{/* SUPERFICIE CONSTRUIDA - SOLO CASA */}
+				{/* SUPERFICIE CONSTRUIDA - Solo casa */}
 				{type === 'house' && (
 					<div className={styles.formGroup}>
-						<label className={styles.label}>
+						<label className={styles.label} htmlFor="constructedArea">
 							Superficie construida (m²) <span className={styles.required}>*</span>
 						</label>
 						<input
+							id="constructedArea"
 							type="number"
+							min="0"
 							placeholder="0"
 							value={formData.constructedArea || ''}
 							onChange={(e) => onChange('constructedArea', Number(e.target.value))}
 							className={errors.constructedArea ? styles.inputError : styles.input}
 						/>
 						{errors.constructedArea && (
-							<p className={styles.error}>⚠️ {errors.constructedArea}</p>
+							<p className={styles.error}>{errors.constructedArea}</p>
 						)}
+						<p className={styles.hint}>
+							Debe ser menor o igual a la superficie del lote
+						</p>
 					</div>
 				)}
 
-				{/* DORMITORIOS - CASA Y DEPARTAMENTO */}
+				{/* DORMITORIOS - Casa y Departamento */}
 				{(type === 'house' || type === 'apartment') && (
 					<div className={styles.formGroup}>
-						<label className={styles.label}>
+						<label className={styles.label} htmlFor="bedrooms">
 							Dormitorios <span className={styles.required}>*</span>
 						</label>
 						<input
+							id="bedrooms"
 							type="number"
-							min="0"
+							min="1"
 							placeholder="0"
 							value={formData.bedrooms || ''}
 							onChange={(e) => onChange('bedrooms', Number(e.target.value))}
 							className={errors.bedrooms ? styles.inputError : styles.input}
 						/>
 						{errors.bedrooms && (
-							<p className={styles.error}>⚠️ {errors.bedrooms}</p>
+							<p className={styles.error}>{errors.bedrooms}</p>
 						)}
 					</div>
 				)}
 
-				{/* BAÑOS - CASA Y DEPARTAMENTO */}
+				{/* BAÑOS - Casa y Departamento */}
 				{(type === 'house' || type === 'apartment') && (
 					<div className={styles.formGroup}>
-						<label className={styles.label}>
+						<label className={styles.label} htmlFor="bathrooms">
 							Baños <span className={styles.required}>*</span>
 						</label>
 						<input
+							id="bathrooms"
 							type="number"
 							min="1"
 							placeholder="0"
@@ -101,16 +112,19 @@ export default function DetailsSection({ formData, onChange, errors }: DetailsSe
 							className={errors.bathrooms ? styles.inputError : styles.input}
 						/>
 						{errors.bathrooms && (
-							<p className={styles.error}>⚠️ {errors.bathrooms}</p>
+							<p className={styles.error}>{errors.bathrooms}</p>
 						)}
 					</div>
 				)}
 
-				{/* PLANTAS - SOLO CASA */}
+				{/* PLANTAS - Solo casa (opcional) */}
 				{type === 'house' && (
 					<div className={styles.formGroup}>
-						<label className={styles.label}>Plantas</label>
+						<label className={styles.label} htmlFor="floors">
+							Plantas
+						</label>
 						<input
+							id="floors"
 							type="number"
 							min="1"
 							placeholder="1"
@@ -122,11 +136,14 @@ export default function DetailsSection({ formData, onChange, errors }: DetailsSe
 					</div>
 				)}
 
-				{/* COCHERAS - CASA Y DEPARTAMENTO */}
+				{/* COCHERAS - Casa y Departamento (opcional) */}
 				{(type === 'house' || type === 'apartment') && (
 					<div className={styles.formGroup}>
-						<label className={styles.label}>Cocheras</label>
+						<label className={styles.label} htmlFor="garage">
+							Cocheras
+						</label>
 						<input
+							id="garage"
 							type="number"
 							min="0"
 							placeholder="0"

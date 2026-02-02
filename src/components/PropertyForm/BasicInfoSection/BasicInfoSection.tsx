@@ -1,11 +1,18 @@
 import styles from './BasicInfoSection.module.css';
 
-export default function BasicInfoSection() {
+interface BasicInfoSectionProps {
+	formData: any;
+	onChange: (field: string, value: any) => void;
+	errors: Record<string, string>;
+}
+
+export default function BasicInfoSection({ formData, onChange, errors }: BasicInfoSectionProps) {
 	return (
 		<section className={styles.section}>
 			<h2 className={styles.sectionTitle}>Datos Básicos</h2>
 
 			<div className={styles.grid}>
+
 				{/* Tipo de operación */}
 				<div className={styles.formGroup}>
 					<label className={styles.label}>
@@ -15,18 +22,21 @@ export default function BasicInfoSection() {
 						<label className={styles.radioLabel}>
 							<input
 								type="radio"
-								name="operationType"
+								name="category"
 								value="sale"
+								checked={formData.category === 'sale'}
+								onChange={(e) => onChange('category', e.target.value)}
 								className={styles.radio}
-								defaultChecked
 							/>
 							<span>Venta</span>
 						</label>
 						<label className={styles.radioLabel}>
 							<input
 								type="radio"
-								name="operationType"
+								name="category"
 								value="rent"
+								checked={formData.category === 'rent'}
+								onChange={(e) => onChange('category', e.target.value)}
 								className={styles.radio}
 							/>
 							<span>Alquiler</span>
@@ -36,70 +46,51 @@ export default function BasicInfoSection() {
 
 				{/* Tipo de propiedad */}
 				<div className={styles.formGroup}>
-					<label className={styles.label} htmlFor="propertyType">
+					<label className={styles.label} htmlFor="type">
 						Tipo de propiedad <span className={styles.required}>*</span>
 					</label>
 					<select
-						id="propertyType"
-						className={styles.select}
-						defaultValue="apartment"
+						id="type"
+						value={formData.type}
+						onChange={(e) => onChange('type', e.target.value)}
+						className={errors.type ? styles.selectError : styles.select}
 					>
+						<option value="">Seleccionar tipo</option>
 						<option value="apartment">Departamento</option>
 						<option value="house">Casa</option>
 						<option value="land">Terreno</option>
-						<option value="commercial">Local comercial</option>
-						<option value="office">Oficina</option>
 					</select>
-				</div>
-
-				{/* Título */}
-				<div className={`${styles.formGroup} ${styles.fullWidth}`}>
-					<label className={styles.label} htmlFor="title">
-						Título de la propiedad <span className={styles.required}>*</span>
-					</label>
-					<input
-						id="title"
-						type="text"
-						placeholder="Ej: Hermoso departamento en el centro"
-						className={styles.input}
-					/>
-					<p className={styles.hint}>
-						Máximo 100 caracteres. Sé descriptivo pero conciso.
-					</p>
+					{errors.type && (
+						<p className={styles.error}>{errors.type}</p>
+					)}
 				</div>
 
 				{/* Precio */}
-				<div className={styles.formGroup}>
+				<div className={`${styles.formGroup} ${styles.fullWidth}`}>
 					<label className={styles.label} htmlFor="price">
 						Precio <span className={styles.required}>*</span>
 					</label>
 					<div className={styles.inputGroup}>
-						<select className={styles.selectCurrency} defaultValue="USD">
-							<option value="USD">USD</option>
-							<option value="ARS">ARS</option>
-						</select>
+						<span className={styles.currency}>USD</span>
 						<input
 							id="price"
 							type="number"
+							min="0"
+							step="1000"
 							placeholder="0"
-							className={styles.input}
+							value={formData.price || ''}
+							onChange={(e) => onChange('price', Number(e.target.value))}
+							className={errors.price ? styles.inputError : styles.input}
 						/>
 					</div>
+					{errors.price && (
+						<p className={styles.error}>{errors.price}</p>
+					)}
+					<p className={styles.hint}>
+						Precio en dólares estadounidenses
+					</p>
 				</div>
 
-				{/* Expensas */}
-				<div className={styles.formGroup}>
-					<label className={styles.label} htmlFor="expenses">
-						Expensas
-					</label>
-					<input
-						id="expenses"
-						type="number"
-						placeholder="0"
-						className={styles.input}
-					/>
-					<p className={styles.hint}>Opcional</p>
-				</div>
 			</div>
 		</section>
 	);
