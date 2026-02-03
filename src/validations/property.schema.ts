@@ -3,7 +3,7 @@
  */
 
 import { z } from 'zod';
-import {PropertyState, PropertyType} from "@/types/property.types";
+import {OperationEnum, PropertyTypeEnum} from '@/types/prisma'
 
 export const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB en bytes
 
@@ -83,10 +83,10 @@ export const createPropertySchema = z.object({
 		.number()
 		.positive('El precio debe ser mayor a 0')
 		.max(999999999, 'El precio excede el límite permitido'),
-	type: z.nativeEnum(PropertyType, {
+	type: z.nativeEnum(PropertyTypeEnum, {
 		errorMap: () => ({ message: 'Tipo de propiedad inválido' }),
 	}),
-	category: z.nativeEnum(PropertyState, {
+	category: z.nativeEnum(OperationEnum, {
 		errorMap: () => ({ message: 'Estado de propiedad inválido' }),
 	}),
 	address: z
@@ -151,15 +151,15 @@ export const createPropertySchema = z.object({
 		 * - garage es opcional
 		 * - Regla de negocio: constructedArea <= surface
 		 */
-		if (data.type === PropertyType.HOME) {
+		if (data.type === PropertyTypeEnum.casa) {
 			// constructedArea obligatorio para casas
-			if (!data.constructedArea || data.constructedArea <= 0) {
-				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
-					path: ['constructedArea'],
-					message: 'El área construida es obligatoria para casas'
-				});
-			}
+			// if (!data.constructedArea || data.constructedArea <= 0) {
+			// 	ctx.addIssue({
+			// 		code: z.ZodIssueCode.custom,
+			// 		path: ['constructedArea'],
+			// 		message: 'El área construida es obligatoria para casas'
+			// 	});
+			// }
 
 			// bedrooms obligatorio para casas (mínimo 1)
 			if (!data.bedrooms || data.bedrooms < 1) {
@@ -197,7 +197,7 @@ export const createPropertySchema = z.object({
 		 * - constructedArea NO aplica
 		 * - floors NO aplica
 		 */
-		if (data.type === PropertyType.APARTMENT) {
+		if (data.type === PropertyTypeEnum.departamento) {
 			// bedrooms obligatorio para departamentos (mínimo 1)
 			if (!data.bedrooms || data.bedrooms < 1) {
 				ctx.addIssue({

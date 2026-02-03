@@ -33,9 +33,15 @@ export class PropertyService {
 		files: File[],
 		imageMetadata: ImageMetadata[]) {
 
+		console.log("CREATE", dto);
+
 		// Parse & validate en una línea - throws ZodError si falla
 		const validatedProperty = createPropertySchema.parse(dto);
 		const validatedImageMetadata = imageMetadataArraySchema.parse(imageMetadata);
+
+		console.log("PROPERTY", validatedProperty);
+		console.log("IMAGEMETADATA", validatedImageMetadata);
+
 
 		let uploadedImages: CloudinaryResult[] = [];
 

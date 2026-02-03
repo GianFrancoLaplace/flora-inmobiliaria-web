@@ -26,7 +26,7 @@ export default function BasicInfoSection({ formData, onChange, errors }: BasicIn
 							<input
 								type="radio"
 								name="category"
-								value="sale"
+								value={OperationEnum.venta}
 								checked={formData.category === OperationEnum.venta}
 								onChange={(e) => onChange('category', e.target.value)}
 								className={styles.radio}
@@ -37,7 +37,7 @@ export default function BasicInfoSection({ formData, onChange, errors }: BasicIn
 							<input
 								type="radio"
 								name="category"
-								value="rent"
+								value={OperationEnum.alquiler}
 								checked={formData.category === OperationEnum.alquiler}
 								onChange={(e) => onChange('category', e.target.value)}
 								className={styles.radio}

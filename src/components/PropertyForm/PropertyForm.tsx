@@ -1,6 +1,6 @@
 'use client';
 
-import {FormEvent, useState} from 'react';
+import {FormEvent, useEffect, useState} from 'react';
 import styles from './PropertyForm.module.css';
 import DescriptionSection from "@/components/PropertyForm/DescriptionSection/DescriptionSection";
 import LocationSection from "@/components/PropertyForm/LocationSection/LocationSection";
@@ -41,7 +41,7 @@ export default function PropertyForm({
 		surface: 1000,
 		address: 'Av. Perón 123',
 		city: 'Tandil',
-		ubication: '',
+		ubication: 'Calamuchita',
 		description: 'Una gran casa peronista',
 		imagePreview: [],
 	};
@@ -54,6 +54,11 @@ export default function PropertyForm({
 	const { submit } = usePropertySubmit()
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	// DEBUG
+	useEffect(() => {
+		console.log(formData)
+	})
 
 	const handleChange = (field: string, value: any) => {
 		console.log(field, value);

@@ -8,7 +8,7 @@ import { ImageMetadata } from './property-form.types';
 export interface CreatePropertyDto {
 	address: string;
 	city: string;
-	state: OperationEnum;
+	category: OperationEnum;
 	price: number;
 	description: string;
 	surface: number;

@@ -1,3 +1,5 @@
+import {OperationEnum, PropertyTypeEnum} from "@/types/prisma";
+
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -5,12 +7,12 @@ import {ZodError} from "zod";
 import {PropertyService} from "@/services/property.service";
 import { NextRequest, NextResponse } from 'next/server';
 import {
-	CreatePropertyDTO,
 	PropertyState,
 	PropertyType,
 	ImageMetadata,
 	CreateImage
 } from '@/types/property.types';
+import { CreatePropertyDto } from "@/types/property-api.types";
 
 type PriceFilter = {
     lte?: number;
@@ -61,16 +63,18 @@ export async function GET(request: Request) {
 
 export async function POST(request: NextRequest) {
   try {
+	  console.log("LOG DEL POST");
+
 	  const formData = await request.formData();
 
-	  const createPropertyDTO: CreatePropertyDTO = {
+	  const createPropertyDTO: CreatePropertyDto = {
 		  address: formData.get("address") as string,
 		  city: formData.get("city") as string,
-		  state: formData.get("state") as PropertyState,
+		  category: formData.get("state") as OperationEnum,
 		  price: Number(formData.get("price")),
 		  description: formData.get("description") as string,
 		  ubication: formData.get("ubication") as string,
-		  type: formData.get("type") as PropertyType,
+		  type: formData.get("type") as PropertyTypeEnum,
 		  surface: Number(formData.get("surface")),
 
 		  // opcionales
@@ -127,6 +131,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
 	  if (error instanceof ZodError) {
+		  console.error(error.errors);
 		  return NextResponse.json(
 			  { errors: error.errors },
 			  { status: 400 }
