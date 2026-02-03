@@ -1,8 +1,7 @@
 import { z } from "zod";
-import { PropertyState, PropertyType } from "@/types/property.types";
-import { OperationEnum } from "@prisma/client";
+import { OperationEnum, PropertyTypeEnum } from "@prisma/client";
 
-const optionalNonEmptyString = (field: string, min = 2, max = 120) =>
+const optionalNonEmptyString = (field: string, min = 2, max = 200) =>
     z
         .string({ invalid_type_error: `${field} debe ser texto` })
         .trim()
@@ -10,7 +9,7 @@ const optionalNonEmptyString = (field: string, min = 2, max = 120) =>
         .max(max, `${field} es demasiado largo`)
         .optional();
 
-const optionalInt = (field: string, min: number, max: number) =>
+const optionalIntRange = (field: string, min: number, max: number) =>
     z
         .number({ invalid_type_error: `${field} debe ser número` })
         .int(`${field} debe ser entero`)
@@ -18,33 +17,18 @@ const optionalInt = (field: string, min: number, max: number) =>
         .max(max, `${field} debe ser <= ${max}`)
         .optional();
 
-const optionalPositive = (field: string, min: number, max: number) =>
-    z
-        .number({ invalid_type_error: `${field} debe ser número` })
-        .min(min, `${field} debe ser >= ${min}`)
-        .max(max, `${field} debe ser <= ${max}`)
-        .optional();
-
-const ubicationSchema = z
-    .string({ invalid_type_error: "Ubicación debe ser texto" })
-    .trim()
-    .min(5, "Ubicación inválida")
-    .max(500, "Ubicación demasiado larga")
-    .optional();
-
 export const propertyUpdateSchema = z
     .object({
         address: optionalNonEmptyString("Dirección", 4, 140),
+
         city: optionalNonEmptyString("Ciudad", 2, 80),
-        state: z.nativeEnum(PropertyState).optional(),
 
-        // ✅ ahora es string
-        ubication: ubicationSchema,
 
-        price: z
-            .number({ invalid_type_error: "Precio debe ser número" })
-            .positive("Precio debe ser mayor a 0")
-            .max(1_000_000_000, "Precio demasiado alto")
+        ubication: z
+            .string({ invalid_type_error: "Ubicación debe ser texto" })
+            .trim()
+            .min(5, "Ubicación inválida")
+            .max(500, "Ubicación demasiado larga")
             .optional(),
 
         description: z
@@ -54,32 +38,54 @@ export const propertyUpdateSchema = z
             .max(5000, "Descripción demasiado larga")
             .optional(),
 
-        type: z.nativeEnum(PropertyType).optional(),
+        price: z
+            .number({ invalid_type_error: "Precio debe ser número" })
+            .int("Precio debe ser entero")
+            .positive("Precio debe ser mayor a 0")
+            .max(1_000_000_000, "Precio demasiado alto")
+            .optional(),
+
+        surface: z
+            .number({ invalid_type_error: "Superficie debe ser número" })
+            .int("Superficie debe ser entera")
+            .min(10, "Superficie debe ser >= 10")
+            .max(1_000_000, "Superficie demasiado grande")
+            .optional(),
+
+        constructedArea: z
+            .number({ invalid_type_error: "Área construida debe ser número" })
+            .int("Área construida debe ser entera")
+            .min(5, "Área construida debe ser >= 5")
+            .max(1_000_000, "Área construida demasiado grande")
+            .optional(),
+
+        bedrooms: optionalIntRange("Dormitorios", 0, 30),
+
+
+        bathrooms: optionalIntRange("Baños", 0, 30),
+
+        garage: optionalIntRange("Cocheras", 0, 20),
+
+        floors: optionalIntRange("Pisos", 0, 200),
+
+        type: z.nativeEnum(PropertyTypeEnum).optional(),
 
         category: z.nativeEnum(OperationEnum).optional(),
-
-        surface: optionalPositive("Superficie", 10, 1_000_000),
-        bedrooms: optionalInt("Dormitorios", 0, 30),
-        bathrooms: optionalInt("Baños", 0, 30),
-        garage: optionalInt("Cocheras", 0, 20),
-        floors: optionalInt("Pisos", 0, 200),
-
-        constructed_area: optionalPositive("Área construida", 5, 1_000_000),
     })
     .superRefine((data, ctx) => {
         if (
             typeof data.surface === "number" &&
-            typeof data.constructed_area === "number" &&
-            data.constructed_area > data.surface
+            typeof data.constructedArea === "number" &&
+            data.constructedArea > data.surface
         ) {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
-                path: ["constructed_area"],
+                path: ["constructedArea"],
                 message: "Área construida no puede ser mayor que la superficie",
             });
         }
 
-        if (data.type === PropertyType.LAND || data.type === PropertyType.FIELD) {
+        if (data.type === PropertyTypeEnum.lote || data.type === PropertyTypeEnum.campo) {
             const invalid =
                 (typeof data.bedrooms === "number" && data.bedrooms > 0) ||
                 (typeof data.bathrooms === "number" && data.bathrooms > 0);
@@ -88,10 +94,18 @@ export const propertyUpdateSchema = z
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     path: ["type"],
-                    message:
-                        "Para lote/campo, dormitorios y baños deberían ser 0 o no enviarse",
+                    message: "Para lote/campo, dormitorios y baños deberían ser 0 o no enviarse",
                 });
             }
+        }
+
+      
+        if (Object.keys(data).length === 0) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: [],
+                message: "Debes enviar al menos un campo para actualizar",
+            });
         }
     });
 
