@@ -2,65 +2,63 @@
 
 import { useState, useRef, DragEvent, ChangeEvent } from 'react';
 import styles from './MediaSection.module.css';
-import {PropertyData} from "@/types/property.types";
+import { ImagePreview } from "@/types/property-form.types";
+import {
+	validateImageFile,
+	validateImageFiles
+} from '@/validations/image.validation';
 
 interface MediaSectionProps {
-	formData: PropertyData;
-	onChange: (field: string, value: any) => void;
+	value: ImagePreview[];
+	onChange: (images: ImagePreview[]) => void;
 	errors: Record<string, string>;
 }
 
-interface ImagePreview {
-	file: File;
-	preview: string;
-	position: number;
-	isMain: boolean;
-}
-
-export default function MediaSection({ formData, onChange, errors }: MediaSectionProps) {
-	const [imagePreviews, setImagePreviews] = useState<ImagePreview[]>([]);
+export default function MediaSection({ value, onChange, errors }: MediaSectionProps) {
 	const [isDragging, setIsDragging] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const handleFiles = (files: FileList | null) => {
 		if (!files) return;
 
-		const validFiles: File[] = [];
+		const fileArray = Array.from(files);
 		const newPreviews: ImagePreview[] = [];
 
-		Array.from(files).forEach((file, index) => {
-			// Validar tipo
-			if (!file.type.startsWith('image/')) {
-				alert(`${file.name} no es una imagen válida`);
-				return;
+		// Validar cada archivo individualmente
+		for (let i = 0; i < fileArray.length; i++) {
+			const file = fileArray[i];
+
+			// Usar validación Zod
+			const validation = validateImageFile(file);
+
+			if (!validation.valid) {
+				alert(`${file.name}: ${validation.error}`);
+				continue;
 			}
 
-			// Validar tamaño (5MB)
-			if (file.size > 5 * 1024 * 1024) {
-				alert(`${file.name} excede el tamaño máximo de 5MB`);
-				return;
-			}
-
-			validFiles.push(file);
-
-			// Crear preview
-			const reader = new FileReader();
-			reader.onload = (e) => {
-				const preview: ImagePreview = {
-					file,
-					position: index,
-					preview: e.target?.result as string,
-					isMain: imagePreviews.length === 0 && newPreviews.length === 0
-				};
-				newPreviews.push(preview);
-
-				if (newPreviews.length === validFiles.length) {
-					setImagePreviews(prev => [...prev, ...newPreviews]);
-					onChange('images', [...(formData.images || []), ...validFiles]);
-				}
+			// Crear preview si pasó validación
+			const preview: ImagePreview = {
+				file,
+				preview: URL.createObjectURL(file),
+				position: value.length + newPreviews.length,
+				isMain: value.length === 0 && newPreviews.length === 0
 			};
-			reader.readAsDataURL(file);
-		});
+
+			newPreviews.push(preview);
+		}
+
+		// Validar array completo antes de agregar
+		if (newPreviews.length > 0) {
+			const allFiles = [...value.map(v => v.file), ...newPreviews.map(p => p.file)];
+			const arrayValidation = validateImageFiles(allFiles);
+
+			if (!arrayValidation.valid) {
+				alert(arrayValidation.errors.join('\n'));
+				return;
+			}
+
+			onChange([...value, ...newPreviews]);
+		}
 	};
 
 	const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
@@ -96,30 +94,22 @@ export default function MediaSection({ formData, onChange, errors }: MediaSectio
 	};
 
 	const handleRemoveImage = (index: number) => {
-		const newPreviews = imagePreviews.filter((_, i) => i !== index);
-		const newFiles = (formData.images || []).filter((_: any, i: number) => i !== index);
+		const newPreviews = value.filter((_, i) => i !== index);
 
 		// Si eliminamos la principal y hay más imágenes, la primera se vuelve principal
-		if (imagePreviews[index].isMain && newPreviews.length > 0) {
+		if (value[index].isMain && newPreviews.length > 0) {
 			newPreviews[0].isMain = true;
 		}
 
-		setImagePreviews(newPreviews);
-		onChange('images', newFiles);
+		onChange(newPreviews);
 	};
 
 	const handleSetMainImage = (index: number) => {
-		const newPreviews = imagePreviews.map((preview, i) => ({
-			...preview,
+		const updated = value.map((img, i) => ({
+			...img,
 			isMain: i === index
 		}));
-		setImagePreviews(newPreviews);
-
-		// Reordenar el array de files para que la principal esté primera
-		const newFiles = [...(formData.images || [])];
-		const [mainFile] = newFiles.splice(index, 1);
-		newFiles.unshift(mainFile);
-		onChange('images', newFiles);
+		onChange(updated);
 	};
 
 	return (
@@ -169,9 +159,9 @@ export default function MediaSection({ formData, onChange, errors }: MediaSectio
 				</div>
 
 				{/* Galería de imágenes */}
-				{imagePreviews.length > 0 && (
+				{value.length > 0 && (
 					<div className={styles.gallery}>
-						{imagePreviews.map((preview, index) => (
+						{value.map((preview, index) => (
 							<div key={index} className={styles.imageCard}>
 								<div className={styles.imageWrapper}>
 									<img
@@ -235,9 +225,9 @@ export default function MediaSection({ formData, onChange, errors }: MediaSectio
 				)}
 
 				<p className={styles.hint}>
-					{imagePreviews.length === 0
+					{value.length === 0
 						? 'Sube al menos una imagen de la propiedad'
-						: `${imagePreviews.length} imagen${imagePreviews.length > 1 ? 'es' : ''} cargada${imagePreviews.length > 1 ? 's' : ''}`
+						: `${value.length} imagen${value.length > 1 ? 'es' : ''} cargada${value.length > 1 ? 's' : ''}`
 					}
 				</p>
 

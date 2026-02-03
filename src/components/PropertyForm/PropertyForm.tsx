@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import {FormEvent, useState} from 'react';
 import styles from './PropertyForm.module.css';
 import DescriptionSection from "@/components/PropertyForm/DescriptionSection/DescriptionSection";
 import LocationSection from "@/components/PropertyForm/LocationSection/LocationSection";
 import DetailsSection from "@/components/PropertyForm/DetailsSection/DetailsSection";
 import BasicInfoSection from "@/components/PropertyForm/BasicInfoSection/BasicInfoSection";
 import MediaSection from "@/components/PropertyForm/MediaSection/MediaSection";
-import { PropertyFormInput, PropertyFormProps } from "@/types/property-form.types";
+import {FormMode, PropertyFormInput, PropertyFormProps} from "@/types/property-form.types";
 import {createPropertySchema} from "@/validations/property.schema";
 
 
@@ -19,15 +19,21 @@ export default function PropertyForm({
 	                                     onSubmit
                                      }: PropertyFormProps) {
 
-	const [formData, setFormData] = useState<PropertyFormInput>({
+	const defaultFormData: PropertyFormInput = {
 		type: undefined,
 		category: undefined,
 		price: 0,
 		surface: 0,
 		address: '',
+		city: '',
+		ubication: '',
 		description: '',
-		images: [],
-		...initialData
+		imagePreview: [],
+	};
+
+	const [formData, setFormData] = useState<PropertyFormInput>({
+		...defaultFormData,
+		...initialData,
 	});
 
 	const [errors, setErrors] = useState<Record<string, string>>({});
@@ -107,12 +113,12 @@ export default function PropertyForm({
 		<div className={styles.formContainer}>
 
 			{/* Header con indicador de modo */}
-			<div className={mode === 'edit' ? styles.headerEdit : styles.headerCreate}>
+			<div className={mode === FormMode.EDIT ? styles.headerEdit : styles.headerCreate}>
 				<div className={styles.headerContent}>
 					<p className={styles.modeTitle}>
-						{mode === 'edit' ? 'Editando propiedad' : 'Nueva propiedad'}
+						{mode === FormMode.EDIT ? 'Editando propiedad' : 'Nueva propiedad'}
 					</p>
-					{mode === 'edit' && propertyTitle && (
+					{mode === FormMode.EDIT && propertyTitle && (
 						<>
 							<p className={styles.propertyTitle}>{propertyTitle}</p>
 							{propertyId && (
@@ -129,7 +135,7 @@ export default function PropertyForm({
 				{hasErrors && (
 					<div className={styles.errorSummary}>
 						<p className={styles.errorTitle}>
-							⚠️ Hay {Object.keys(errors).length} {Object.keys(errors).length === 1 ? 'error' : 'errores'} que corregir
+							Hay {Object.keys(errors).length} {Object.keys(errors).length === 1 ? 'error' : 'errores'} que corregir
 						</p>
 						<ul className={styles.errorList}>
 							{Object.entries(errors).map(([field, message]) => (
@@ -165,8 +171,8 @@ export default function PropertyForm({
 				/>
 
 				<MediaSection
-					formData={formData}
-					onChange={handleChange}
+					value={formData.imagePreview}
+					onChange={(images) => handleChange('images', images)}
 					errors={errors}
 				/>
 
@@ -189,10 +195,10 @@ export default function PropertyForm({
 						{isSubmitting ? (
 							<>
 								<span className={styles.spinner}></span>
-								{mode === 'edit' ? 'Guardando...' : 'Creando...'}
+								{mode === FormMode.EDIT ? 'Guardando...' : 'Creando...'}
 							</>
 						) : (
-							mode === 'edit' ? 'Guardar cambios' : 'Crear propiedad'
+							mode === FormMode.EDIT ? 'Guardar cambios' : 'Crear propiedad'
 						)}
 					</button>
 				</div>

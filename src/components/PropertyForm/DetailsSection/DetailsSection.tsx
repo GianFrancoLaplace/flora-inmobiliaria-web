@@ -1,8 +1,10 @@
 import styles from './DetailsSection.module.css';
 import {PropertyData} from "@/types/property.types";
+import {PropertyFormInput} from "@/types/property-form.types";
+import {PropertyTypeEnum} from "@/types/prisma";
 
 interface DetailsSectionProps {
-	formData: PropertyData;
+	formData: PropertyFormInput;
 	onChange: (field: string, value: any) => void;
 	errors: Record<string, string>;
 }
@@ -33,8 +35,8 @@ export default function DetailsSection({ formData, onChange, errors }: DetailsSe
 				{/* SUPERFICIE - Todos los tipos */}
 				<div className={styles.formGroup}>
 					<label className={styles.label} htmlFor="surface">
-						{type === 'land' ? 'Superficie del terreno (m²)' :
-							type === 'house' ? 'Superficie del lote (m²)' :
+						{type === PropertyTypeEnum.campo ? 'Superficie del terreno (m²)' :
+							type === PropertyTypeEnum.casa ? 'Superficie del lote (m²)' :
 								'Superficie total (m²)'}
 						<span className={styles.required}>*</span>
 					</label>
@@ -53,7 +55,7 @@ export default function DetailsSection({ formData, onChange, errors }: DetailsSe
 				</div>
 
 				{/* SUPERFICIE CONSTRUIDA - Solo casa */}
-				{type === 'house' && (
+				{type === PropertyTypeEnum.casa && (
 					<div className={styles.formGroup}>
 						<label className={styles.label} htmlFor="constructedArea">
 							Superficie construida (m²) <span className={styles.required}>*</span>
@@ -77,7 +79,7 @@ export default function DetailsSection({ formData, onChange, errors }: DetailsSe
 				)}
 
 				{/* DORMITORIOS - Casa y Departamento */}
-				{(type === 'house' || type === 'apartment') && (
+				{(type === PropertyTypeEnum.casa || type === PropertyTypeEnum.departamento) && (
 					<div className={styles.formGroup}>
 						<label className={styles.label} htmlFor="bedrooms">
 							Dormitorios <span className={styles.required}>*</span>
@@ -98,7 +100,7 @@ export default function DetailsSection({ formData, onChange, errors }: DetailsSe
 				)}
 
 				{/* BAÑOS - Casa y Departamento */}
-				{(type === 'house' || type === 'apartment') && (
+				{(type === PropertyTypeEnum.casa || type === PropertyTypeEnum.departamento) && (
 					<div className={styles.formGroup}>
 						<label className={styles.label} htmlFor="bathrooms">
 							Baños <span className={styles.required}>*</span>
@@ -119,7 +121,7 @@ export default function DetailsSection({ formData, onChange, errors }: DetailsSe
 				)}
 
 				{/* PLANTAS - Solo casa (opcional) */}
-				{type === 'house' && (
+				{type === PropertyTypeEnum.casa && (
 					<div className={styles.formGroup}>
 						<label className={styles.label} htmlFor="floors">
 							Plantas
@@ -138,7 +140,7 @@ export default function DetailsSection({ formData, onChange, errors }: DetailsSe
 				)}
 
 				{/* COCHERAS - Casa y Departamento (opcional) */}
-				{(type === 'house' || type === 'apartment') && (
+				{(type === PropertyTypeEnum.casa || type === PropertyTypeEnum.departamento) && (
 					<div className={styles.formGroup}>
 						<label className={styles.label} htmlFor="garage">
 							Cocheras

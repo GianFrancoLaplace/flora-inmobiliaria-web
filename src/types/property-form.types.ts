@@ -26,16 +26,14 @@ export interface PropertyFormInput {
 	floors?: number;
 	garage?: number;
 
-	// Imágenes (solo en frontend)
-	images: File[];
-	imageMetadata: ImageMetadata;
+	imagePreview: ImagePreview[];
 }
 
 /**
  * Props del componente PropertyForm
  */
 export interface PropertyFormProps {
-	mode: 'create' | 'edit';
+	mode: FormMode;
 	propertyTitle?: string;
 	propertyId?: string;
 	initialData?: Partial<PropertyFormInput>;
@@ -50,4 +48,16 @@ export interface PropertyFormProps {
 export interface ImageMetadata {
 	position: number;
 	isMain: boolean;
+}
+
+export interface ImagePreview {
+	file: File;           // El binario real
+	preview: string;      // Data URL para mostrar
+	position: number;     // Orden en galería
+	isMain: boolean;      // ¿Es la foto principal?
+}
+
+export enum FormMode {
+	CREATE = 'CREATE',
+	EDIT = 'EDIT',
 }

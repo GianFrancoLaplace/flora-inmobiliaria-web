@@ -1,19 +1,17 @@
 import PropertyForm from "@/components/PropertyForm/PropertyForm";
 import {PropertyService} from "@/services/property.service";
-import {CreatePropertyDTO, ImageMetadata} from "@/types/property.types";
+import {FormMode, PropertyFormInput} from "@/types/property-form.types";
+import {parsePropertyFormToService} from "@/lib/property-form-parser";
 
-const handleCreate = async  (
-	                          dto: CreatePropertyDTO,
-                              files: File[],
-                              imageMetadata: ImageMetadata[] ) => {
-	const propertyService = new PropertyService();
-	await propertyService.create(dto, files, imageMetadata);
-}
+export default function FormPage() {
+	const handleCreate = async (formInput: PropertyFormInput) => {
+		const { dto, files, imageMetadata } = parsePropertyFormToService(formInput);
 
-export default async function FormPage(){
+		const propertyService = new PropertyService();
+		await propertyService.create(dto, files, imageMetadata);
+	};
+
 	return (
-		<PropertyForm mode={"create"} onSubmit={handleCreate} >
-
-		</PropertyForm>
-	)
+		<PropertyForm mode={FormMode.CREATE} onSubmit={handleCreate} />
+	);
 }

@@ -1,8 +1,10 @@
 import {
-	CreatePropertyDTO,
 	ImageMetadata,
 	PropertyTypes
 } from '@/types/property.types'
+import {
+	CreatePropertyDto,
+} from '@/types/property-api.types'
 import {
 	PropertyFilters,
 	WhereClause
@@ -27,7 +29,7 @@ export class PropertyService {
 	}
 
 	async create(
-		dto: CreatePropertyDTO,
+		dto: CreatePropertyDto,
 		files: File[],
 		imageMetadata: ImageMetadata[]) {
 

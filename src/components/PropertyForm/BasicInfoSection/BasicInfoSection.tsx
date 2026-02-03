@@ -1,8 +1,10 @@
 import styles from './BasicInfoSection.module.css';
 import {PropertyData} from "@/types/property.types";
+import {PropertyFormInput} from "@/types/property-form.types";
+import { OperationEnum } from "@/types/prisma"
 
 interface BasicInfoSectionProps {
-	formData: PropertyData;
+	formData: PropertyFormInput;
 	onChange: (field: string, value: any) => void;
 	errors: Record<string, string>;
 }
@@ -25,7 +27,7 @@ export default function BasicInfoSection({ formData, onChange, errors }: BasicIn
 								type="radio"
 								name="category"
 								value="sale"
-								checked={formData.category === 'sale'}
+								checked={formData.category === OperationEnum.venta}
 								onChange={(e) => onChange('category', e.target.value)}
 								className={styles.radio}
 							/>
@@ -36,7 +38,7 @@ export default function BasicInfoSection({ formData, onChange, errors }: BasicIn
 								type="radio"
 								name="category"
 								value="rent"
-								checked={formData.category === 'rent'}
+								checked={formData.category === OperationEnum.alquiler}
 								onChange={(e) => onChange('category', e.target.value)}
 								className={styles.radio}
 							/>
