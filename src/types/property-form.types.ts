@@ -37,9 +37,6 @@ export interface PropertyFormProps {
 	propertyTitle?: string;
 	propertyId?: string;
 	initialData?: Partial<PropertyFormInput>;
-	onSubmit: (
-		data: PropertyFormInput,
-	) => Promise<void>;
 }
 
 /**

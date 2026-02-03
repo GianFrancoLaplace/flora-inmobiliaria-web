@@ -1,7 +1,7 @@
 import styles from './BasicInfoSection.module.css';
 import {PropertyData} from "@/types/property.types";
 import {PropertyFormInput} from "@/types/property-form.types";
-import { OperationEnum } from "@/types/prisma"
+import {OperationEnum, PropertyTypeEnum} from "@/types/prisma"
 
 interface BasicInfoSectionProps {
 	formData: PropertyFormInput;
@@ -59,9 +59,9 @@ export default function BasicInfoSection({ formData, onChange, errors }: BasicIn
 						className={errors.type ? styles.selectError : styles.select}
 					>
 						<option value="">Seleccionar tipo</option>
-						<option value="apartment">Departamento</option>
-						<option value="house">Casa</option>
-						<option value="land">Terreno</option>
+						<option value={PropertyTypeEnum.departamento}>Departamento</option>
+						<option value={PropertyTypeEnum.casa}>Casa</option>
+						<option value={PropertyTypeEnum.lote}>Lote</option>
 					</select>
 					{errors.type && (
 						<p className={styles.error}>{errors.type}</p>

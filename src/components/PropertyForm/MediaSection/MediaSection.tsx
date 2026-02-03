@@ -19,6 +19,7 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const handleFiles = (files: FileList | null) => {
+		console.log(files);
 		if (!files) return;
 
 		const fileArray = Array.from(files);
@@ -56,6 +57,8 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 				alert(arrayValidation.errors.join('\n'));
 				return;
 			}
+
+			console.log(files);
 
 			onChange([...value, ...newPreviews]);
 		}

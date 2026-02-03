@@ -9,6 +9,9 @@ import BasicInfoSection from "@/components/PropertyForm/BasicInfoSection/BasicIn
 import MediaSection from "@/components/PropertyForm/MediaSection/MediaSection";
 import {FormMode, PropertyFormInput, PropertyFormProps} from "@/types/property-form.types";
 import {createPropertySchema} from "@/validations/property.schema";
+import {usePropertySubmit} from "@/hooks/usePropertySubmit";
+import {PropertyTypeEnum} from "@prisma/client";
+import {OperationEnum} from "@/types/prisma";
 
 
 export default function PropertyForm({
@@ -16,18 +19,30 @@ export default function PropertyForm({
 	                                     propertyTitle,
 	                                     propertyId,
 	                                     initialData,
-	                                     onSubmit
+
                                      }: PropertyFormProps) {
 
+	// const defaultFormData: PropertyFormInput = {
+	// 	type: undefined,
+	// 	category: undefined,
+	// 	price: 0,
+	// 	surface: 0,
+	// 	address: '',
+	// 	city: '',
+	// 	ubication: '',
+	// 	description: '',
+	// 	imagePreview: [],
+	// };
+
 	const defaultFormData: PropertyFormInput = {
-		type: undefined,
-		category: undefined,
-		price: 0,
-		surface: 0,
-		address: '',
-		city: '',
+		type: PropertyTypeEnum.casa,
+		category: OperationEnum.venta,
+		price: 1000,
+		surface: 1000,
+		address: 'Av. Perón 123',
+		city: 'Tandil',
 		ubication: '',
-		description: '',
+		description: 'Una gran casa peronista',
 		imagePreview: [],
 	};
 
@@ -36,11 +51,16 @@ export default function PropertyForm({
 		...initialData,
 	});
 
+	const { submit } = usePropertySubmit()
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const handleChange = (field: string, value: any) => {
-		setFormData(prev => ({ ...prev, [field]: value }));
+		console.log(field, value);
+		setFormData(prev => ({...prev, [field]: value}));
+
+		console.log(formData);
+
 
 		// Limpiar error del campo cuando el usuario lo modifica
 		if (errors[field]) {
@@ -98,7 +118,7 @@ export default function PropertyForm({
 
 		setIsSubmitting(true);
 		try {
-			await onSubmit(formData);
+			await submit(formData);
 		} catch (error) {
 			console.error('Error al guardar:', error);
 			setErrors({ submit: 'Hubo un error al guardar la propiedad' });
@@ -172,7 +192,7 @@ export default function PropertyForm({
 
 				<MediaSection
 					value={formData.imagePreview}
-					onChange={(images) => handleChange('images', images)}
+					onChange={(images) => handleChange('imagePreview', images)}
 					errors={errors}
 				/>
 
