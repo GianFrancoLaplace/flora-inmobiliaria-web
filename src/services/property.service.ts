@@ -21,35 +21,10 @@ import {OperationEnum, PropertyTypeEnum} from "@prisma/client"
 import {CloudinaryResult} from "@/types/cloudinary.types";
 import {stateMap, typeMap} from "@/helpers/PropertyMapper";
 import {imageMetadataArraySchema} from "@/validations/property.schema";
-import {NextRequest, NextResponse} from "next/server";
-import {PropertyUpdateDataValidated, propertyUpdateSchema} from "@/rules/property";
-import {error} from "next/dist/build/output/log";
+import {NextResponse} from "next/server";
+import {PropertyUpdateDataValidated, propertyUpdateSchema} from "@/validations/property";
 
-/**
- * Filtros para búsqueda de propiedades
- */
-interface PropertyFilters {
-	types?: PropertyType[];
-	operations?: PropertyState[];
-	minPrice?: number;
-	maxPrice?: number;
-}
 
-/**
- * Objeto WHERE para filtrar propiedades en Prisma
- */
-interface WhereClause {
-	type?: {
-		in: PropertyTypeEnum[];
-	};
-	category?: {
-		in: OperationEnum[];
-	};
-	price?: {
-		gte?: number;
-		lte?: number;
-	};
-}
 
 export class PropertyService {
 
