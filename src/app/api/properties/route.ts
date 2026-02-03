@@ -64,7 +64,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: NextRequest) {
   try {
-	  console.log("LOG DEL POST");
+	  // console.log("LOG DEL POST");
 
 	  const formData = await request.formData();
 
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
 		  rawMetadata
 	  );
 
-	  console.log(imageFiles.length !== imageMetadata.length);
+	  // console.log(imageFiles.length !== imageMetadata.length);
 
 	  if (imageFiles.length !== imageMetadata.length) {
 		  return NextResponse.json(
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
 		  );
 	  }
 
-	  console.error('Error en POST /api/properties:', error);
+	  // console.error('Error en POST /api/properties:', error);
 
 	  return NextResponse.json(
 		  { error: 'Error interno' },

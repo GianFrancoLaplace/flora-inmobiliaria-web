@@ -116,18 +116,14 @@ export const createPropertySchema = z.object({
 		.max(999999, 'El área construida excede el límite (999,999 m²)')
 		.finite('El área construida debe ser un número válido')
 		.optional(),
-	bedrooms: z
-		.number()
-		.int('El número de dormitorios debe ser entero')
-		.min(1, 'Debe haber al menos 1 dormitorio')
-		.max(50, 'El número de dormitorios excede el límite (50)')
-		.optional(),
-	bathrooms: z
-		.number()
-		.int('El número de baños debe ser entero')
-		.min(1, 'Debe haber al menos 1 baño')
-		.max(50, 'El número de baños excede el límite (50)')
-		.optional(),
+	bedrooms: z.preprocess(
+		(val) => (typeof val === 'number' && isNaN(val)) ? undefined : val,
+		z.number().int().max(50).optional()
+	),
+	bathrooms: z.preprocess(
+		(val) => (typeof val === 'number' && isNaN(val)) ? undefined : val,
+		z.number().int().max(50).optional()
+	),
 	floors: z
 		.number()
 		.int('El número de pisos debe ser entero')
@@ -162,20 +158,20 @@ export const createPropertySchema = z.object({
 			// }
 
 			// bedrooms obligatorio para casas (mínimo 1)
-			if (!data.bedrooms || data.bedrooms < 1) {
+			if (data.bedrooms === undefined || data.bedrooms < 1) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
 					path: ['bedrooms'],
-					message: 'Las casas deben tener al menos 1 dormitorio'
+					message: 'El número de dormitorios es requerido para casas'
 				});
 			}
 
 			// bathrooms obligatorio para casas (mínimo 1)
-			if (!data.bathrooms || data.bathrooms < 1) {
+			if (data.bathrooms === undefined || data.bathrooms < 1) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
 					path: ['bathrooms'],
-					message: 'Las casas deben tener al menos 1 baño'
+					message: 'El número de baños es requerido para casas'
 				});
 			}
 
@@ -199,7 +195,7 @@ export const createPropertySchema = z.object({
 		 */
 		if (data.type === PropertyTypeEnum.departamento) {
 			// bedrooms obligatorio para departamentos (mínimo 1)
-			if (!data.bedrooms || data.bedrooms < 1) {
+			if (data.bedrooms === undefined || data.bedrooms < 1) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
 					path: ['bedrooms'],
@@ -208,7 +204,7 @@ export const createPropertySchema = z.object({
 			}
 
 			// bathrooms obligatorio para departamentos (mínimo 1)
-			if (!data.bathrooms || data.bathrooms < 1) {
+			if (data.bathrooms === undefined || data.bathrooms < 1) {
 				ctx.addIssue({
 					code: z.ZodIssueCode.custom,
 					path: ['bathrooms'],
