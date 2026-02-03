@@ -1,89 +1,56 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { use } from 'react';
 import PropertyForm from '@/components/PropertyForm/PropertyForm';
-import type { PropertyTypes } from '@/types/property.types';
+import {FormMode, ImagePreview, PropertyFormInput} from "@/types/property-form.types";
+import { prisma } from  '@/lib/prisma'
+import {notFound} from "next/navigation";
 
 interface PropertyEditPageProps {
 	params: Promise<{ slug: string }>;
 }
 
-export default function PropertyEditPage({ params }: PropertyEditPageProps) {
-	const router = useRouter();
-	const { slug } = use(params);
+export default async function PropertyEditPage({ params }: PropertyEditPageProps) {
+	const { slug } = await params;
 
-	// TODO: Fetch de la propiedad
-	// Por ahora simulamos con un objeto vacío
-	const property: PropertyTypes = {
-		// ... datos cargados desde API
-	};
-
-	async function handleUpdate(data: PropertyTypes) {
-		try {
-			const newImages = data.images.filter(img => img.file);
-			const uploadedImages = newImages.length > 0
-				? await uploadImages(newImages)
-				: [];
-
-			const allImages = [
-				...data.images.filter(img => !img.file),
-				...uploadedImages
-			];
-
-			const response = await fetch(`/api/properties/${slug}`, {
-				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					...data,
-					images: allImages
-				})
-			});
-
-			if (!response.ok) {
-				throw new Error('Error al actualizar');
-			}
-
-			router.push(`/properties/${slug}`);
-
-		} catch (error) {
-			console.error('Error:', error);
-			// TODO: Mostrar toast/notificación de error
+	const property = await prisma.property.findFirst({
+		where: { slug } ,
+		include: {
+			images : true
 		}
+	});
+
+	if (!property) {
+		return (notFound())
 	}
+
+	const propertyInput: Partial<PropertyFormInput> = {
+		address: property.address ?? undefined,
+		city: property.city ?? undefined,
+		description: property.description ?? undefined,
+		ubication: property.ubication ?? undefined,
+
+		price: property.price ?? undefined,
+		surface: property.surface ?? undefined,
+		garage: property.garage ?? undefined,
+		bedrooms: property.bedrooms ?? undefined,
+		bathrooms: property.bathrooms ?? undefined,
+		floors: property.floors ?? undefined,
+		constructedArea: property.constructedArea ?? undefined,
+
+		type: property.type,
+		category: property.category,
+
+		imagePreview: property.images.map((img, index): ImagePreview => ({
+			preview: img.url!,
+			position: img.position,
+			isMain: img.isMain,
+		}))
+	};
 
 	return (
 		<div>
 			<PropertyForm
-				mode="edit"
-				initialData={property}
-				onSubmit={handleUpdate}
+				mode={FormMode.EDIT}
+				initialData={propertyInput}
 			/>
 		</div>
 	);
-}
-
-// Helper para subir imágenes
-async function uploadImages(images: any[]) {
-	const formData = new FormData();
-
-	images.forEach((img, index) => {
-		if (img.file) {
-			formData.append('images', img.file);
-			formData.append('order', index.toString());
-			formData.append('isMain', img.isMain.toString());
-		}
-	});
-
-	const response = await fetch('/api/properties/images', {
-		method: 'POST',
-		body: formData
-	});
-
-	if (!response.ok) {
-		throw new Error('Error al subir imágenes');
-	}
-
-	const result = await response.json();
-	return result.images;
 }

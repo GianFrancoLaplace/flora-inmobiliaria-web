@@ -48,10 +48,10 @@ export interface ImageMetadata {
 }
 
 export interface ImagePreview {
-	file: File;           // El binario real
+	file?: File;
 	preview: string;      // Data URL para mostrar
-	position: number;     // Orden en galería
-	isMain: boolean;      // ¿Es la foto principal?
+	position: number;
+	isMain: boolean;
 }
 
 export enum FormMode {

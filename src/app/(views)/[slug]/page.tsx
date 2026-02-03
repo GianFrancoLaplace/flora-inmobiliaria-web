@@ -18,7 +18,7 @@ type PageProps = {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
 	const { slug } = await params;
 
-	const property = await prisma.property.findUnique({
+	const property = await prisma.property.findFirst({
 		where: { slug },
 		include: {
 			images: {
@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function PropertyPage({ params }: PageProps) {
 	const { slug } = await params;
 
-	const property = await prisma.property.findUnique({
+	const property = await prisma.property.findFirst({
 		where: { slug },
 		include: {
 			images: {
