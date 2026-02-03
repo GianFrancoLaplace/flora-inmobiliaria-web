@@ -76,11 +76,17 @@ export interface ImageMetadata {
 export interface PropertyUpdateData {
     address?: string;
     city?: string;
-    state: PropertyState;
     ubication?: string;
     price?: number;
     description?: string;
     type?: PropertyType;
+    category?:PropertyState;
+    surface?: number;
+    bedrooms?: number;
+    bathrooms?: number;
+    garage?: number;
+    floors?: number;
+    constructed_area?: number;
 }
 
 export interface Image {

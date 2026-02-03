@@ -1,6 +1,8 @@
 import {
 	ImageMetadata,
-	PropertyTypes
+	PropertyState,
+	PropertyType,
+	PropertyTypes, PropertyUpdateData
 } from '@/types/property.types'
 import {
 	CreatePropertyDto,
@@ -19,6 +21,35 @@ import {OperationEnum, PropertyTypeEnum} from "@prisma/client"
 import {CloudinaryResult} from "@/types/cloudinary.types";
 import {stateMap, typeMap} from "@/helpers/PropertyMapper";
 import {imageMetadataArraySchema} from "@/validations/property.schema";
+import {NextRequest, NextResponse} from "next/server";
+import {PropertyUpdateDataValidated, propertyUpdateSchema} from "@/rules/property";
+import {error} from "next/dist/build/output/log";
+
+/**
+ * Filtros para búsqueda de propiedades
+ */
+interface PropertyFilters {
+	types?: PropertyType[];
+	operations?: PropertyState[];
+	minPrice?: number;
+	maxPrice?: number;
+}
+
+/**
+ * Objeto WHERE para filtrar propiedades en Prisma
+ */
+interface WhereClause {
+	type?: {
+		in: PropertyTypeEnum[];
+	};
+	category?: {
+		in: OperationEnum[];
+	};
+	price?: {
+		gte?: number;
+		lte?: number;
+	};
+}
 
 export class PropertyService {
 
@@ -187,4 +218,58 @@ export class PropertyService {
 			return result;
 		});
 	}
+
+	 public async PUT(
+			id: number,
+			body:PropertyUpdateData
+		) {
+		try {
+			if (isNaN(id)) {
+				return NextResponse.json({ message: 'ID de propiedad inválido' }, { status: 400 });
+			}
+			const parsed = propertyUpdateSchema.safeParse(body);
+
+			if (!parsed.success) {
+				return NextResponse.json(
+					{ message: "Datos inválidos", errors: parsed.error.flatten() },
+					{ status: 422 }
+				);
+			}
+
+			const existingProperty = await prisma.property.findUnique({
+				where: { idProperty: id },
+			});
+
+			if (!existingProperty) {
+				return NextResponse.json({ message: "Propiedad no encontrada" }, { status: 404 });
+			}
+
+			const updateData: PropertyUpdateDataValidated = parsed.data;
+			if (Object.keys(updateData).length === 0) {
+				return NextResponse.json(
+					{ message: "Debes enviar al menos un campo para actualizar" },
+					{ status: 400 }
+				);
+			}
+
+
+			const updatedProperty = await prisma.property.update({
+				where: { idProperty: id },
+				data: updateData,
+			});
+
+			return NextResponse.json({
+				message: "Propiedad actualizada exitosamente",
+				property: updatedProperty,
+			});
+		} catch (error) {
+			console.error("Error al actualizar la propiedad:", error);
+			return NextResponse.json(
+				{ message: "Error interno del servidor" },
+				{ status: 500 }
+			);
+		}
+	}
+
+
 }

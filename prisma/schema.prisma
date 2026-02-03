@@ -43,6 +43,9 @@ model Image {
   position   Int
   isMain     Boolean   @map("is_main")
   idProperty Int?      @map("id_property")
+  alt_text   String?
+  position   Int
+  isMain     Boolean   @map("is_main")
   property   Property? @relation(fields: [idProperty], references: [idProperty], onDelete: Cascade, map: "fk_image_propery")
 
   @@map("image")

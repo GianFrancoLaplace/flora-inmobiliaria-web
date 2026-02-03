@@ -8,19 +8,26 @@ import {PropertyTypes, PropertyState, PropertyUpdateData} from '@/types/property
 import {Characteristic} from "@/types/Characteristic";
 import {PropertyService} from "@/services/property.service";
 import {getIconByCategory, mapPrismaCharacteristicCategory} from "@/helpers/IconMapper"
+const propertyService = new PropertyService();
+
+export async function PUT(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+) {
+    const { id } = params;
+    const propertyId = parseInt(id)
+    const body: PropertyUpdateData = await request.json();
+
+    return await propertyService.PUT(propertyId, body)
+}
 
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        // Await params antes de usarlos
         const { id } = await params;
         const propertyId = parseInt(id);
-
-        if (isNaN(propertyId)) {
-            return NextResponse.json({ message: 'ID de propiedad inválido' }, { status: 400 });
-        }
 
         const propiedad = await prisma.property.findUnique({
             where: { idProperty : propertyId  },
@@ -50,7 +57,6 @@ export async function GET(
                 id: img.idImage,
                 url: img.url !== null ? img.url : "",
             })),
-	        slug: propiedad.slug || '',
 
             characteristics: propiedad.characteristics
                 .filter((c) => {
@@ -98,65 +104,6 @@ export async function GET(
     }
 }
 
-export async function PUT(
-    request: NextRequest,
-    { params }: { params: { id: string } }
-) {
-    try {
-        const { id } = params;
-
-        if (!id) {
-            return NextResponse.json({ error: "ID no proporcionado" }, { status: 400 });
-        }
-
-        const propertyId = parseInt(id);
-        if (isNaN(propertyId)) {
-            return NextResponse.json({ message: "ID inválido" }, { status: 400 });
-        }
-
-        const body: PropertyUpdateData = await request.json();
-        const service = new PropertyService();
-
-        // const validationErrors = service.verifyFields(body);
-        // if (validationErrors.length > 0) {
-        //     return NextResponse.json(
-        //         { message: "Datos inválidos", errors: validationErrors },
-        //         { status: 400 }
-        //     );
-        // }
-
-        const existingProperty = await prisma.property.findUnique({
-            where: { idProperty: propertyId },
-        });
-
-        if (!existingProperty) {
-            return NextResponse.json({ message: "Propiedad no encontrada" }, { status: 404 });
-        }
-
-        const updateData: Record<string, unknown> = {};
-        if (body.address !== undefined) updateData.address = body.address;
-        if (body.state !== undefined) updateData.category = body.state;
-        if (body.price !== undefined) updateData.price = body.price;
-        if (body.description !== undefined) updateData.description = body.description;
-        if (body.type !== undefined) updateData.type = body.type;
-
-        const updatedProperty = await prisma.property.update({
-            where: { idProperty: propertyId },
-            data: updateData,
-        });
-
-        return NextResponse.json({
-            message: "Propiedad actualizada exitosamente",
-            property: updatedProperty,
-        });
-    } catch (error) {
-        console.error("Error al actualizar la propiedad:", error);
-        return NextResponse.json(
-            { message: "Error interno del servidor" },
-            { status: 500 }
-        );
-    }
-}
 
 
 export async function DELETE(

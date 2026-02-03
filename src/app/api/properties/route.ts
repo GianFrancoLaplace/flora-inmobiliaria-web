@@ -25,6 +25,7 @@ const propertyService = new PropertyService();
  * GET /api/properties
  * Soporta filtros: tipo, operacion, minValue, maxValue
  */
+
 export async function GET(request: Request) {
 	try {
 		const { searchParams } = new URL(request.url);

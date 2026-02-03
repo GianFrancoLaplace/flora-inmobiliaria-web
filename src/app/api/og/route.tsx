@@ -24,7 +24,6 @@ export async function GET(request: NextRequest) {
 					padding: '60px',
 				}}
 			>
-				{/* AGREGAR LOGO aquí si tenés */}
 				<div style={{
 					fontSize: 60,
 					fontWeight: 'bold',
