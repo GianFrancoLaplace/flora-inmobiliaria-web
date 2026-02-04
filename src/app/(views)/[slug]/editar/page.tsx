@@ -1,7 +1,8 @@
 import PropertyForm from '@/components/PropertyForm/PropertyForm';
-import {FormMode, ImagePreview, PropertyFormInput} from "@/types/property-form.types";
+import {FormMode, PropertyFormInput} from "@/types/property-form.types";
 import { prisma } from  '@/lib/prisma'
 import {notFound} from "next/navigation";
+import {ImageItem} from "@/types/image.types";
 
 interface PropertyEditPageProps {
 	params: Promise<{ slug: string }>;
@@ -21,6 +22,18 @@ export default async function PropertyEditPage({ params }: PropertyEditPageProps
 		return (notFound())
 	}
 
+	/**
+	 * Convertir imágenes de BD a objetos tipo 'existing'
+	 * Cada imagen tiene url, id, position e isMain
+	 */
+	const existingImages: ImageItem[] = property.images.map((img): ImageItem => ({
+		type: 'existing',
+		id: img.idImage,
+		url: img.url!,
+		position: img.position,
+		isMain: img.isMain,
+	}));
+
 	const propertyInput: Partial<PropertyFormInput> = {
 		address: property.address ?? undefined,
 		city: property.city ?? undefined,
@@ -38,11 +51,9 @@ export default async function PropertyEditPage({ params }: PropertyEditPageProps
 		type: property.type,
 		category: property.category,
 
-		imagePreview: property.images.map((img, index): ImagePreview => ({
-			preview: img.url!,
-			position: img.position,
-			isMain: img.isMain,
-		}))
+		// Sistema de Discriminated Union para imágenes
+		images: existingImages,
+		deletedImageIds: [],
 	};
 
 	return (
@@ -50,6 +61,7 @@ export default async function PropertyEditPage({ params }: PropertyEditPageProps
 			<PropertyForm
 				mode={FormMode.EDIT}
 				initialData={propertyInput}
+				propertyId={property.idProperty.toString()}
 			/>
 		</div>
 	);

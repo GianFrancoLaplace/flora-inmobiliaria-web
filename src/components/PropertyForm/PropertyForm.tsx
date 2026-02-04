@@ -12,6 +12,7 @@ import {createPropertySchema} from "@/validations/property.schema";
 import {usePropertySubmit} from "@/hooks/usePropertySubmit";
 import {PropertyTypeEnum} from "@prisma/client";
 import {OperationEnum} from "@/types/prisma";
+import {ImageItem} from "@/types/image.types";
 
 
 export default function PropertyForm({
@@ -43,7 +44,8 @@ export default function PropertyForm({
 		city: 'Tandil',
 		ubication: 'Calamuchita',
 		description: 'Una gran casa peronista',
-		imagePreview: [],
+		images: [],
+		deletedImageIds: []
 	};
 
 	const [formData, setFormData] = useState<PropertyFormInput>({
@@ -57,21 +59,53 @@ export default function PropertyForm({
 
 	// DEBUG
 	useEffect(() => {
-		console.log(formData)
-	})
+		console.log('FormData actualizado:', formData);
+		console.log('Imágenes eliminadas:', formData.deletedImageIds);
+	}, [formData]);
 
+	/**
+	 * Handler genérico para campos simples
+	 */
 	const handleChange = (field: string, value: any) => {
-		console.log(field, value);
 		setFormData(prev => ({...prev, [field]: value}));
-
-		console.log(formData);
-
 
 		// Limpiar error del campo cuando el usuario lo modifica
 		if (errors[field]) {
 			setErrors(prev => {
 				const newErrors = { ...prev };
 				delete newErrors[field];
+				return newErrors;
+			});
+		}
+	};
+
+	/**
+	 * Handler específico para imágenes
+	 * Detecta si se eliminó una imagen existente para agregar su ID a deletedImageIds
+	 */
+	const handleImagesChange = (newImages: ImageItem[]) => {
+		// Detectar qué imágenes existentes fueron eliminadas
+		const existingImages = formData.images.filter(img => img.type === 'existing');
+		const remainingExistingImages = newImages.filter(img => img.type === 'existing');
+
+		const deletedIds = existingImages
+			.filter(existing => !remainingExistingImages.some(remaining =>
+				remaining.type === 'existing' && remaining.id === existing.id
+			))
+			.map(img => img.id);
+
+		// Actualizar estado
+		setFormData(prev => ({
+			...prev,
+			images: newImages,
+			deletedImageIds: [...prev.deletedImageIds, ...deletedIds]
+		}));
+
+		// Limpiar error de imágenes si existe
+		if (errors.images) {
+			setErrors(prev => {
+				const newErrors = { ...prev };
+				delete newErrors.images;
 				return newErrors;
 			});
 		}
@@ -123,13 +157,47 @@ export default function PropertyForm({
 
 		setIsSubmitting(true);
 		try {
-			await submit(formData);
+			if (mode === FormMode.CREATE) {
+				await submitCreate();
+			} else {
+				await submitEdit();
+			}
 		} catch (error) {
 			console.error('Error al guardar:', error);
 			setErrors({ submit: 'Hubo un error al guardar la propiedad' });
 		} finally {
 			setIsSubmitting(false);
 		}
+	};
+
+	/**
+	 * Submit para modo CREATE
+	 * Todas las imágenes son nuevas (type='new')
+	 */
+	const submitCreate = async () => {
+		await submit(formData, FormMode.CREATE);
+	};
+
+	/**
+	 * Submit para modo EDIT
+	 * Puede tener mezcla de imágenes existentes y nuevas
+	 */
+	const submitEdit = async () => {
+		// TODO: Implementar cuando el backend tenga el endpoint PUT
+		console.log('Submit EDIT - Data preparada:', {
+			propertyData: {
+				address: formData.address,
+				city: formData.city,
+				price: formData.price,
+				// ... resto de campos
+			},
+			existingImages: formData.images.filter(img => img.type === 'existing'),
+			newImages: formData.images.filter(img => img.type === 'new'),
+			deletedImageIds: formData.deletedImageIds
+		});
+
+		// Placeholder hasta que tengamos el endpoint
+		alert('Modo EDIT: Backend aún no implementado. Ver consola para ver datos preparados.');
 	};
 
 	const hasErrors = Object.keys(errors).length > 0;
@@ -196,8 +264,8 @@ export default function PropertyForm({
 				/>
 
 				<MediaSection
-					value={formData.imagePreview}
-					onChange={(images) => handleChange('imagePreview', images)}
+					value={formData.images}
+					onChange={handleImagesChange}
 					errors={errors}
 				/>
 

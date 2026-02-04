@@ -2,15 +2,15 @@
 
 import { useState, useRef, DragEvent, ChangeEvent } from 'react';
 import styles from './MediaSection.module.css';
-import { ImagePreview } from "@/types/property-form.types";
+import {ImageItem, NewImage} from "@/types/image.types";
 import {
 	validateImageFile,
 	validateImageFiles
 } from '@/validations/image.validation';
 
 interface MediaSectionProps {
-	value: ImagePreview[];
-	onChange: (images: ImagePreview[]) => void;
+	value: ImageItem[];
+	onChange: (images: ImageItem[]) => void;
 	errors: Record<string, string>;
 }
 
@@ -19,11 +19,10 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const handleFiles = (files: FileList | null) => {
-		console.log(files);
 		if (!files) return;
 
 		const fileArray = Array.from(files);
-		const newPreviews: ImagePreview[] = [];
+		const newImages: NewImage[] = [];
 
 		// Validar cada archivo individualmente
 		for (let i = 0; i < fileArray.length; i++) {
@@ -37,20 +36,26 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 				continue;
 			}
 
-			// Crear preview si pasó validación
-			const preview: ImagePreview = {
+			// Crear objeto tipo 'new' con File + preview
+			const newImage: ImageItem = {
+				type: 'new',
 				file,
 				preview: URL.createObjectURL(file),
-				position: value.length + newPreviews.length,
-				isMain: value.length === 0 && newPreviews.length === 0
+				position: value.length + newImages.length,
+				isMain: value.length === 0 && newImages.length === 0
 			};
 
-			newPreviews.push(preview);
+			newImages.push(newImage);
 		}
 
-		// Validar array completo antes de agregar
-		if (newPreviews.length > 0) {
-			const allFiles = [...value.map(v => v.file), ...newPreviews.map(p => p.file)];
+		if (newImages.length > 0) {
+			const existingFiles = value
+				.filter((img): img is NewImage => img.type === 'new')
+				.map(img => img.file);
+
+			const newFiles = newImages.map(img => img.file);
+			const allFiles = [...existingFiles, ...newFiles];
+
 			const arrayValidation = validateImageFiles(allFiles);
 
 			if (!arrayValidation.valid) {
@@ -58,9 +63,7 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 				return;
 			}
 
-			console.log(files);
-
-			onChange([...value, ...newPreviews]);
+			onChange([...value, ...newImages]);
 		}
 	};
 
@@ -97,14 +100,15 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 	};
 
 	const handleRemoveImage = (index: number) => {
-		const newPreviews = value.filter((_, i) => i !== index);
+		const newImages = value.filter((_, i) => i !== index);
 
 		// Si eliminamos la principal y hay más imágenes, la primera se vuelve principal
-		if (value[index].isMain && newPreviews.length > 0) {
-			newPreviews[0].isMain = true;
+		if (value[index].isMain && newImages.length > 0) {
+			newImages[0].isMain = true;
 		}
 
-		onChange(newPreviews);
+		// El padre decide si agregar a deletedImageIds según el tipo
+		onChange(newImages);
 	};
 
 	const handleSetMainImage = (index: number) => {
@@ -113,6 +117,15 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 			isMain: i === index
 		}));
 		onChange(updated);
+	};
+
+	/**
+	 * Renderiza la URL correcta según el tipo de imagen
+	 * - type='existing': url de Cloudinary
+	 * - type='new': preview blob URL
+	 */
+	const getImageSrc = (img: ImageItem): string => {
+		return img.type === 'existing' ? img.url : img.preview;
 	};
 
 	return (
@@ -164,11 +177,11 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 				{/* Galería de imágenes */}
 				{value.length > 0 && (
 					<div className={styles.gallery}>
-						{value.map((preview, index) => (
+						{value.map((img, index) => (
 							<div key={index} className={styles.imageCard}>
 								<div className={styles.imageWrapper}>
 									<img
-										src={preview.preview}
+										src={getImageSrc(img)}
 										alt={`Imagen ${index + 1}`}
 										className={styles.image}
 									/>
@@ -204,7 +217,7 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 											</svg>
 										</button>
 									</div>
-									{preview.isMain && (
+									{img.isMain && (
 										<span className={styles.mainBadge}>Principal</span>
 									)}
 								</div>

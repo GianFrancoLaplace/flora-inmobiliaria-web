@@ -1,4 +1,5 @@
 import { PropertyTypeEnum, OperationEnum } from './prisma';
+import { ImageItem } from "@/types/image.types"
 
 /**
  * Datos del formulario de creación/edición de propiedad
@@ -26,7 +27,9 @@ export interface PropertyFormInput {
 	floors?: number;
 	garage?: number;
 
-	imagePreview: ImagePreview[];
+	// Gestión de imágenes con Discriminated Union
+	images: ImageItem[];              // Array único con imágenes existentes y nuevas
+	deletedImageIds: number[];        // IDs de imágenes existentes marcadas para eliminar
 }
 
 /**
