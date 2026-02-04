@@ -122,45 +122,49 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 			<h2 className={styles.sectionTitle}>Imágenes</h2>
 
 			<div className={styles.content}>
+				{ value.length === 0 && (
 
-				<div
-					className={`${styles.dropzone} ${isDragging ? styles.dropzoneActive : ''}`}
-					onDragEnter={handleDragEnter}
-					onDragLeave={handleDragLeave}
-					onDragOver={handleDragOver}
-					onDrop={handleDrop}
-					onClick={handleClickUpload}
-				>
-					<div className={styles.dropzoneContent}>
-						<svg
-							className={styles.uploadIcon}
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-							/>
-						</svg>
-						<p className={styles.dropzoneText}>
-							Arrastra imágenes aquí o haz clic para seleccionar
-						</p>
-						<p className={styles.dropzoneHint}>
-							Formatos: JPG, PNG, WEBP (máx. 5MB cada una)
-						</p>
+					<div
+						className={`${styles.dropzone} ${isDragging ? styles.dropzoneActive : ''}`}
+						onDragEnter={handleDragEnter}
+						onDragLeave={handleDragLeave}
+						onDragOver={handleDragOver}
+						onDrop={handleDrop}
+						onClick={handleClickUpload}
+					>
+						<div className={styles.dropzoneContent}>
+							<svg
+								className={styles.uploadIcon}
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+								/>
+							</svg>
+							<p className={styles.dropzoneText}>
+								Arrastra imágenes aquí o haz clic para seleccionar
+							</p>
+							<p className={styles.dropzoneHint}>
+								Formatos: JPG, PNG, WEBP (máx. 5MB cada una)
+							</p>
+						</div>
+						<input
+							ref={fileInputRef}
+							type="file"
+							multiple
+							accept="image/jpeg,image/jpg,image/png,image/webp"
+							onChange={handleFileInput}
+							className={styles.fileInput}
+							data-testid="file-input"
+						/>
 					</div>
-					<input
-						ref={fileInputRef}
-						type="file"
-						multiple
-						accept="image/jpeg,image/jpg,image/png,image/webp"
-						onChange={handleFileInput}
-						className={styles.fileInput}
-					/>
-				</div>
+					)
+				}
 
 				{value.length > 0 && (
 					<div className={styles.gallery}>

@@ -37,9 +37,6 @@ export default function DescriptionSection({ formData, onChange, errors }: Descr
 					<p className={styles.error}>{errors.description}</p>
 				)}
 				<div className={styles.textareaFooter}>
-					<p className={styles.hint}>
-						Mínimo 50 caracteres. Sé detallado pero conciso.
-					</p>
 					<span className={styles.charCounter}>
 						{charCount} / {maxCharacters}
 					</span>

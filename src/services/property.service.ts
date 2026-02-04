@@ -61,6 +61,7 @@ export class PropertyService {
 
 			const slug = crearSlug(
 				validatedProperty.category +
+				" " +
 				validatedProperty.description
 			)
 

@@ -21,30 +21,31 @@ export default function PropertyForm({
 	                                     initialData,
                                      }: PropertyFormProps) {
 
-	// const defaultFormData: PropertyFormInput = {
-	// 	type: undefined,
-	// 	category: undefined,
-	// 	price: 0,
-	// 	surface: 0,
-	// 	address: '',
-	// 	city: '',
-	// 	ubication: '',
-	// 	description: '',
-	// 	imagePreview: [],
-	// };
-
 	const defaultFormData: PropertyFormInput = {
-		type: PropertyTypeEnum.casa,
-		category: OperationEnum.venta,
-		price: 1000,
-		surface: 1000,
-		address: 'Av. Perón 123',
-		city: 'Tandil',
-		ubication: 'Calamuchita',
-		description: 'Una gran casa peronista',
+		type: undefined,
+		category: undefined,
+		price: 0,
+		surface: 0,
+		address: '',
+		city: '',
+		ubication: '',
+		description: '',
 		images: [],
 		deletedImageIds: []
 	};
+
+	// const defaultFormData: PropertyFormInput = {
+	// 	type: PropertyTypeEnum.casa,
+	// 	category: OperationEnum.venta,
+	// 	price: 1000,
+	// 	surface: 1000,
+	// 	address: 'Av. Perón 123',
+	// 	city: 'Tandil',
+	// 	ubication: 'Calamuchita',
+	// 	description: 'Una gran casa peronista',
+	// 	images: [],
+	// 	deletedImageIds: []
+	// };
 
 	const [formData, setFormData] = useState<PropertyFormInput>({
 		...defaultFormData,
