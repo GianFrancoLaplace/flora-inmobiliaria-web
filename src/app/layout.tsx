@@ -4,13 +4,10 @@ import { cactus } from "@/app/(views)/ui/fonts";
 import NavBar from "@/components/NavBar/NavBar";
 import Footer from "@/components/Footer/Footer";
 import WhatsAppRedirection from "@/components/WhatsAppRedirection/WhatsAppRedirection";
+import {getBaseUrl} from "@/lib/baseURL";
 
 // URL base definida para evitar repeticiones
-let BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL : "";
-
-if (!BASE_URL) {
-	BASE_URL = 'https://flora-inmobiliaria-web.vercel.app/';  // TODO: HARDCODEADO
-}
+let BASE_URL = getBaseUrl();
 
 export const metadata: Metadata = {
 	metadataBase: new URL(BASE_URL),
@@ -45,7 +42,7 @@ export const metadata: Metadata = {
 		description: 'Encontrá tu próxima propiedad en Tandil. Casas, departamentos, terrenos y más. Atención personalizada.',
 		images: [
 			{
-				url: '/homeBackground.jpg', // TODO: Subir imagen
+				url: 'public/backgrounds/homeBackground.jpg',
 				width: 1200,
 				height: 630,
 				alt: 'Flora Cordeiro Inmobiliaria - Tandil',
