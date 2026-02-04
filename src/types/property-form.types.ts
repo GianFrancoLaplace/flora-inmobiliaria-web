@@ -1,40 +1,24 @@
 import { PropertyTypeEnum, OperationEnum } from './prisma';
 import { ImageItem } from "@/types/image.types"
 
-/**
- * Datos del formulario de creación/edición de propiedad
- * type y category en undefined en caso de crear (no hay un predeterminado)
- */
 export interface PropertyFormInput {
-	// Básicos
 	type?: PropertyTypeEnum;
 	category?: OperationEnum;
 	price: number;
 	surface: number;
-
-	// Ubicación
 	address: string;
 	city: string;
 	ubication: string;
-
-	// Descripción
 	description: string;
-
-	// Detalles opcionales por tipo
 	constructedArea?: number;
 	bedrooms?: number;
 	bathrooms?: number;
 	floors?: number;
 	garage?: number;
-
-	// Gestión de imágenes con Discriminated Union
-	images: ImageItem[];              // Array único con imágenes existentes y nuevas
-	deletedImageIds: number[];        // IDs de imágenes existentes marcadas para eliminar
+	images: ImageItem[];
+	deletedImageIds: number[];
 }
 
-/**
- * Props del componente PropertyForm
- */
 export interface PropertyFormProps {
 	mode: FormMode;
 	propertyTitle?: string;
@@ -42,9 +26,6 @@ export interface PropertyFormProps {
 	initialData?: Partial<PropertyFormInput>;
 }
 
-/**
- * Metadata de imagen para upload
- */
 export interface ImageMetadata {
 	position: number;
 	isMain: boolean;
@@ -52,7 +33,7 @@ export interface ImageMetadata {
 
 export interface ImagePreview {
 	file?: File;
-	preview: string;      // Data URL para mostrar
+	preview: string;
 	position: number;
 	isMain: boolean;
 }

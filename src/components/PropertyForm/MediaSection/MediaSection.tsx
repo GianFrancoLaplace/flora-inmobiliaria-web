@@ -24,11 +24,8 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 		const fileArray = Array.from(files);
 		const newImages: NewImage[] = [];
 
-		// Validar cada archivo individualmente
 		for (let i = 0; i < fileArray.length; i++) {
 			const file = fileArray[i];
-
-			// Usar validación Zod
 			const validation = validateImageFile(file);
 
 			if (!validation.valid) {
@@ -36,7 +33,6 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 				continue;
 			}
 
-			// Crear objeto tipo 'new' con File + preview
 			const newImage: ImageItem = {
 				type: 'new',
 				file,
@@ -102,12 +98,10 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 	const handleRemoveImage = (index: number) => {
 		const newImages = value.filter((_, i) => i !== index);
 
-		// Si eliminamos la principal y hay más imágenes, la primera se vuelve principal
 		if (value[index].isMain && newImages.length > 0) {
 			newImages[0].isMain = true;
 		}
 
-		// El padre decide si agregar a deletedImageIds según el tipo
 		onChange(newImages);
 	};
 
@@ -119,11 +113,6 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 		onChange(updated);
 	};
 
-	/**
-	 * Renderiza la URL correcta según el tipo de imagen
-	 * - type='existing': url de Cloudinary
-	 * - type='new': preview blob URL
-	 */
 	const getImageSrc = (img: ImageItem): string => {
 		return img.type === 'existing' ? img.url : img.preview;
 	};
@@ -134,7 +123,6 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 
 			<div className={styles.content}>
 
-				{/* Zona de carga */}
 				<div
 					className={`${styles.dropzone} ${isDragging ? styles.dropzoneActive : ''}`}
 					onDragEnter={handleDragEnter}
@@ -174,7 +162,6 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 					/>
 				</div>
 
-				{/* Galería de imágenes */}
 				{value.length > 0 && (
 					<div className={styles.gallery}>
 						{value.map((img, index) => (
@@ -224,7 +211,6 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 							</div>
 						))}
 
-						{/* Botón para agregar más */}
 						<div className={styles.imageCard}>
 							<div className={styles.addMoreCard} onClick={handleClickUpload}>
 								<svg className={styles.plusIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">

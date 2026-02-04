@@ -14,13 +14,11 @@ import {PropertyTypeEnum} from "@prisma/client";
 import {OperationEnum} from "@/types/prisma";
 import {ImageItem} from "@/types/image.types";
 
-
 export default function PropertyForm({
 	                                     mode,
 	                                     propertyTitle,
 	                                     propertyId,
 	                                     initialData,
-
                                      }: PropertyFormProps) {
 
 	// const defaultFormData: PropertyFormInput = {
@@ -57,19 +55,9 @@ export default function PropertyForm({
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	// DEBUG
-	useEffect(() => {
-		console.log('FormData actualizado:', formData);
-		console.log('Imágenes eliminadas:', formData.deletedImageIds);
-	}, [formData]);
-
-	/**
-	 * Handler genérico para campos simples
-	 */
 	const handleChange = (field: string, value: any) => {
 		setFormData(prev => ({...prev, [field]: value}));
 
-		// Limpiar error del campo cuando el usuario lo modifica
 		if (errors[field]) {
 			setErrors(prev => {
 				const newErrors = { ...prev };
@@ -79,12 +67,7 @@ export default function PropertyForm({
 		}
 	};
 
-	/**
-	 * Handler específico para imágenes
-	 * Detecta si se eliminó una imagen existente para agregar su ID a deletedImageIds
-	 */
 	const handleImagesChange = (newImages: ImageItem[]) => {
-		// Detectar qué imágenes existentes fueron eliminadas
 		const existingImages = formData.images.filter(img => img.type === 'existing');
 		const remainingExistingImages = newImages.filter(img => img.type === 'existing');
 
@@ -94,14 +77,12 @@ export default function PropertyForm({
 			))
 			.map(img => img.id);
 
-		// Actualizar estado
 		setFormData(prev => ({
 			...prev,
 			images: newImages,
 			deletedImageIds: [...prev.deletedImageIds, ...deletedIds]
 		}));
 
-		// Limpiar error de imágenes si existe
 		if (errors.images) {
 			setErrors(prev => {
 				const newErrors = { ...prev };
@@ -112,7 +93,6 @@ export default function PropertyForm({
 	};
 
 	const validate = (): boolean => {
-		// Preparar datos para validación - convertir strings vacíos a undefined
 		const dataToValidate = {
 			...formData,
 			city: formData.city?.trim() || undefined,
@@ -124,17 +104,15 @@ export default function PropertyForm({
 			garage: formData.garage || undefined,
 		};
 
-		// Validar con Zod
 		const result = createPropertySchema.safeParse(dataToValidate);
 
 		if (!result.success) {
-			// Convertir errores de Zod al formato del formulario
 			const fieldErrors = result.error.flatten().fieldErrors;
-
 			const formattedErrors: Record<string, string> = {};
+
 			Object.entries(fieldErrors).forEach(([field, messages]) => {
 				if (messages && messages.length > 0) {
-					formattedErrors[field] = messages[0]; // Tomar solo el primer error
+					formattedErrors[field] = messages[0];
 				}
 			});
 
@@ -142,7 +120,6 @@ export default function PropertyForm({
 			return false;
 		}
 
-		// Validación exitosa
 		setErrors({});
 		return true;
 	};
@@ -170,42 +147,30 @@ export default function PropertyForm({
 		}
 	};
 
-	/**
-	 * Submit para modo CREATE
-	 * Todas las imágenes son nuevas (type='new')
-	 */
 	const submitCreate = async () => {
 		await submit(formData, FormMode.CREATE);
 	};
 
-	/**
-	 * Submit para modo EDIT
-	 * Puede tener mezcla de imágenes existentes y nuevas
-	 */
+	/** TODO: Implementar PUT en backend */
 	const submitEdit = async () => {
-		// TODO: Implementar cuando el backend tenga el endpoint PUT
 		console.log('Submit EDIT - Data preparada:', {
 			propertyData: {
 				address: formData.address,
 				city: formData.city,
 				price: formData.price,
-				// ... resto de campos
 			},
 			existingImages: formData.images.filter(img => img.type === 'existing'),
 			newImages: formData.images.filter(img => img.type === 'new'),
 			deletedImageIds: formData.deletedImageIds
 		});
 
-		// Placeholder hasta que tengamos el endpoint
-		alert('Modo EDIT: Backend aún no implementado. Ver consola para ver datos preparados.');
+		alert('Modo EDIT: Backend aún no implementado.');
 	};
 
 	const hasErrors = Object.keys(errors).length > 0;
 
 	return (
 		<div className={styles.formContainer}>
-
-			{/* Header con indicador de modo */}
 			<div className={mode === FormMode.EDIT ? styles.headerEdit : styles.headerCreate}>
 				<div className={styles.headerContent}>
 					<p className={styles.modeTitle}>
@@ -223,8 +188,6 @@ export default function PropertyForm({
 			</div>
 
 			<form onSubmit={handleSubmit} className={styles.form}>
-
-				{/* Resumen de errores */}
 				{hasErrors && (
 					<div className={styles.errorSummary}>
 						<p className={styles.errorTitle}>
@@ -238,7 +201,6 @@ export default function PropertyForm({
 					</div>
 				)}
 
-				{/* Secciones del formulario */}
 				<BasicInfoSection
 					formData={formData}
 					onChange={handleChange}
@@ -269,7 +231,6 @@ export default function PropertyForm({
 					errors={errors}
 				/>
 
-				{/* Botones de acción */}
 				<div className={styles.actions}>
 					<button
 						type="button"
@@ -295,7 +256,6 @@ export default function PropertyForm({
 						)}
 					</button>
 				</div>
-
 			</form>
 		</div>
 	);
