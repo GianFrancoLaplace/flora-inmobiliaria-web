@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
 	  const createPropertyDTO: CreatePropertyDto = {
 		  address: formData.get("address") as string,
 		  city: formData.get("city") as string,
-		  category: formData.get("state") as OperationEnum,
+		  category: formData.get("category") as OperationEnum,
 		  price: Number(formData.get("price")),
 		  description: formData.get("description") as string,
 		  ubication: formData.get("ubication") as string,

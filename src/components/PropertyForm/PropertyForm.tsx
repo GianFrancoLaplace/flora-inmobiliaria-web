@@ -152,20 +152,12 @@ export default function PropertyForm({
 		await submit(formData, FormMode.CREATE);
 	};
 
-	/** TODO: Implementar PUT en backend */
 	const submitEdit = async () => {
-		console.log('Submit EDIT - Data preparada:', {
-			propertyData: {
-				address: formData.address,
-				city: formData.city,
-				price: formData.price,
-			},
-			existingImages: formData.images.filter(img => img.type === 'existing'),
-			newImages: formData.images.filter(img => img.type === 'new'),
-			deletedImageIds: formData.deletedImageIds
-		});
-
-		alert('Modo EDIT: Backend aún no implementado.');
+		// propertyId debe venir de las props
+		if (!propertyId) {
+			throw new Error('Property ID es requerido para editar');
+		}
+		await submit(formData, FormMode.EDIT, propertyId);
 	};
 
 	const hasErrors = Object.keys(errors).length > 0;
