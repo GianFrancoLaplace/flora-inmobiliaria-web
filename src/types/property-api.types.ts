@@ -21,28 +21,7 @@ export interface CreatePropertyDto {
 	constructedArea?: number;
 }
 
-/**
- * DTO para actualizar propiedad vía API
- */
-export interface UpdatePropertyDto {
-	address?: string;
-	city?: string;
-	state?: OperationEnum;
-	ubication?: string;
-	price?: number;
-	description?: string;
-	type?: PropertyTypeEnum;
-	garage?: number;
-	bedrooms?: number;
-	bathrooms?: number;
-	floors?: number;
-	constructedArea?: number;
-}
 
-/**
- * Payload completo para crear propiedad
- * Combina DTO + archivos + metadata
- */
 export interface CreatePropertyPayload {
 	data: CreatePropertyDto;
 	files: File[];
