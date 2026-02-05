@@ -42,7 +42,7 @@ export const metadata: Metadata = {
 		description: 'Encontrá tu próxima propiedad en Tandil. Casas, departamentos, terrenos y más. Atención personalizada.',
 		images: [
 			{
-				url: 'public/backgrounds/homeBackground.jpg',
+				url: '/backgrounds/homeBackground.jpg',
 				width: 1200,
 				height: 630,
 				alt: 'Flora Cordeiro Inmobiliaria - Tandil',
@@ -117,18 +117,20 @@ export default function RootLayout({
 
 	return (
 		<html lang="es">
-		<body className={`${cactus.className}`}>
-		{/* Script JSON-LD inyectado correctamente en el body */}
-		<script
-			type="application/ld+json"
-			dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-		/>
+			<head>
+				<script
+					type="application/ld+json"
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+				/>
+			</head>
+			<body className={`${cactus.className}`}>
+			{/* Script JSON-LD inyectado correctamente en el body */}
 
-		<NavBar />
-		{children}
-		<WhatsAppRedirection />
-		<Footer />
-		</body>
+			<NavBar />
+			{children}
+			<WhatsAppRedirection />
+			<Footer />
+			</body>
 		</html>
 	);
 }
