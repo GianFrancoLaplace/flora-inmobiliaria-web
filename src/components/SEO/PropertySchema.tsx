@@ -1,8 +1,8 @@
-import { PropertyTypes } from '@/types/property.types'
+import { PropertyWithImages } from '@/types/prisma'
 import {getBaseUrl} from "@/lib/baseURL";
 
 interface PropertySchemaProps {
-	property: PropertyTypes
+	property: PropertyWithImages
 }
 
 export function PropertySchema({ property }: PropertySchemaProps) {
@@ -11,16 +11,16 @@ export function PropertySchema({ property }: PropertySchemaProps) {
 		'@type': 'RealEstateListing',
 		name: `${property.type} en ${property.address}`,
 		description: property.description,
-		url: `${getBaseUrl()}/propiedades/ficha/${property.id}`,
+		url: `${getBaseUrl()}/${property.slug}`,
 
 		offers: {
 			'@type': 'Offer',
 			price: property.price,
 			priceCurrency: 'ARS',
-			availability: property.state === 'venta'
+			availability: property.category === 'venta'
 				? 'https://schema.org/InStock'
 				: 'https://schema.org/OutOfStock',
-			url: `${getBaseUrl()}/propiedades/ficha/${property.id}`,
+			url: `${getBaseUrl()}/${property.slug}`,
 		},
 
 		address: {
@@ -35,28 +35,28 @@ export function PropertySchema({ property }: PropertySchemaProps) {
 			image: property.images.map(img => img.url),
 		}),
 
-		// ...(property.characteristics. && {
-		// 	numberOfRooms: property.characteristics,
-		// }),
-		//
-		// ...(property.bathrooms && {
-		// 	numberOfBathroomsTotal: property.bathrooms,
-		// }),
-		//
-		// ...(property.surface && {
-		// 	floorSize: {
-		// 		'@type': 'QuantitativeValue',
-		// 		value: property.surface,
-		// 		unitCode: 'MTK' // metros cuadrados
-		// 	}
-		// }),
+		...(property.bedrooms && {
+			numberOfRooms: property.bedrooms,
+		}),
+
+		...(property.bathrooms && {
+			numberOfBathroomsTotal: property.bathrooms,
+		}),
+
+		...(property.surface && {
+			floorSize: {
+				'@type': 'QuantitativeValue',
+				value: property.surface,
+				unitCode: 'MTK' // metros cuadrados
+			}
+		}),
 
 		broker: {
 			'@type': 'RealEstateAgent',
 			name: 'Flora Cordeiro',
 			url: `${getBaseUrl()}/`,
-			telephone: '+54-XXX-XXXXXXX', // AGREGAR TELÉFONO REAL
-			email: "floracordeiroinmobiliaria@gmail.com", // AGREGAR EMAIL REAL
+			telephone: '+54-XXX-XXXXXXX', // TODO: AGREGAR TELÉFONO REAL
+			email: "floracordeiroinmobiliaria@gmail.com", // TODO: AGREGAR EMAIL REAL
 		}
 	}
 
