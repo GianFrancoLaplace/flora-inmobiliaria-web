@@ -262,7 +262,6 @@ export class PropertyService {
 				{ status: 200 }
 			);
 		} catch (error) {
-			// 3) Rollback Cloudinary de las recién subidas
 			if (uploaded.length > 0) {
 				await imageService.deleteMultiple(uploaded.map((u) => u.publicId));
 			}

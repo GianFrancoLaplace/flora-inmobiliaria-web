@@ -1,4 +1,3 @@
-import {CreatePropertyDto} from "@/types/property-api.types";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -10,7 +9,6 @@ import {PropertyService} from "@/services/property.service";
 import {ImageService} from "@/services/image.service";
 import {OperationEnum, PropertyTypeEnum} from "@/types/prisma";
 const propertyService = new PropertyService();
-const imageService = new ImageService();
 
 
 export async function PUT(
@@ -24,7 +22,6 @@ export async function PUT(
 
     const formData = await request.formData();
 
-    // 1) Property (mandás todo desde el front)
     const property: PropertyUpdateData = {
         address: String(formData.get("address") ?? ""),
         city: String(formData.get("city") ?? ""),
@@ -44,7 +41,6 @@ export async function PUT(
         floors: formData.get("floors") ? Number(formData.get("floors")) : undefined,
     };
 
-    // 2) JSON strings
     const existingImages = JSON.parse(String(formData.get("existingImages") ?? "[]")) as
         { id: number; position: number; isMain: boolean }[];
 
@@ -53,7 +49,6 @@ export async function PUT(
     const imageMetadata = JSON.parse(String(formData.get("imageMetadata") ?? "[]")) as
         { position: number; isMain: boolean }[];
 
-    // 3) Files nuevas
     const imageFiles = formData.getAll("images") as File[];
 
     if (imageFiles.length !== imageMetadata.length) {
@@ -63,7 +58,6 @@ export async function PUT(
         );
     }
 
-    // Delegá todo al service
     return await propertyService.PUT(propertyId, {
         property,
         existingImages,
