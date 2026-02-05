@@ -40,7 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const propertyRoutes = propertyIds.map((id) => ({
 		url: `${baseUrl}/propiedades/ficha/${id}`,
 		lastModified: new Date().toISOString(),
-		changeFrequency: 'daily' as const,
+		changeFrequency: 'monthly' as const,
 		priority: 0.9,
 	}))
 
