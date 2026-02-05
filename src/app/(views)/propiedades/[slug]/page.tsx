@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 	return {
 		title: `${property.type} en ${property.category} - ${property.address}`,
-		description: property.description.substring(0, 160) || "",
+		description: property.description?.substring(0, 160) || "",
 		openGraph: {
 			title: `${property.type} - $${property.price.toLocaleString("es-AR")}`,
 			description: property.description  || "",
