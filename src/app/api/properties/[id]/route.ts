@@ -3,9 +3,13 @@ export const revalidate = 0;
 
 import {NextRequest, NextResponse} from 'next/server';
 import {prisma} from '@/lib/prisma';
+<<<<<<< Updated upstream
 import {mapOperationToState, mapPropertyType} from '@/helpers/PropertyMapper';
 import {PropertyTypes, PropertyState, PropertyUpdateData} from '@/types/property.types';
 import {Characteristic} from "@/types/Characteristic";
+=======
+import {PropertyUpdateData, ImageMetadata, PropertyData} from '@/types/property.types';
+>>>>>>> Stashed changes
 import {PropertyService} from "@/services/property.service";
 import {getIconByCategory, mapPrismaCharacteristicCategory} from "@/helpers/IconMapper"
 const propertyService = new PropertyService();
@@ -23,6 +27,7 @@ export async function PUT(
 
 export async function GET(
     request: NextRequest,
+<<<<<<< Updated upstream
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
@@ -95,14 +100,29 @@ export async function GET(
         };
 
         return NextResponse.json(propiedadFormateada);
+=======
+    ctx: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await ctx.params;
+        const propertyId = Number(id);
+
+        if (!Number.isInteger(propertyId)) {
+            return NextResponse.json({ message: "ID inválido" }, { status: 400 });
+        }
+
+        return await propertyService.GET(propertyId);
+>>>>>>> Stashed changes
     } catch (error) {
-        console.error('Error al obtener la propiedad:', error);
+        console.error("Error al obtener la propiedad:", error);
         return NextResponse.json(
-            { message: 'Error al obtener la propiedad' },
+            { message: "Error al obtener la propiedad" },
             { status: 500 }
         );
     }
 }
+
+
 
 
 

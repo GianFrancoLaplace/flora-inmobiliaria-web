@@ -205,6 +205,7 @@ export class PropertyService {
 			}
 			const parsed = propertyUpdateSchema.safeParse(body);
 
+<<<<<<< Updated upstream
 			if (!parsed.success) {
 				return NextResponse.json(
 					{ message: "Datos inválidos", errors: parsed.error.flatten() },
@@ -242,10 +243,112 @@ export class PropertyService {
 			console.error("Error al actualizar la propiedad:", error);
 			return NextResponse.json(
 				{ message: "Error interno del servidor" },
+=======
+			const updatedProperty = await prisma.$transaction(async (tx) => {
+				const updated = await tx.property.update({
+					where: { idProperty: propertyId },
+					data: parsed.data,
+				});
+
+				if (deletedImageIds.length > 0) {
+					await tx.image.deleteMany({
+						where: { idImage: { in: deletedImageIds }, idProperty: propertyId },
+					});
+				}
+
+				await Promise.all(
+					existingImages.map((img) =>
+						tx.image.update({
+							where: { idImage: img.id },
+							data: { position: img.position, isMain: img.isMain },
+						})
+					)
+				);
+
+				if (uploaded.length > 0) {
+					await tx.image.createMany({
+						data: uploaded.map((u, i) => ({
+							url: u.url,
+							position: imageMetadata[i].position,
+							isMain: imageMetadata[i].isMain,
+							idProperty: propertyId,
+						})),
+					});
+				}
+
+				return updated;
+			});
+
+			return NextResponse.json(
+				{ message: "Propiedad actualizada", property: updatedProperty },
+				{ status: 200 }
+			);
+		} catch (error) {
+			if (uploaded.length > 0) {
+				await imageService.deleteMultiple(uploaded.map((u) => u.publicId));
+			}
+
+			console.error("PUT property failed:", error);
+			return NextResponse.json({ message: "Error interno" }, { status: 500 });
+		}
+	}
+
+
+
+	public async GET(id: number) {
+		try {
+			const property = await prisma.property.findUnique({
+				where: { idProperty: id },
+				include: {
+					images: {
+						orderBy: { position: "asc" },
+					},
+				},
+			});
+
+			if (!property) {
+				return NextResponse.json({ message: "property no encontrada" }, { status: 404 });
+			}
+
+			const propertyResponse: PropertyData = {
+				id: property.idProperty,
+				address: property.address,
+				city: property.city || "",
+				ubication: property.ubication || "",
+				price: property.price,
+				description: property.description || "",
+				type: property.type,
+				category: property.category,
+				surface: property.surface,
+				bedrooms: property.bedrooms || 0,
+				bathrooms: property.bathrooms || 0,
+				garage: property.garage || 0,
+				floors: property.floors || 0,
+				constructed_area: property.constructedArea || 0,
+
+				images: property.images.map((img) => ({
+					id: img.idImage,
+					url: img.url ?? "",
+					position: img.position,
+					isMain: img.isMain,
+				})),
+			};
+
+			return NextResponse.json(propertyResponse, { status: 200 });
+		} catch (error) {
+			console.error("Error al obtener la property:", error);
+			return NextResponse.json(
+				{ message: "Error al obtener la property" },
+>>>>>>> Stashed changes
 				{ status: 500 }
 			);
 		}
 	}
 
 
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
 }
