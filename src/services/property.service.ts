@@ -273,56 +273,55 @@ export class PropertyService {
 
 
 
-	public async GET(
-		id: number
-	) {
+	 async GET(id: number) {
 		try {
-
 			const property = await prisma.property.findUnique({
-				where: { idProperty : id  },
-				include: {
-					images: true,
+			where: { idProperty: id },
+			include: {
+				images: {
+				orderBy: { position: "asc" }, 
 				},
+			},
 			});
 
 			if (!property) {
-				return NextResponse.json(
-					{ message: 'property no encontrada' },
-					{ status: 404 }
-				);
+			return NextResponse.json({ message: "property no encontrada" }, { status: 404 });
 			}
 
 			const propertyResponse: PropertyData = {
-				id: property.idProperty,
-				address: property.address,
-				city: property.city || '',
-				ubication: property.ubication || '',
-				price: property.price,
-				description: property.description || '',
-				type: property.type,
-				category:property.category,
-				surface: property.surface,
-				bedrooms: property.bedrooms || 0,
-				bathrooms:property.bathrooms || 0,
-				garage: property.garage || 0,
-				floors: property.floors || 1,
-				constructed_area: property.constructedArea || 0,
-				images: property.images.map((img) => ({
-					id: img.idImage,
-					url: img.url !== null ? img.url : "",
-				})),
-				
+			id: property.idProperty,
+			address: property.address,
+			city: property.city || "",
+			ubication: property.ubication || "",
+			price: property.price,
+			description: property.description || "",
+			type: property.type,
+			category: property.category,
+			surface: property.surface,
+			bedrooms: property.bedrooms || 0,
+			bathrooms: property.bathrooms || 0,
+			garage: property.garage || 0,
+			floors: property.floors || 0,
+			constructed_area: property.constructedArea || 0,
+
+			images: property.images.map((img) => ({
+				id: img.idImage,
+				url: img.url ?? "",
+				position: img.position,     
+				isMain: img.isMain,         
+			})),
 			};
 
-			return NextResponse.json(propertyResponse);
+			return NextResponse.json(propertyResponse, { status: 200 });
 		} catch (error) {
-			console.error('Error al obtener la property:', error);
+			console.error("Error al obtener la property:", error);
 			return NextResponse.json(
-				{ message: 'Error al obtener la property' },
-				{ status: 500 }
+			{ message: "Error al obtener la property" },
+			{ status: 500 }
 			);
 		}
-	}
+}
+
 
 
 

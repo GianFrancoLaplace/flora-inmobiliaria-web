@@ -4,9 +4,8 @@ export const revalidate = 0;
 
 import {NextRequest, NextResponse} from 'next/server';
 import {prisma} from '@/lib/prisma';
-import {PropertyUpdateData, ImageMetadata} from '@/types/property.types';
+import {PropertyData, PropertyUpdateData} from '@/types/property.types';
 import {PropertyService} from "@/services/property.service";
-import {ImageService} from "@/services/image.service";
 import {OperationEnum, PropertyTypeEnum} from "@/types/prisma";
 const propertyService = new PropertyService();
 
@@ -68,22 +67,27 @@ export async function PUT(
 }
 
 export async function GET(
-    request: NextRequest,
-    { params }: { params: { id: string } }
+  request: NextRequest,
+  ctx: { params: Promise<{ id: string }> }
 ) {
-    try {
-        const { id } = params;
-        const propertyId = parseInt(id)
-        return await propertyService.GET(propertyId);
+  try {
+    const { id } = await ctx.params;
+    const propertyId = Number(id);
 
-    } catch (error) {
-        console.error('Error al obtener la propiedad:', error);
-        return NextResponse.json(
-            { message: 'Error al obtener la propiedad' },
-            { status: 500 }
-        );
+    if (!Number.isInteger(propertyId)) {
+      return NextResponse.json({ message: "ID inválido" }, { status: 400 });
     }
+
+    return await propertyService.GET(propertyId);
+  } catch (error) {
+    console.error("Error al obtener la propiedad:", error);
+    return NextResponse.json(
+      { message: "Error al obtener la propiedad" },
+      { status: 500 }
+    );
+  }
 }
+
 
 
 
