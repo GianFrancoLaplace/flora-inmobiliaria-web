@@ -1,127 +1,92 @@
+
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 import {NextRequest, NextResponse} from 'next/server';
 import {prisma} from '@/lib/prisma';
-<<<<<<< Updated upstream
-import {mapOperationToState, mapPropertyType} from '@/helpers/PropertyMapper';
-import {PropertyTypes, PropertyState, PropertyUpdateData} from '@/types/property.types';
-import {Characteristic} from "@/types/Characteristic";
-=======
-import {PropertyUpdateData, ImageMetadata, PropertyData} from '@/types/property.types';
->>>>>>> Stashed changes
+import {PropertyData, PropertyUpdateData} from '@/types/property.types';
 import {PropertyService} from "@/services/property.service";
-import {getIconByCategory, mapPrismaCharacteristicCategory} from "@/helpers/IconMapper"
+import {OperationEnum, PropertyTypeEnum} from "@/types/prisma";
 const propertyService = new PropertyService();
+
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    ctx: { params: Promise<{ id: string }> } // 👈 clave
 ) {
-    const { id } = params;
-    const propertyId = parseInt(id)
-    const body: PropertyUpdateData = await request.json();
+    const contentType = request.headers.get("content-type");
+    console.log("PUT /api/properties/[id] content-type:", contentType);
+    const { id } = await ctx.params;
+    const propertyId = Number(id);
 
-    return await propertyService.PUT(propertyId, body)
+    const formData = await request.formData();
+
+    const property: PropertyUpdateData = {
+        address: String(formData.get("address") ?? ""),
+        city: String(formData.get("city") ?? ""),
+        ubication: String(formData.get("ubication") ?? ""),
+        description: String(formData.get("description") ?? ""),
+        price: Number(formData.get("price")),
+        surface: Number(formData.get("surface")),
+        type: formData.get("type") as PropertyTypeEnum,
+        category: formData.get("category") as OperationEnum,
+
+        constructed_area: formData.get("constructedArea")
+            ? Number(formData.get("constructedArea"))
+            : undefined,
+        bedrooms: formData.get("bedrooms") ? Number(formData.get("bedrooms")) : undefined,
+        bathrooms: formData.get("bathrooms") ? Number(formData.get("bathrooms")) : undefined,
+        garage: formData.get("garage") ? Number(formData.get("garage")) : undefined,
+        floors: formData.get("floors") ? Number(formData.get("floors")) : undefined,
+    };
+
+    const existingImages = JSON.parse(String(formData.get("existingImages") ?? "[]")) as
+        { id: number; position: number; isMain: boolean }[];
+
+    const deletedImageIds = JSON.parse(String(formData.get("deletedImageIds") ?? "[]")) as number[];
+
+    const imageMetadata = JSON.parse(String(formData.get("imageMetadata") ?? "[]")) as
+        { position: number; isMain: boolean }[];
+
+    const imageFiles = formData.getAll("images") as File[];
+
+    if (imageFiles.length !== imageMetadata.length) {
+        return NextResponse.json(
+            { message: "images y imageMetadata no coinciden" },
+            { status: 400 }
+        );
+    }
+
+    return await propertyService.PUT(propertyId, {
+        property,
+        existingImages,
+        deletedImageIds,
+        imageFiles,
+        imageMetadata,
+    });
 }
 
 export async function GET(
-    request: NextRequest,
-<<<<<<< Updated upstream
-    { params }: { params: Promise<{ id: string }> }
+  request: NextRequest,
+  ctx: { params: Promise<{ id: string }> }
 ) {
-    try {
-        const { id } = await params;
-        const propertyId = parseInt(id);
+  try {
+    const { id } = await ctx.params;
+    const propertyId = Number(id);
 
-        const propiedad = await prisma.property.findUnique({
-            where: { idProperty : propertyId  },
-            include: {
-                characteristics: true,
-                images: true,
-            },
-        });
-
-        if (!propiedad) {
-            return NextResponse.json(
-                { message: 'Propiedad no encontrada' },
-                { status: 404 }
-            );
-        }
-
-        const propiedadFormateada: PropertyTypes = {
-            id: propiedad.idProperty,
-            address: propiedad.address || '',
-            city: '',
-            state: mapOperationToState(propiedad.category),
-            price: propiedad.price,
-            description: propiedad.description || '',
-            type: mapPropertyType(propiedad.type),
-            ubication: propiedad.ubication || '',
-            images: propiedad.images.map((img) => ({
-                id: img.idImage,
-                url: img.url !== null ? img.url : "",
-            })),
-
-            characteristics: propiedad.characteristics
-                .filter((c) => {
-                    const isIntegerValid =
-                        c.dataType === 'integer' &&
-                        c.valueInteger !== null &&
-                        c.valueInteger !== 0;
-                    const isTextValid =
-                        c.dataType === 'text' &&
-                        c.valueText &&
-                        c.valueText.trim() !== '';
-                    return isIntegerValid || isTextValid;
-                })
-                .map((c): Characteristic => {
-                    const mappedCategory = mapPrismaCharacteristicCategory(c.category);
-                    const iconUrl = getIconByCategory(mappedCategory);
-
-                    return {
-                        id: c.idCharacteristic,
-                        characteristic: c.characteristic,
-                        data_type: c.dataType === 'integer' ? 'integer' : 'text',
-                        value_integer:
-                            c.dataType === 'integer' && c.valueInteger !== null
-                                ? c.valueInteger
-                                : undefined,
-                        value_text:
-                            c.dataType === 'text' &&
-                            c.valueText &&
-                            c.valueText.trim() !== ''
-                                ? c.valueText.trim()
-                                : undefined,
-                        category: mappedCategory,
-                        iconUrl: iconUrl,
-                    };
-                }),
-        };
-
-        return NextResponse.json(propiedadFormateada);
-=======
-    ctx: { params: Promise<{ id: string }> }
-) {
-    try {
-        const { id } = await ctx.params;
-        const propertyId = Number(id);
-
-        if (!Number.isInteger(propertyId)) {
-            return NextResponse.json({ message: "ID inválido" }, { status: 400 });
-        }
-
-        return await propertyService.GET(propertyId);
->>>>>>> Stashed changes
-    } catch (error) {
-        console.error("Error al obtener la propiedad:", error);
-        return NextResponse.json(
-            { message: "Error al obtener la propiedad" },
-            { status: 500 }
-        );
+    if (!Number.isInteger(propertyId)) {
+      return NextResponse.json({ message: "ID inválido" }, { status: 400 });
     }
-}
 
+    return await propertyService.GET(propertyId);
+  } catch (error) {
+    console.error("Error al obtener la propiedad:", error);
+    return NextResponse.json(
+      { message: "Error al obtener la propiedad" },
+      { status: 500 }
+    );
+  }
+}
 
 
 

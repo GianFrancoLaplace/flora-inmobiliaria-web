@@ -1,4 +1,5 @@
 import { Characteristic } from "@/types/Characteristic";
+import {PropertyTypeEnum , OperationEnum} from "@/types/prisma";
 
 export type User = {
     id_admin: number;
@@ -20,20 +21,21 @@ export interface PropertyTypes {
 }
 
 export interface PropertyData {
-	type: 'house' | 'apartment' | 'land' | '';
-	category: 'sale' | 'rent';
-	price: number;
-	surface: number;
-	constructedArea?: number;
-	bedrooms?: number;
-	bathrooms?: number;
-	floors?: number;
-	garage?: number;
+	id: number;
 	address: string;
-	city?: string;
-	ubication?: string;
+	city: string;
+	ubication: string;
+	price: number;
 	description: string;
-	images: File[];
+	type: PropertyTypeEnum;
+	category:OperationEnum;
+	surface: number;
+	bedrooms: number;
+	bathrooms: number;
+	garage: number;
+	floors: number;
+	constructed_area: number;
+	images: { id: number; url: string }[];
 }
 
 export interface PropertyFormProps {
@@ -48,21 +50,6 @@ export interface PropertyFormProps {
  * DTO para crear una propiedad (sin imágenes)
  * Representa los datos de texto del formulario
  */
-export interface CreatePropertyDTO {
-	address: string;
-	city: string;
-	state: PropertyState;
-	price: number;
-	description: string;
-	surface: number;
-	ubication: string;
-	type: PropertyType;
-	garage?: number;
-	bedrooms?: number;
-	bathrooms?: number;
-	floors?: number
-	constructedArea?: number;
-}
 
 /**
  * Metadata de posicionamiento de imagen enviada por el cliente
@@ -79,8 +66,8 @@ export interface PropertyUpdateData {
     ubication?: string;
     price?: number;
     description?: string;
-    type?: PropertyType;
-    category?:PropertyState;
+    type?: PropertyTypeEnum;
+    category?:OperationEnum;
     surface?: number;
     bedrooms?: number;
     bathrooms?: number;

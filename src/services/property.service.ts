@@ -1,5 +1,5 @@
 import {
-	ImageMetadata,
+	ImageMetadata, PropertyData,
 	PropertyState,
 	PropertyType,
 	PropertyTypes, PropertyUpdateData
@@ -19,12 +19,19 @@ import { crearSlug } from "@/lib/generateSlug"
 import {ImageService} from "@/services/image.service";
 import {OperationEnum, PropertyTypeEnum} from "@prisma/client"
 import {CloudinaryResult} from "@/types/cloudinary.types";
-import {stateMap, typeMap} from "@/helpers/PropertyMapper";
+import { stateMap, typeMap} from "@/helpers/PropertyMapper";
 import {imageMetadataArraySchema} from "@/validations/property.schema";
 import {NextResponse} from "next/server";
-import {PropertyUpdateDataValidated, propertyUpdateSchema} from "@/validations/property";
+import { propertyUpdateSchema} from "@/validations/property";
+import type { ExistingImage } from "@/types/image.types";
 
-
+type PutPayload = {
+	property: PropertyUpdateData;
+	existingImages: Pick<ExistingImage, "id" | "position" | "isMain">[];
+	deletedImageIds: number[];
+	imageFiles: File[];
+	imageMetadata: ImageMetadata[];
+};
 
 export class PropertyService {
 
@@ -71,7 +78,7 @@ export class PropertyService {
 					data: {
 						address: validatedProperty.address,
 						city: validatedProperty.city,
-						category: validatedProperty.category as OperationEnum, // ojo: state → category
+						category: validatedProperty.category as OperationEnum,
 						price: validatedProperty.price,
 						description: validatedProperty.description,
 						ubication: validatedProperty.ubication,
@@ -157,7 +164,7 @@ export class PropertyService {
 	}
 
 	/**
-	 * Convierte propiedades de Prisma al formato de la aplicación
+	 * Convierte propertyes de Prisma al formato de la aplicación
 	 */
 	private mapToPropertyTypes(properties: any[]): PropertyTypes[] {
 		return properties.map((p): PropertyTypes => {
@@ -195,55 +202,26 @@ export class PropertyService {
 		});
 	}
 
-	 public async PUT(
-			id: number,
-			body:PropertyUpdateData
-		) {
-		try {
-			if (isNaN(id)) {
-				return NextResponse.json({ message: 'ID de propiedad inválido' }, { status: 400 });
-			}
-			const parsed = propertyUpdateSchema.safeParse(body);
+	async PUT(propertyId: number, payload: PutPayload) {
+		const { property, existingImages, deletedImageIds, imageFiles, imageMetadata } = payload;
 
-<<<<<<< Updated upstream
-			if (!parsed.success) {
-				return NextResponse.json(
-					{ message: "Datos inválidos", errors: parsed.error.flatten() },
-					{ status: 422 }
-				);
-			}
-
-			const existingProperty = await prisma.property.findUnique({
-				where: { idProperty: id },
-			});
-
-			if (!existingProperty) {
-				return NextResponse.json({ message: "Propiedad no encontrada" }, { status: 404 });
-			}
-
-			const updateData: PropertyUpdateDataValidated = parsed.data;
-			if (Object.keys(updateData).length === 0) {
-				return NextResponse.json(
-					{ message: "Debes enviar al menos un campo para actualizar" },
-					{ status: 400 }
-				);
-			}
-
-
-			const updatedProperty = await prisma.property.update({
-				where: { idProperty: id },
-				data: updateData,
-			});
-
-			return NextResponse.json({
-				message: "Propiedad actualizada exitosamente",
-				property: updatedProperty,
-			});
-		} catch (error) {
-			console.error("Error al actualizar la propiedad:", error);
+		const parsed = propertyUpdateSchema.safeParse(property);
+		if (!parsed.success) {
 			return NextResponse.json(
-				{ message: "Error interno del servidor" },
-=======
+				{ message: "Datos inválidos", errors: parsed.error.flatten() },
+				{ status: 422 }
+			);
+		}
+
+		const imageService = new ImageService();
+
+		let uploaded: { url: string; publicId: string }[] = [];
+
+		try {
+			if (imageFiles.length > 0) {
+				uploaded = await imageService.uploadMultiple(imageFiles, propertyId, imageMetadata);
+			}
+
 			const updatedProperty = await prisma.$transaction(async (tx) => {
 				const updated = await tx.property.update({
 					where: { idProperty: propertyId },
@@ -295,60 +273,56 @@ export class PropertyService {
 
 
 
-	public async GET(id: number) {
+	 async GET(id: number) {
 		try {
 			const property = await prisma.property.findUnique({
-				where: { idProperty: id },
-				include: {
-					images: {
-						orderBy: { position: "asc" },
-					},
+			where: { idProperty: id },
+			include: {
+				images: {
+				orderBy: { position: "asc" }, 
 				},
+			},
 			});
 
 			if (!property) {
-				return NextResponse.json({ message: "property no encontrada" }, { status: 404 });
+			return NextResponse.json({ message: "property no encontrada" }, { status: 404 });
 			}
 
 			const propertyResponse: PropertyData = {
-				id: property.idProperty,
-				address: property.address,
-				city: property.city || "",
-				ubication: property.ubication || "",
-				price: property.price,
-				description: property.description || "",
-				type: property.type,
-				category: property.category,
-				surface: property.surface,
-				bedrooms: property.bedrooms || 0,
-				bathrooms: property.bathrooms || 0,
-				garage: property.garage || 0,
-				floors: property.floors || 0,
-				constructed_area: property.constructedArea || 0,
+			id: property.idProperty,
+			address: property.address,
+			city: property.city || "",
+			ubication: property.ubication || "",
+			price: property.price,
+			description: property.description || "",
+			type: property.type,
+			category: property.category,
+			surface: property.surface,
+			bedrooms: property.bedrooms || 0,
+			bathrooms: property.bathrooms || 0,
+			garage: property.garage || 0,
+			floors: property.floors || 0,
+			constructed_area: property.constructedArea || 0,
 
-				images: property.images.map((img) => ({
-					id: img.idImage,
-					url: img.url ?? "",
-					position: img.position,
-					isMain: img.isMain,
-				})),
+			images: property.images.map((img) => ({
+				id: img.idImage,
+				url: img.url ?? "",
+				position: img.position,     
+				isMain: img.isMain,         
+			})),
 			};
 
 			return NextResponse.json(propertyResponse, { status: 200 });
 		} catch (error) {
 			console.error("Error al obtener la property:", error);
 			return NextResponse.json(
-				{ message: "Error al obtener la property" },
->>>>>>> Stashed changes
-				{ status: 500 }
+			{ message: "Error al obtener la property" },
+			{ status: 500 }
 			);
 		}
-	}
+}
 
 
-<<<<<<< Updated upstream
-=======
 
 
->>>>>>> Stashed changes
 }
