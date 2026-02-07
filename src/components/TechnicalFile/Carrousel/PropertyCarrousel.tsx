@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import styles from './PropertyView.module.css';
+import styles from './CarrouselFotos.module.css';
 import type { ImageDbModel } from '@/types/prisma';
 
 type PropertyCarouselProps = {

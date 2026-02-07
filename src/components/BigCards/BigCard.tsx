@@ -35,7 +35,7 @@ export default function BigCard({slug, imageSrc, price, transaction, adress, cit
         <main className={`${styles.page} ${cactus.className}`} style={{position: 'relative'}}>
             {showLabel && <div className={styles.addedLabel}>{transaction.toUpperCase()}</div>}
 
-            <Link href={`/${slug}`}>
+            <Link href={`/propiedades/${slug}`}>
                 <Image
                     src={imageSrc}
                     alt={'imagen propiedad'}

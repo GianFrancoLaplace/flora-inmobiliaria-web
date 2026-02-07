@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import styles from './PropertyView.module.css';
+import styles from './TechnicalSheet.module.css';
 import { cactus } from "@/app/(views)/ui/fonts";
 import ContactInformation from "@/components/features/ContactInformation/ContactInformation";
 import PropertyCarousel from './Carrousel/PropertyCarrousel';

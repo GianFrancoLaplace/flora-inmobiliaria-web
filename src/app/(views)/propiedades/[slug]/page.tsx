@@ -1,11 +1,9 @@
-// src/app/(views)/propiedades/[slug]/page.tsx
-import Image from 'next/image';
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { getBaseUrl } from "@/lib/baseURL";
-import PropertyView from '@/components/PropertyView/PropertyView';
 import { PropertySchema } from "@/components/SEO/PropertySchema";
+import TechnicalSheet from "@/components/TechnicalFile/TechnicalSheet";
 
 type PageProps = {
 	params: Promise<{ slug: string }>;
@@ -70,7 +68,7 @@ export default async function PropertyPage({ params }: PageProps) {
 	return (
 		<main>
 			<PropertySchema property={property} />
-			<PropertyView property={property} />
+			<TechnicalSheet property={property} />
 		</main>
 	);
 }

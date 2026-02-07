@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import styles from './PropertyView.module.css';
+import styles from './TechnicalSheet.module.css';
 
 type PropertyItemProps = {
 	imgSrc: string;

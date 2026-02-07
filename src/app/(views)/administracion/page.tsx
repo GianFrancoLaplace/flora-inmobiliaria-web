@@ -1,55 +1,48 @@
-// app/(views)/administracion/page.tsx
-
-"use client";
-import { Suspense } from 'react'; // 1. Asegúrate de importar Suspense
+import { PropertyService } from '@/services/property.service';
 import Admns from '@/components/Administracion/Administration';
 import ContactInformation from '@/components/features/ContactInformation/ContactInformation';
 import '../ui/fonts';
 import styles from './adminStyles.module.css';
 import UnifiedFilter from '@/components/FilterPropertiesAdmin/UnifiedFilter';
-import { useUnifiedFilter } from '@/hooks/GetProperties';
+import { PropertyTypeEnum, OperationEnum } from '@/types/prisma';
 
+type PageProps = {
+	searchParams: Promise<{
+		tipo?: string;
+		operacion?: string;
+		maxValue?: string;
+	}>;
+};
 
-function AdminPageContent() {
-  const { maxValue, handleMaxValueChange } = useUnifiedFilter();
+export default async function AdminPage({ searchParams }: PageProps) {
+	const params = await searchParams;
 
-  const filtrosTipoTransaccion = ["Quiero comprar", "Quiero alquilar"];
-  const filtrosTipoPropiedad = ["Casas", "Departamentos", "Locales", "Lotes", "Campos"];
+	const propertyService = new PropertyService();
 
-  return (
-      <>
-        <main>
-          <ContactInformation />
-        </main>
-        <br />
-        <div>
-          <div className={styles.propertiesLayoutFilter}>
-            <div className={styles.propertiesLayoutFilters}>
-              <UnifiedFilter
-                  maxValue={maxValue}
-                  onMaxValueChange={handleMaxValueChange}
-                  filtrosOperacion={filtrosTipoTransaccion}
-                  filtrosPropiedad={filtrosTipoPropiedad}
-              />
-            </div>
+	const filters = {
+		types: params.tipo?.split(',').filter(Boolean) as PropertyTypeEnum[] | undefined,
+		operations: params.operacion?.split(',').filter(Boolean) as OperationEnum[] | undefined,
+		maxPrice: params.maxValue ? Number(params.maxValue) : undefined,
+	};
 
-            <div className={styles.containerContentRight}>
-              <Admns />
-            </div>
-          </div>
-        </div>
-      </>
-  );
-}
+	const properties = await propertyService.findMany(filters);
 
+	return (
+		<div className={styles.container}>
+			<main>
+				<ContactInformation />
+			</main>
+			<br/>
 
-export default function FichaPropiedad() {
-  return (
-      <div className={styles.container}>
-
-        <Suspense fallback={<div>Cargando panel de administración...</div>}>
-          <AdminPageContent />
-        </Suspense>
-      </div>
-  );
+			<div>
+				<div className={styles.propertiesLayoutFilter}>
+					<div className={styles.propertiesLayoutFilters}>
+						<UnifiedFilter
+						/>
+						<Admns properties={properties} />
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 }
