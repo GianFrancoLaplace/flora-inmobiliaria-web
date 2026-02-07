@@ -1,11 +1,11 @@
 import Image from "next/image";
 import styles from './SmallCard.module.css';
 import Link from "next/link";
-import {PropertyTypes, PropertyState} from "@/types/property.types";
+import {PropertyTypeEnum, OperationEnum, PropertyWithImages} from "@/types/prisma";
 
 type Props = {
     imageSrc: string;
-    property: PropertyTypes;
+    property: PropertyWithImages;
     rooms: number;
     dorms: number;
     bathrooms: number;
@@ -14,22 +14,24 @@ type Props = {
 
 export default function SmallCard({imageSrc, property, rooms, dorms, bathrooms}:Props){
 
-	const showLabel = Object.values(PropertyState).includes(property.state)
+	const showLabel =
+		property.category === 'venta' ||
+		property.category === 'alquiler';
 
     return (
         <main className={styles.card}>
-            {showLabel && <div className={styles.addedLabel}>{property.state}</div>}
+            {showLabel && <div className={styles.addedLabel}>{property.category.toUpperCase()}</div>}
             <Link href={`/propiedades/ficha/${property.slug}`}>
                 <Image
                     src={imageSrc}
-                    alt={`Imagen de la propiedad en ${property.state}`}
+                    alt={`Imagen de la propiedad en ${property.category}`}
                     fill
                     className={styles.cardImage}
                 />
             </Link>
             <div className={styles.cardOverlay}>
                 <h3 className={styles['cardPriceStatus']}>
-                    USD {property.price} | {property.state}
+                    USD {property.price} | {property.category.toUpperCase()}
                 </h3>
                 <h5 className={styles.cardAddress}>
                     {property.address}, {property.city}

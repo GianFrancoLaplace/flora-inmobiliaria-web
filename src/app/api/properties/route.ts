@@ -6,56 +6,10 @@ export const revalidate = 0;
 import {ZodError} from "zod";
 import {PropertyService} from "@/services/property.service";
 import { NextRequest, NextResponse } from 'next/server';
-import {
-	PropertyState,
-	PropertyType,
-
-} from '@/types/property.types';
 import { ImageMetadata } from '@/types/image.types'
 import { CreatePropertyDto } from "@/types/property-api.types";
 
 const propertyService = new PropertyService();
-
-/**
- * GET /api/properties
- * Soporta filtros: tipo, operacion, minValue, maxValue
- */
-
-export async function GET(request: Request) {
-	try {
-		const { searchParams } = new URL(request.url);
-
-		// Parsear filtros del query string
-		const types = searchParams.get('tipo')
-			?.split(',')
-			.filter(Boolean) as PropertyType[] | undefined;
-
-		const operations = searchParams.get('operacion')
-			?.split(',')
-			.filter(Boolean) as PropertyState[] | undefined;
-
-		const minValue = searchParams.get('minValue');
-		const maxValue = searchParams.get('maxValue');
-
-		// Construir objeto de filtros
-		const filters = {
-			types,
-			operations,
-			minPrice: minValue ? Number(minValue) : undefined,
-			maxPrice: maxValue ? Number(maxValue) : undefined,
-		};
-
-		const properties = await propertyService.findMany(filters);
-
-		return NextResponse.json(properties);
-	} catch (error) {
-		console.error('Error en GET /api/properties:', error);
-		return NextResponse.json(
-			{ error: 'Error al obtener propiedades' },
-			{ status: 500 }
-		);
-	}
-}
 
 export async function POST(request: NextRequest) {
   try {

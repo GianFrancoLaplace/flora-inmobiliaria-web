@@ -1,9 +1,8 @@
-import {PropertyState, PropertyType} from "@/types/property.types";
 import {OperationEnum, PropertyTypeEnum} from "@prisma/client";
 
 export interface PropertyFilters {
-	types?: PropertyType[];
-	operations?: PropertyState[];
+	types?: PropertyTypeEnum[];
+	operations?: OperationEnum[];
 	minPrice?: number;
 	maxPrice?: number;
 }

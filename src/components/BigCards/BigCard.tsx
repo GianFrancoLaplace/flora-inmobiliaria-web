@@ -17,14 +17,9 @@ type Props = {
 };
 
 export default function BigCard({slug, imageSrc, price, transaction, adress, city, rooms, dorms, bathrooms}: Props) {
-    const showLabel =
-        transaction === "VENDIDA" ||
-        transaction === "ALQUILADA" ||
-        transaction === "Alquilada" ||
-        transaction === "alquilada" ||
-        transaction === "Vendida" ||
-        transaction === "vendida"
-    ;
+	const showLabel =
+		transaction === 'venta' ||
+		transaction === 'alquiler'
 
 	let parts = [];
 

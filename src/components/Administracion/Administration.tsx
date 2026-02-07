@@ -1,27 +1,23 @@
 "use client"
+
 import styles from "./Administration.module.css";
 import { cactus } from "@/app/(views)/ui/fonts";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { useUnifiedFilter } from "@/hooks/GetProperties";
 import { DeleteProperty } from "@/hooks/DeleteProperty";
 import { useRouter } from "next/navigation";
+import { PropertyWithImages } from "@/types/prisma";
 
-export default function Administration() {
+type Props = {
+	properties: PropertyWithImages[];
+};
+
+export default function Administration({ properties }: Props) {
     const router = useRouter();
 
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [propertyToDelete, setPropertyToDelete] = useState<any>(null);
-
-    const {
-        properties,
-        loading,
-        error,
-        formatPrice,
-        formatCharacteristics,
-        refetchProperties,
-    } = useUnifiedFilter();
 
     const {
         deleteProperty,
@@ -44,7 +40,7 @@ export default function Administration() {
         try {
             const response = await deleteProperty(propertyToDelete.id);
             if (response) {
-                await refetchProperties();
+                router.refresh();
                 setShowConfirmModal(false);
                 setPropertyToDelete(null);
             } else {
@@ -55,23 +51,10 @@ export default function Administration() {
         }
     };
 
-	if (loading) {
-		return (
-			<div className={`${styles.statusContainer} ${styles.statusContainerLoading}`}>
-				<h3>Cargando propiedades...</h3>
-			</div>
-		);
-	}
+	const formatPrice = (price: number) =>
+		`USD ${price.toLocaleString('es-AR')}`;
 
-	if (error) {
-		return (
-			<div className={`${styles.statusContainer} ${styles.statusContainerError}`}>
-				<h4>Error al cargar las propiedades: {error}</h4>
-			</div>
-		);
-	}
-
-    return (
+	return (
         <div>
             <div className={`${styles.sectionProperties} ${cactus.className}`}>
                 <div>
@@ -95,7 +78,7 @@ export default function Administration() {
 		        </div>
 	        ) : (
                 properties.map((prop) => (
-                    <div key={prop.id} className={`${styles.cardsProperties} ${cactus.className}`}>
+                    <div key={prop.idProperty} className={`${styles.cardsProperties} ${cactus.className}`}>
                         <div className={`${styles.cardProperties} ${cactus.className}`}>
                             <div className={`${styles.imageProperties} ${cactus.className}`}>
                                 <Image
@@ -106,7 +89,7 @@ export default function Administration() {
                                 />
                             </div>
 
-                            <Link href={`/propiedades/ficha/${prop.id}`} className={styles.linkProperties}>
+                            <Link href={`/propiedades/ficha/${prop.slug}`} className={styles.linkProperties}>
                                 <div className={`${styles.infoProperties} ${cactus.className}`}>
                                     <div className={styles.priceProperties}>
                                         <h2>{formatPrice(prop.price)}</h2>
@@ -122,7 +105,7 @@ export default function Administration() {
                                 <button
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        router.push(`/administracion/ficha/${prop.id}?mode=edit`);
+                                        router.push(`/administracion/ficha/${prop.slug}?mode=edit`);
                                     }}
                                     type="button"
                                 >
