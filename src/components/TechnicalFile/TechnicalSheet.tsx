@@ -10,13 +10,8 @@ type PropertyViewProps = {
 	property: PropertyWithImages;
 };
 
-/**
- * FUNDAMENTO: Componente de presentación puro (presentational component)
- * Recibe data, renderiza UI, zero lógica de negocio
- * Es como Vision después de que Thanos le arranca la gema - solo forma sin poder, pero hermosa forma
- */
-export default function PropertyView({ property }: PropertyViewProps) {
-	// Mapeo de tipos de enum a labels legibles
+
+export default function TechnicalSheet({ property }: PropertyViewProps) {
 	const operationLabels = {
 		alquiler: 'Alquiler',
 		venta: 'Venta',
