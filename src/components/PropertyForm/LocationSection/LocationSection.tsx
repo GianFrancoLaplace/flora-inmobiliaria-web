@@ -208,7 +208,6 @@ export default function LocationSection({ formData, onChange, errors }: Location
 						onChange={(e) => onChange('city', e.target.value)}
 						className={styles.input}
 					/>
-					<p className={styles.hint}>Ayuda a precisar la ubicación</p>
 				</div>
 
 				{/* Coordenadas (hidden input para el form) */}
