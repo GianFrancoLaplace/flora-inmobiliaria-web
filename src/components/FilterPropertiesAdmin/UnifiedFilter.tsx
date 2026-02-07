@@ -5,6 +5,7 @@ import { PropertyTypeEnum, OperationEnum } from '@/types/prisma';
 import FiltroToggle from '../FilterButtons/FilterButtons';
 import styles from './filterPropAdmin.module.css';
 import { useState } from 'react';
+import {useDebouncedCallback} from "use-debounce";
 
 const UnifiedFilter: React.FC = () => {
 	const router = useRouter();
@@ -66,20 +67,20 @@ const UnifiedFilter: React.FC = () => {
 			params.delete(paramKey);
 		}
 
-		router.push(`${pathname}?${params.toString()}`);
+		router.replace(`${pathname}?${params.toString()}`);
 	};
 
-	const handleMaxValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleMaxValueChange = useDebouncedCallback((value: string) => {
 		const params = new URLSearchParams(searchParams.toString());
 
-		if (e.target.value && e.target.value.trim() !== '') {
-			params.set('maxValue', e.target.value);
+		if (value && value.trim() !== '') {
+			params.set('maxValue', value);
 		} else {
 			params.delete('maxValue');
 		}
 
-		router.push(`${pathname}?${params.toString()}`);
-	};
+		router.replace(`${pathname}?${params.toString()}`);
+	}, 300);
 
 	const filtrosOperacion = Object.keys(operacionLabels);
 	const filtrosPropiedad = Object.keys(propiedadLabels);
@@ -109,7 +110,7 @@ const UnifiedFilter: React.FC = () => {
 							className={styles.maxValueInput}
 							placeholder="Escribe el valor máximo"
 							defaultValue={searchParams.get('maxValue') || ''}
-							onChange={handleMaxValueChange}
+							onChange={(e) => handleMaxValueChange(e.target.value)}
 							min="0"
 						/>
 						<button className={styles.searchButton} type="button">

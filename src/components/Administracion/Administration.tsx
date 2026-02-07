@@ -17,7 +17,7 @@ export default function Administration({ properties }: Props) {
     const router = useRouter();
 
     const [showConfirmModal, setShowConfirmModal] = useState(false);
-    const [propertyToDelete, setPropertyToDelete] = useState<any>(null);
+	const [propertyToDelete, setPropertyToDelete] = useState<PropertyWithImages | null>(null);
 
     const {
         deleteProperty,
@@ -38,7 +38,7 @@ export default function Administration({ properties }: Props) {
     const handleConfirmDelete = async () => {
         if (!propertyToDelete) return;
         try {
-            const response = await deleteProperty(propertyToDelete.id);
+            const response = await deleteProperty(propertyToDelete.idProperty);
             if (response) {
                 router.refresh();
                 setShowConfirmModal(false);

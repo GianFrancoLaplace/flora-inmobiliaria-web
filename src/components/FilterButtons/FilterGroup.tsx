@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import FiltroToggle from './FilterButtons';
 import styles from './FilterButtons.module.css';
-import { useRouter, useSearchParams } from 'next/navigation';
+import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 
 interface Props {
   title: string;
@@ -13,7 +13,9 @@ interface Props {
 const FilterGroup: React.FC<Props> = ({ title, filters }) => {
   const [activos, setActivos] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const normalizeForAPI = (value: string): string => {
@@ -42,9 +44,8 @@ const FilterGroup: React.FC<Props> = ({ title, filters }) => {
     } else {
       params.delete('tipo');
     }
-    
-    const newUrl = `${window.location.pathname}?${params.toString()}`;
-    window.history.replaceState(null, '', newUrl);
+
+	router.replace(`${pathname}?${params.toString()}`);
   };
 
   return (
