@@ -1,7 +1,5 @@
-
 import { notFound } from 'next/navigation';
 import TechnicalSheet from '@/components/TechnicalFile/TechnicalSheet';
-import {getPropertyById} from '@/hooks/getPropertyById';
 type Mode = 'view' | 'edit' | 'create';
 
 type PageProps = {
