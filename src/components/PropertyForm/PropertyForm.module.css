@@ -164,3 +164,32 @@
         width: 100%;
     }
 }
+
+.successContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    padding: 2rem;
+}
+
+.successCard {
+    text-align: center;
+    background: white;
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-top: 5px solid #4caf50; /* Verde éxito */
+}
+
+.successIcon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.redirectText {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    font-style: italic;
+}

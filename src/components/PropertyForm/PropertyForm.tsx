@@ -1,6 +1,6 @@
 'use client';
 
-import {FormEvent, useEffect, useState} from 'react';
+import {FormEvent, useState} from 'react';
 import styles from './PropertyForm.module.css';
 import DescriptionSection from "@/components/PropertyForm/DescriptionSection/DescriptionSection";
 import LocationSection from "@/components/PropertyForm/LocationSection/LocationSection";
@@ -10,9 +10,10 @@ import MediaSection from "@/components/PropertyForm/MediaSection/MediaSection";
 import {FormMode, PropertyFormInput, PropertyFormProps} from "@/types/property-form.types";
 import {createPropertySchema} from "@/validations/property.schema";
 import {usePropertySubmit} from "@/hooks/usePropertySubmit";
-import {PropertyTypeEnum} from "@prisma/client";
-import {OperationEnum} from "@/types/prisma";
 import {ImageItem} from "@/types/image.types";
+import { useRouter } from 'next/navigation';
+import {getBaseUrl} from "@/lib/baseURL";
+import {CheckIcon} from "lucide-react";
 
 export default function PropertyForm({
 	                                     mode,
@@ -55,6 +56,9 @@ export default function PropertyForm({
 	const { submit } = usePropertySubmit()
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [isSuccess, setIsSuccess] = useState(false);
+
+	const router = useRouter();
 
 	const handleChange = (field: string, value: any) => {
 		setFormData(prev => ({...prev, [field]: value}));
@@ -140,6 +144,15 @@ export default function PropertyForm({
 			} else {
 				await submitEdit();
 			}
+
+			setIsSuccess(true);
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+
+			// Redirigir después de 2 segundos a la lista de propiedades o al detalle
+			setTimeout(() => {
+				router.replace(getBaseUrl() + '/administracion');
+				router.refresh();
+			}, 2000);
 		} catch (error) {
 			console.error('Error al guardar:', error);
 			setErrors({ submit: 'Hubo un error al guardar la propiedad' });
@@ -161,6 +174,19 @@ export default function PropertyForm({
 	};
 
 	const hasErrors = Object.keys(errors).length > 0;
+
+	if (isSuccess) {
+		return (
+			<div className={styles.successContainer}>
+				<div className={styles.successCard}>
+					<div className={styles.successIcon}>  <CheckIcon /></div>
+					<h2>¡Operación exitosa!</h2>
+					<p>La propiedad ha sido {mode === FormMode.CREATE ? 'creada' : 'actualizada'} correctamente.</p>
+					<p className={styles.redirectText}>Redirigiendo al panel...</p>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className={styles.formContainer}>
