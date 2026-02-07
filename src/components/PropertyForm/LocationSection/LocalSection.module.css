@@ -1,3 +1,4 @@
+/* LocalSection.module.css */
 .section {
     background-color: var(--secondary-color-1);
     border: 1px solid var(--border-color);
@@ -13,12 +14,6 @@
     margin-bottom: var(--20px);
     padding-bottom: var(--15px);
     border-bottom: 2px solid var(--secondary-color-3);
-}
-
-.content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--25px);
 }
 
 .grid {
@@ -73,25 +68,39 @@
     box-shadow: 0 0 0 3px var(--secondary-color-2);
 }
 
-.inputReadonly {
+.inputError {
     composes: input;
-    background-color: var(--primary-color-2);
-    color: var(--primary-color-3);
-    cursor: not-allowed;
+    border-color: var(--error-color);
+}
+
+.error {
+    font-size: var(--h6-size);
+    color: var(--error-color);
+    margin-top: 0.25rem;
 }
 
 .hint {
     font-size: var(--h6-size);
     color: var(--secondary-text-color);
+    margin: 0;
 }
 
-/* Mapa */
+/* ==================== MAPA ==================== */
+
 .mapContainer {
+    position: relative;
     width: 100%;
     height: 400px;
     border-radius: var(--radius-md);
     overflow: hidden;
     border: 1px solid var(--border-color);
+    background-color: var(--primary-color-1);
+}
+
+@media (max-width: 768px) {
+    .mapContainer {
+        height: 300px;
+    }
 }
 
 .mapPlaceholder {
@@ -103,36 +112,153 @@
     justify-content: center;
     background: linear-gradient(135deg, var(--primary-color-1) 0%, var(--secondary-color-2) 100%);
     gap: var(--15px);
+    padding: var(--20px);
 }
 
 .mapIcon {
     width: 64px;
     height: 64px;
     color: var(--primary-color-4);
+    stroke-width: 1.5;
+}
+
+@media (max-width: 768px) {
+    .mapIcon {
+        width: 48px;
+        height: 48px;
+    }
 }
 
 .mapText {
     font-size: var(--h5-size);
     font-weight: var(--font-weight-medium);
     color: var(--primary-color-4);
+    text-align: center;
+    margin: 0;
+    max-width: 300px;
+}
+
+@media (max-width: 768px) {
+    .mapText {
+        font-size: var(--h6-size);
+    }
+}
+
+/* Indicador de actualización */
+.mapUpdating {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 1000;
+    background: var(--background-color);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--h6-size);
+    color: var(--primary-text-color);
+    font-weight: var(--font-weight-medium);
+}
+
+@media (max-width: 768px) {
+    .mapUpdating {
+        top: 8px;
+        right: 8px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+    }
+}
+
+.spinnerIcon {
+    width: 16px;
+    height: 16px;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.mapFading {
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+/* Info del mapa */
+.mapInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
 }
 
 .mapHint {
-    font-size: var(--h6-size);
-    color: var(--primary-color-3);
-}
-
-/* Coordenadas */
-.coordinatesGroup {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--15px);
-    padding: var(--15px);
-    background-color: var(--primary-color-1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background-color: #f0f9ff;
+    border: 1px solid #bae6fd;
     border-radius: var(--radius-sm);
-    border: 1px dashed var(--border-color);
+    color: #0369a1;
+    font-size: var(--h6-size);
+    margin: 0;
 }
 
+@media (max-width: 768px) {
+    .mapHint {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Warning de ubicación no encontrada */
+.locationWarning {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background-color: #fef3c7;
+    border: 1px solid #fbbf24;
+    border-radius: var(--radius-sm);
+    color: #92400e;
+    font-size: var(--h6-size);
+    font-weight: var(--font-weight-medium);
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .locationWarning {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Información de coordenadas */
+.coordsInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    background-color: var(--primary-color-1);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-family: monospace;
+    font-size: var(--h6-size);
+    color: var(--secondary-text-color);
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .coordsInfo {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Autocomplete (por si lo necesitas en el futuro) */
 .autocompleteContainer {
     position: relative;
 }
@@ -142,35 +268,53 @@
     top: 100%;
     left: 0;
     right: 0;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.5rem;
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
     margin-top: 0.25rem;
     max-height: 300px;
     overflow-y: auto;
     z-index: 1000;
     list-style: none;
     padding: 0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .suggestionItem {
     padding: 0.75rem 1rem;
     cursor: pointer;
     transition: background 0.2s;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border-color);
+    font-size: var(--h6-size);
 }
 
 .suggestionItem:hover {
-    background: #f8fafc;
+    background: var(--secondary-color-1);
 }
 
 .suggestionItem:last-child {
     border-bottom: none;
 }
 
-@media (max-width: 768px) {
-    .coordinatesGroup {
-        grid-template-columns: 1fr;
+/* Responsive mejorado */
+@media (max-width: 480px) {
+    .section {
+        padding: var(--15px);
+    }
+
+    .sectionTitle {
+        font-size: var(--h4-size);
+        margin-bottom: var(--15px);
+        padding-bottom: var(--10px);
+    }
+
+    .grid {
+        gap: var(--15px);
+    }
+
+    .input,
+    .select {
+        padding: var(--10px) var(--15px);
+        font-size: var(--h6-size);
     }
 }

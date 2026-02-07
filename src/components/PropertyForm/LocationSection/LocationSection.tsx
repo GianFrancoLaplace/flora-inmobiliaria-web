@@ -1,23 +1,10 @@
+// src/components/PropertyForm/LocationSection/LocationSection.tsx
 'use client';
 
-import { useState } from 'react';
-import { GoogleMap, useLoadScript, MarkerF } from '@react-google-maps/api';
-import usePlacesAutocomplete, { getGeocode, getLatLng } from 'use-places-autocomplete';
+import { useState, useEffect } from 'react';
+import { MapPin, AlertCircle, Info, Loader2 } from 'lucide-react';
 import styles from './LocalSection.module.css';
 import { PropertyFormInput } from "@/types/property-form.types";
-
-// Configuración del mapa
-const mapContainerStyle = {
-	width: '100%',
-	height: '400px',
-};
-
-const defaultCenter = {
-	lat: -37.3217, // Tandil
-	lng: -59.1332,
-};
-
-const libraries: ('places')[] = ['places']; // Debe estar FUERA del component
 
 interface LocationSectionProps {
 	formData: PropertyFormInput;
@@ -25,128 +12,107 @@ interface LocationSectionProps {
 	errors: Record<string, string>;
 }
 
-// Subcomponent para el Autocomplete (separado para clarity)
-function PlacesAutocomplete({
-	                            onSelect
-                            }: {
-	onSelect: (lat: number, lng: number, address: string, city?: string, neighborhood?: string) => void
-}) {
-	const {
-		ready,
-		value,
-		suggestions: { status, data },
-		setValue,
-		clearSuggestions,
-	} = usePlacesAutocomplete({
-		requestOptions: {
-			componentRestrictions: { country: 'ar' }, // Restringir a Argentina
-		},
-		debounce: 300, // Built-in debounce para reducir API calls
-	});
-
-	const handleSelect = async (description: string) => {
-		setValue(description, false);
-		clearSuggestions();
-
-		try {
-			const results = await getGeocode({ address: description });
-			const { lat, lng } = await getLatLng(results[0]);
-
-			// Extraer componentes de dirección
-			const addressComponents = results[0].address_components;
-			const city = addressComponents.find(c => c.types.includes('locality'))?.long_name;
-			const neighborhood = addressComponents.find(c => c.types.includes('neighborhood'))?.long_name;
-
-			onSelect(lat, lng, description, city, neighborhood);
-		} catch (error) {
-			console.error('Error getting geocode:', error);
-		}
-	};
-
-	return (
-		<div className={styles.autocompleteContainer}>
-			<input
-				type="text"
-				value={value}
-				onChange={(e) => setValue(e.target.value)}
-				disabled={!ready}
-				placeholder="Buscar dirección (ej: Av. San Martín 1234, Tandil)"
-				className={styles.input}
-			/>
-
-			{status === 'OK' && (
-				<ul className={styles.suggestionsList}>
-					{data.map((suggestion) => (
-						<li
-							key={suggestion.place_id}
-							onClick={() => handleSelect(suggestion.description)}
-							className={styles.suggestionItem}
-						>
-							{suggestion.description}
-						</li>
-					))}
-				</ul>
-			)}
-		</div>
-	);
-}
-
 export default function LocationSection({ formData, onChange, errors }: LocationSectionProps) {
-	const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | null>(null);
-	const [mapCenter, setMapCenter] = useState(defaultCenter);
+	const [mapUrl, setMapUrl] = useState<string>('');
+	const [isUpdating, setIsUpdating] = useState(false);
+	const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
+	const [locationFound, setLocationFound] = useState(true);
 
-	const { isLoaded, loadError } = useLoadScript({
-		googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-		libraries,
-	});
+	// Geocoding: dirección → coordenadas
+	const geocodeAddress = async (address: string, city?: string) => {
+		const fullAddress = [address, city]
+			.filter(Boolean)
+			.join(', ');
 
-	const handlePlaceSelect = (
-		lat: number,
-		lng: number,
-		address: string,
-		city?: string,
-		neighborhood?: string
-	) => {
-		const position = { lat, lng };
-		setMarkerPosition(position);
-		setMapCenter(position);
+		if (!fullAddress.trim()) {
+			setMapUrl('');
+			setCoordinates(null);
+			setLocationFound(true);
+			return;
+		}
 
-		// Actualizar formulario
-		onChange('address', address);
-		onChange('city', city || '');
-		onChange('ubication', neighborhood || '');
-		onChange('latitude', lat);
-		onChange('longitude', lng);
-	};
+		setIsUpdating(true);
+		setLocationFound(true);
 
-	const handleMarkerDragEnd = async (e: google.maps.MapMouseEvent) => {
-		if (!e.latLng) return;
-
-		const lat = e.latLng.lat();
-		const lng = e.latLng.lng();
-
-		setMarkerPosition({ lat, lng });
-
-		// Reverse geocoding para obtener dirección
 		try {
-			const results = await getGeocode({ location: { lat, lng } });
-			const address = results[0].formatted_address;
-			const addressComponents = results[0].address_components;
-			const city = addressComponents.find(c => c.types.includes('locality'))?.long_name;
-			const neighborhood = addressComponents.find(c => c.types.includes('neighborhood'))?.long_name;
+			const response = await fetch(
+				`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(fullAddress)}&format=json&limit=1`
+			);
+			const data = await response.json();
 
-			onChange('address', address);
-			onChange('city', city || '');
-			onChange('ubication', neighborhood || '');
-			onChange('latitude', lat);
-			onChange('longitude', lng);
+			if (data && data[0]) {
+				const lat = parseFloat(data[0].lat);
+				const lng = parseFloat(data[0].lon);
+
+				setCoordinates({ lat, lng });
+				setLocationFound(true);
+
+				// Guardar coordenadas en el formulario
+				onChange('latitude', lat);
+				onChange('longitude', lng);
+				// Guardar coordenadas en ubication
+				onChange('ubication', `${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+
+				// Crear URL con coordenadas (esto SÍ muestra marcador)
+				const newUrl = `https://maps.google.com/maps?q=${lat},${lng}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+				setMapUrl(newUrl);
+			} else {
+				// Si no encuentra la dirección exacta, intenta solo con ciudad
+				if (city) {
+					const cityResponse = await fetch(
+						`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`
+					);
+					const cityData = await cityResponse.json();
+
+					if (cityData && cityData[0]) {
+						const lat = parseFloat(cityData[0].lat);
+						const lng = parseFloat(cityData[0].lon);
+
+						setCoordinates({ lat, lng });
+						setLocationFound(true);
+
+						onChange('latitude', lat);
+						onChange('longitude', lng);
+						onChange('ubication', `${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+
+						const newUrl = `https://maps.google.com/maps?q=${lat},${lng}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
+						setMapUrl(newUrl);
+					} else {
+						setLocationFound(false);
+						setCoordinates(null);
+					}
+				} else {
+					setLocationFound(false);
+					setCoordinates(null);
+				}
+			}
 		} catch (error) {
-			console.error('Error reverse geocoding:', error);
+			console.error('Error geocoding:', error);
+			setLocationFound(false);
+			setCoordinates(null);
+		} finally {
+			setIsUpdating(false);
 		}
 	};
 
-	if (loadError) return <div>Error loading maps</div>;
-	if (!isLoaded) return <div>Loading maps...</div>;
+	// Actualizar mapa cuando cambia la dirección
+	useEffect(() => {
+		const { address, city } = formData;
+
+		if (!address?.trim()) {
+			setMapUrl('');
+			setCoordinates(null);
+			setLocationFound(true);
+			return;
+		}
+
+		// Debounce: esperar 1.5 segundos después de que el usuario deja de escribir
+		const timeoutId = setTimeout(() => {
+			geocodeAddress(address, city);
+		}, 1500);
+
+		return () => clearTimeout(timeoutId);
+	}, [formData.address, formData.city]);
 
 	return (
 		<section className={styles.section}>
@@ -154,39 +120,64 @@ export default function LocationSection({ formData, onChange, errors }: Location
 
 			<div className={styles.grid}>
 
-				{/* Autocomplete Search */}
+				{/* Mapa SIEMPRE visible */}
 				<div className={`${styles.formGroup} ${styles.fullWidth}`}>
-					<label className={styles.label}>
-						Buscar ubicación en el mapa
-					</label>
-					<PlacesAutocomplete onSelect={handlePlaceSelect} />
-					<p className={styles.hint}>
-						Busca la dirección y ajusta arrastrando el marcador si es necesario
-					</p>
-				</div>
-
-				{/* Mapa */}
-				<div className={`${styles.formGroup} ${styles.fullWidth}`}>
-					<GoogleMap
-						mapContainerStyle={mapContainerStyle}
-						center={mapCenter}
-						zoom={15}
-						options={{
-							streetViewControl: false,
-							mapTypeControl: false,
-						}}
-					>
-						{markerPosition && (
-							<MarkerF
-								position={markerPosition}
-								draggable={true}
-								onDragEnd={handleMarkerDragEnd}
-							/>
+					<div className={styles.mapContainer}>
+						{/* Indicador de actualización */}
+						{isUpdating && (
+							<div className={styles.mapUpdating}>
+								<Loader2 className={styles.spinnerIcon} />
+								<span>Buscando ubicación...</span>
+							</div>
 						)}
-					</GoogleMap>
+
+						{mapUrl ? (
+							<iframe
+								src={mapUrl}
+								width="100%"
+								height="100%"
+								style={{ border: 0 }}
+								allowFullScreen
+								loading="lazy"
+								referrerPolicy="no-referrer-when-downgrade"
+								className={isUpdating ? styles.mapFading : ''}
+							/>
+						) : (
+							<div className={styles.mapPlaceholder}>
+								<MapPin className={styles.mapIcon} />
+								<p className={styles.mapText}>
+									Ingresa una dirección para ver la ubicación en el mapa
+								</p>
+							</div>
+						)}
+					</div>
+
+					{/* Info de la ubicación */}
+					<div className={styles.mapInfo}>
+						<div className={styles.mapHint}>
+							<Info size={16} />
+							<span>La ubicación se actualiza automáticamente mientras escribes</span>
+						</div>
+
+						{/* Warning si no encuentra ubicación */}
+						{!locationFound && formData.address && !isUpdating && (
+							<div className={styles.locationWarning}>
+								<AlertCircle size={16} />
+								<span>No se encontró esta dirección. Verifica que esté escrita correctamente.</span>
+							</div>
+						)}
+
+						{/* Mostrar coordenadas cuando existen */}
+						{coordinates && (
+							<div className={styles.coordsInfo}>
+								<MapPin size={16} />
+								<span>{coordinates.lat.toFixed(6)}, {coordinates.lng.toFixed(6)}</span>
+							</div>
+						)}
+					</div>
 				</div>
 
-				{/* Campos de texto (ahora son read-only mayormente) */}
+				{/* Dirección */}
 				<div className={`${styles.formGroup} ${styles.fullWidth}`}>
 					<label className={styles.label} htmlFor="address">
 						Dirección <span className={styles.required}>*</span>
@@ -194,6 +185,7 @@ export default function LocationSection({ formData, onChange, errors }: Location
 					<input
 						id="address"
 						type="text"
+						placeholder="Ej: Av. San Martín 1234"
 						value={formData.address || ''}
 						onChange={(e) => onChange('address', e.target.value)}
 						className={errors.address ? styles.inputError : styles.input}
@@ -203,31 +195,24 @@ export default function LocationSection({ formData, onChange, errors }: Location
 					)}
 				</div>
 
-				<div className={styles.formGroup}>
+				{/* Ciudad */}
+				<div className={`${styles.formGroup} ${styles.fullWidth}`}>
 					<label className={styles.label} htmlFor="city">
 						Ciudad
 					</label>
 					<input
 						id="city"
 						type="text"
+						placeholder="Ej: Tandil"
 						value={formData.city || ''}
 						onChange={(e) => onChange('city', e.target.value)}
 						className={styles.input}
 					/>
+					<p className={styles.hint}>Ayuda a precisar la ubicación</p>
 				</div>
 
-				<div className={styles.formGroup}>
-					<label className={styles.label} htmlFor="ubication">
-						Barrio/Zona
-					</label>
-					<input
-						id="ubication"
-						type="text"
-						value={formData.ubication || ''}
-						onChange={(e) => onChange('ubication', e.target.value)}
-						className={styles.input}
-					/>
-				</div>
+				{/* Coordenadas (hidden input para el form) */}
+				<input type="hidden" name="ubication" value={formData.ubication || ''} />
 
 			</div>
 		</section>
