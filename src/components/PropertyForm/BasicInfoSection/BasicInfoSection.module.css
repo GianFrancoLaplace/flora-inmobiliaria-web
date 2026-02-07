@@ -104,6 +104,7 @@
 /* Input group (para moneda + precio) */
 .inputGroup {
     display: flex;
+    align-items: center;
     gap: var(--10px);
 }
 
