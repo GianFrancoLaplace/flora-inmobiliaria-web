@@ -1,4 +1,3 @@
-// test-cloudinary.js
 import { readFile } from 'fs/promises';
 import path from 'path';
 import dotenv from 'dotenv';

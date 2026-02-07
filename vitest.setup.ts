@@ -1,11 +1,8 @@
-// vitest.setup.ts
 import { vi } from "vitest";
-import "@testing-library/jest-dom"; // Ahora SÍ va a funcionar
+import "@testing-library/jest-dom";
 
-// Mock global fetch
 global.fetch = vi.fn();
 
-// Mock window.matchMedia (común en Next.js)
 Object.defineProperty(window, 'matchMedia', {
 	writable: true,
 	value: vi.fn().mockImplementation(query => ({
