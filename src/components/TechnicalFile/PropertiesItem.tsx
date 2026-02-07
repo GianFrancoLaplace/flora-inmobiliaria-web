@@ -1,96 +1,26 @@
-import styles from "@/components/TechnicalFile/TechnicalSheet.module.css";
-import Image from "next/image";
-import { Characteristic, CharacteristicCategory } from "@/types/Characteristic";
-import EditableNumericField from "@/components/TechnicalFile/EditableField/EditableNumericField";
-import EditableTextField from "@/components/TechnicalFile/EditableField/EditableTextField";
-import React from "react";
+import Image from 'next/image';
+import styles from './PropertyView.module.css';
 
-type Props = {
-    imgSrc: string;
-    label: string;
-    characteristic: Characteristic;
-    isEditing: boolean;
-
-    onSave: (newValue: number | string) => void;
-    id: number;
-    type: string;
-    onDelete?: () => void;
-  showDeleteButton: boolean;
+type PropertyItemProps = {
+	imgSrc: string;
+	label: string;
+	value: string | number;
 };
 
-export default function Item({
-                                 imgSrc,
-                                 label,
-                                 characteristic,
-                                 isEditing,
-                                 onSave,
-                                 type,
-                                 onDelete
-                             }: Props) {
-
-
-    const isItem = type === "item";
-    const dataType = characteristic.data_type || 'text';
-
-
-    const handleSave = (value: number | string) => {
-        console.log(`Item con ID ${characteristic.id} guardando el valor:`, value);
-        onSave(value);
-    };
-
-    const handleCancelEdit = () => {
-        // La lógica de cancelar también la maneja el padre si es necesario.
-        console.log("Edición cancelada en el item.");
-    };
-
-    const renderEditableField = () => {
-        if (dataType === 'integer') {
-            return (
-                <EditableNumericField
-                    // Usamos los valores directamente de las props
-                    value={characteristic.value_integer ?? 0}
-                    isEditing={isEditing}
-                    // Pasamos nuestra nueva función handleSave
-                    onSave={handleSave}
-                    onCancel={handleCancelEdit}
-                    className={styles.editInputProperties}
-                />
-            );
-        } else {
-            return (
-                <EditableTextField
-                    value={characteristic.value_text ?? ''}
-                    isEditing={isEditing}
-                    type="text"
-                    onSave={handleSave}
-                    onCancel={handleCancelEdit}
-                    className={styles.editInputProperties}
-                />
-            );
-        }
-    };
-
-    return (
-        <div className={`${isItem ? styles.itemProperties : styles.infoCardProperties}`}>
-            <div className={styles.itemInfo}>
-                <Image
-                    src={imgSrc || "/icons/agua.png"}
-                    alt={''}
-                    width={20}
-                    height={20}
-                />
-                <h5>
-                    {label}: {renderEditableField()}
-                </h5>
-            </div>
-            {onDelete && (
-                <button
-                    onClick={onDelete}
-                    className={styles.deleteButton}
-                >
-                    <h5>✖</h5>
-                </button>
-            )}
-        </div>
-    );
+export default function PropertyItem({ imgSrc, label, value }: PropertyItemProps) {
+	return (
+		<div className={styles.itemProperties}>
+			<div className={styles.itemInfo}>
+				<Image
+					src={imgSrc}
+					alt={label}
+					width={20}
+					height={20}
+				/>
+				<h5>
+					{label}: {value}
+				</h5>
+			</div>
+		</div>
+	);
 }
