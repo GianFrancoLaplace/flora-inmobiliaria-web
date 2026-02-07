@@ -5,6 +5,7 @@ import FilterGroup from "@/components/FilterButtons/FilterGroup";
 import BigCardsGrid from "@/components/BigCards/BigCardsGrid";
 import Link from 'next/link';
 import { PropertyService } from '@/services/property.service';
+import {OperationEnum, PropertyTypeEnum} from "@/types/prisma";
 
 const filtrosTipoPropiedad = [
 	"Departamentos",
@@ -14,10 +15,26 @@ const filtrosTipoPropiedad = [
 	"Campos",
 ];
 
-export default async function Page() {
+type PageProps = {
+	searchParams: Promise<{
+		tipo?: string;
+		operacion?: string;
+		maxValue?: string;
+	}>;
+};
+
+export default async function Page({ searchParams }: PageProps) {
 	const propertyService = new PropertyService();
 
-	const properties = await propertyService.findMany();
+	const params = await searchParams;
+
+	const filters = {
+		types: params.tipo?.split(',').filter(Boolean) as PropertyTypeEnum[] | undefined,
+		operations: params.operacion?.split(',').filter(Boolean) as OperationEnum[] | undefined,
+		maxPrice: params.maxValue ? Number(params.maxValue) : undefined,
+	};
+
+	const properties = await propertyService.findMany(filters);
 
 	return (
 		<div className={`${styles.page} ${cactus.className} ${styles.container}`}>
