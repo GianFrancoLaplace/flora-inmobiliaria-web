@@ -1,23 +1,18 @@
 "use client"
 
-import { useState, useEffect } from 'react';
-import styles from './filterPropAdmin.module.css';
-import FiltroToggle from '../FilterButtons/FilterButtons';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { PropertyTypeEnum, OperationEnum } from '@/types/prisma';
+import FiltroToggle from '../FilterButtons/FilterButtons';
+import styles from './filterPropAdmin.module.css';
+import { useState } from 'react';
 
-// ✅ SIN PROPS - Todo viene de los enums
 const UnifiedFilter: React.FC = () => {
-	const [showFilters, setShowFilters] = useState(false);
-	const [activosOperacion, setActivosOperacion] = useState<string[]>([]);
-	const [activosPropiedad, setActivosPropiedad] = useState<string[]>([]);
-	const [maxValue, setMaxValue] = useState<string>('');
-
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 
-	// ✅ Mapeos UI → DB (source of truth: Prisma enums)
+	const [showFilters, setShowFilters] = useState(false);
+
 	const operacionLabels: Record<string, OperationEnum> = {
 		'Quiero comprar': OperationEnum.venta,
 		'Quiero alquilar': OperationEnum.alquiler,
@@ -29,7 +24,6 @@ const UnifiedFilter: React.FC = () => {
 		'Lotes': PropertyTypeEnum.lote,
 	};
 
-	// ✅ Mapeos inversos DB → UI (para leer desde URL)
 	const operacionLabelsReverse: Record<OperationEnum, string> = {
 		[OperationEnum.venta]: 'Quiero comprar',
 		[OperationEnum.alquiler]: 'Quiero alquilar',
@@ -43,80 +37,59 @@ const UnifiedFilter: React.FC = () => {
 		[PropertyTypeEnum.local_comercial]: 'Locales comerciales',
 	};
 
-	// ✅ Leer valores iniciales de URL
-	useEffect(() => {
-		const operacionParam = searchParams.get('operacion');
-		const tipoParam = searchParams.get('tipo');
-		const maxValueParam = searchParams.get('maxValue');
+	const operacionesEnUrl = searchParams.get('operacion')?.split(',').filter(Boolean) || [];
+	const tiposEnUrl = searchParams.get('tipo')?.split(',').filter(Boolean) || [];
 
-		if (operacionParam) {
-			const ops = operacionParam
-				.split(',')
-				.map(op => operacionLabelsReverse[op as OperationEnum])
-				.filter(Boolean);
-			setActivosOperacion(ops);
+	const activosOperacion = operacionesEnUrl
+		.map(op => operacionLabelsReverse[op as OperationEnum])
+		.filter(Boolean);
+
+	const activosPropiedad = tiposEnUrl
+		.map(tp => propiedadLabelsReverse[tp as PropertyTypeEnum])
+		.filter(Boolean);
+
+	const toggleFiltro = (labelUI: string, tipo: 'operacion' | 'tipo') => {
+		const params = new URLSearchParams(searchParams.toString());
+		const paramKey = tipo;
+		const mapeo = tipo === 'operacion' ? operacionLabels : propiedadLabels;
+
+		const valorDB = mapeo[labelUI];
+		const currentDB = params.get(paramKey)?.split(',').filter(Boolean) || [];
+
+		const updated = currentDB.includes(valorDB)
+			? currentDB.filter(v => v !== valorDB)
+			: [...currentDB, valorDB];
+
+		if (updated.length > 0) {
+			params.set(paramKey, updated.join(','));
+		} else {
+			params.delete(paramKey);
 		}
 
-		if (tipoParam) {
-			const tipos = tipoParam
-				.split(',')
-				.map(tp => propiedadLabelsReverse[tp as PropertyTypeEnum])
-				.filter(Boolean);
-			setActivosPropiedad(tipos);
-		}
-
-		if (maxValueParam) {
-			setMaxValue(maxValueParam);
-		}
-	}, [searchParams]);
-
-	// ✅ Actualizar URL cuando cambian los filtros
-	useEffect(() => {
-		const operacionValues = activosOperacion
-			.map(op => operacionLabels[op])
-			.filter(Boolean);
-
-		const tipoValues = activosPropiedad
-			.map(tp => propiedadLabels[tp])
-			.filter(Boolean);
-
-		const params = new URLSearchParams();
-
-		if (operacionValues.length > 0) {
-			params.set('operacion', operacionValues.join(','));
-		}
-		if (tipoValues.length > 0) {
-			params.set('tipo', tipoValues.join(','));
-		}
-		if (maxValue && maxValue.trim() !== '') {
-			params.set('maxValue', maxValue);
-		}
-
-		const newUrl = `${pathname}?${params.toString()}`;
-		window.history.replaceState(null, '', newUrl);
-	}, [activosOperacion, activosPropiedad, maxValue, pathname]);
-
-	const toggleFiltro = (
-		label: string,
-		activos: string[],
-		setActivos: React.Dispatch<React.SetStateAction<string[]>>
-	) => {
-		setActivos((prev) =>
-			prev.includes(label) ? prev.filter((x) => x !== label) : [...prev, label]
-		);
+		router.push(`${pathname}?${params.toString()}`);
 	};
 
 	const handleMaxValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setMaxValue(e.target.value);
+		const params = new URLSearchParams(searchParams.toString());
+
+		if (e.target.value && e.target.value.trim() !== '') {
+			params.set('maxValue', e.target.value);
+		} else {
+			params.delete('maxValue');
+		}
+
+		router.push(`${pathname}?${params.toString()}`);
 	};
 
-	// ✅ Arrays derivados de los mapeos (no hardcodeados)
 	const filtrosOperacion = Object.keys(operacionLabels);
 	const filtrosPropiedad = Object.keys(propiedadLabels);
 
 	return (
 		<div className={styles.unifiedFilterWrapper}>
-			<button className={styles.burgerButton} onClick={() => setShowFilters((prev) => !prev)}>
+			<button
+				className={styles.burgerButton}
+				onClick={() => setShowFilters((prev) => !prev)}
+			>
 				☰ Filtrar
 			</button>
 
@@ -135,7 +108,7 @@ const UnifiedFilter: React.FC = () => {
 							type="number"
 							className={styles.maxValueInput}
 							placeholder="Escribe el valor máximo"
-							value={maxValue}
+							defaultValue={searchParams.get('maxValue') || ''}
 							onChange={handleMaxValueChange}
 							min="0"
 						/>
@@ -156,7 +129,7 @@ const UnifiedFilter: React.FC = () => {
 							key={item}
 							label={item}
 							isActive={activosOperacion.includes(item)}
-							onToggle={() => toggleFiltro(item, activosOperacion, setActivosOperacion)}
+							onToggle={() => toggleFiltro(item, 'operacion')}
 						/>
 					))}
 				</div>
@@ -168,7 +141,7 @@ const UnifiedFilter: React.FC = () => {
 							key={item}
 							label={item}
 							isActive={activosPropiedad.includes(item)}
-							onToggle={() => toggleFiltro(item, activosPropiedad, setActivosPropiedad)}
+							onToggle={() => toggleFiltro(item, 'tipo')}
 						/>
 					))}
 				</div>
