@@ -1,5 +1,5 @@
 import { PropertyData, PropertyUpdateData } from "@/types/property-api.types";
-import {ImageMetadata} from "@/types/image.types";
+import {ImageMetadata, ExistingImage} from "@/types/image.types";
 import {
 	CreatePropertyDto,
 } from '@/types/property-api.types'
@@ -14,11 +14,10 @@ import { crearSlug } from "@/lib/generateSlug"
 import {ImageService} from "@/services/image.service";
 import {OperationEnum, PropertyTypeEnum} from "@prisma/client"
 import {CloudinaryResult} from "@/types/cloudinary.types";
-import { stateMap, typeMap} from "@/helpers/PropertyMapper";
 import {imageMetadataArraySchema} from "@/validations/property.schema";
 import {NextResponse} from "next/server";
 import { propertyUpdateSchema} from "@/validations/property";
-import type { ExistingImage } from "@/types/image.types";
+import {PropertyWithImages} from "@/types/prisma";
 
 type PutPayload = {
 	property: PropertyUpdateData;
@@ -113,17 +112,15 @@ export class PropertyService {
 		}
 	}
 
-	async findMany(filters?: PropertyFilters): Promise<PropertyTypes[]> {
+	async findMany(filters?: PropertyFilters): Promise<PropertyWithImages[]> {
 		const where = this.buildWhereClause(filters);
 
-		const properties = await prisma.property.findMany({
+		return await prisma.property.findMany({
 			where: Object.keys(where).length > 0 ? where : undefined,
 			include: {
-				images: true,
-			},
+				images: { orderBy: { position: 'asc' } }
+			}
 		});
-
-		return this.mapToPropertyTypes(properties);
 	}
 
 	private buildWhereClause(filters?: PropertyFilters): WhereClause {
@@ -156,45 +153,6 @@ export class PropertyService {
 		}
 
 		return where;
-	}
-
-	/**
-	 * Convierte propertyes de Prisma al formato de la aplicación
-	 */
-	private mapToPropertyTypes(properties: any[]): PropertyTypes[] {
-		return properties.map((p): PropertyTypes => {
-
-			const mappedCharacteristics: Characteristic[] = p.characteristics.map((c: any): Characteristic => {
-				return {
-					id: c.idCharacteristic,
-					characteristic: c.characteristic,
-					data_type: c.dataType === 'integer' ? 'integer' : 'text',
-					value_integer: c.valueInteger ?? undefined,
-					value_text: c.valueText?.trim() || undefined,
-					category: c.category ?? undefined,
-				};
-			});
-
-			const mappedImages: { id: number; url: string }[] = p.images.length > 0
-				? [{ id: p.images[0].idImage, url: p.images[0].url }]
-				: [];
-
-			const result: PropertyTypes = {
-				id: p.idProperty,
-				address: p.address,
-				city: p.city,
-				slug: p.slug,
-				state: stateMap[p.category as OperationEnum],
-				price: p.price,
-				description: p.description,
-				type: typeMap[p.type as PropertyTypeEnum],
-				ubication: p.ubication,
-				characteristics: mappedCharacteristics,
-				images: mappedImages,
-			};
-
-			return result;
-		});
 	}
 
 	async PUT(propertyId: number, payload: PutPayload) {
