@@ -1,5 +1,4 @@
 import styles from './LocalSection.module.css';
-import {PropertyData} from "@/types/property.types";
 import {PropertyFormInput} from "@/types/property-form.types";
 
 interface LocationSectionProps {

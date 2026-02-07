@@ -1,5 +1,4 @@
 import styles from './DetailsSection.module.css';
-import {PropertyData} from "@/types/property.types";
 import {PropertyFormInput} from "@/types/property-form.types";
 import {PropertyTypeEnum} from "@/types/prisma";
 

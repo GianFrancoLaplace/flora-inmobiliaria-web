@@ -1,6 +1,6 @@
 import cloudinary from "@/lib/cloudinary";
-import {Image, ImageMetadata} from "@/types/property.types";
-import {prisma } from "@/lib/prisma";
+import {ImageMetadata} from "@/types/image.types";
+
 import {CloudinaryResult} from "@/types/cloudinary.types";
 
 

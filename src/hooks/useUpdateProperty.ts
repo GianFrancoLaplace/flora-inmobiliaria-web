@@ -1,9 +1,8 @@
-// src/hooks/useUpdateProperty.ts
 "use client"
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { PropertyTypes, PropertyUpdateData } from '@/types/property.types';
+import {PropertyUpdateData} from '@/types/property-api.types';
 
 type UpdateStatus = {
     message: string;

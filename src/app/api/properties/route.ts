@@ -9,15 +9,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
 	PropertyState,
 	PropertyType,
-	ImageMetadata,
-	CreateImage
-} from '@/types/property.types';
-import { CreatePropertyDto } from "@/types/property-api.types";
 
-type PriceFilter = {
-    lte?: number;
-    gte?: number;
-};
+} from '@/types/property.types';
+import { ImageMetadata } from '@/types/image.types'
+import { CreatePropertyDto } from "@/types/property-api.types";
 
 const propertyService = new PropertyService();
 

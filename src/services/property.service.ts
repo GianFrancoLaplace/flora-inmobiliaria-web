@@ -1,9 +1,5 @@
-import {
-	ImageMetadata, PropertyData,
-	PropertyState,
-	PropertyType,
-	PropertyTypes, PropertyUpdateData
-} from '@/types/property.types'
+import { PropertyData, PropertyUpdateData } from "@/types/property-api.types";
+import {ImageMetadata} from "@/types/image.types";
 import {
 	CreatePropertyDto,
 } from '@/types/property-api.types'
@@ -12,7 +8,6 @@ import {
 	WhereClause
 } from '@/types/property.filter.types'
 
-import { Characteristic } from "@/types/Characteristic";
 import {prisma} from "@/lib/prisma";
 import {createPropertySchema} from "@/validations/property.schema";
 import { crearSlug } from "@/lib/generateSlug"

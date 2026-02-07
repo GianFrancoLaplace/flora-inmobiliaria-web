@@ -14,4 +14,10 @@ export interface NewImage {
 	isMain: boolean;
 }
 
+export interface ImageMetadata {
+	position: number;
+	isMain: boolean;
+}
+
+
 export type ImageItem = ExistingImage | NewImage;

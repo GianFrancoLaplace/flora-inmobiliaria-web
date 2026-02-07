@@ -4,7 +4,7 @@ export const revalidate = 0;
 
 import {NextRequest, NextResponse} from 'next/server';
 import {prisma} from '@/lib/prisma';
-import {PropertyData, PropertyUpdateData} from '@/types/property.types';
+import {PropertyUpdateData} from '@/types/property-api.types';
 import {PropertyService} from "@/services/property.service";
 import {OperationEnum, PropertyTypeEnum} from "@/types/prisma";
 const propertyService = new PropertyService();

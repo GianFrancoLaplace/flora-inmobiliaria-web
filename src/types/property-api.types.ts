@@ -21,9 +21,36 @@ export interface CreatePropertyDto {
 	constructedArea?: number;
 }
 
+export interface PropertyUpdateData {
+	address?: string;
+	city?: string;
+	ubication?: string;
+	price?: number;
+	description?: string;
+	type?: PropertyTypeEnum;
+	category?:OperationEnum;
+	surface?: number;
+	bedrooms?: number;
+	bathrooms?: number;
+	garage?: number;
+	floors?: number;
+	constructed_area?: number;
+}
 
-export interface CreatePropertyPayload {
-	data: CreatePropertyDto;
-	files: File[];
-	imageMetadata: ImageMetadata[];
+export interface PropertyData {
+	id: number;
+	address: string;
+	city: string;
+	ubication: string;
+	price: number;
+	description: string;
+	type: PropertyTypeEnum;
+	category:OperationEnum;
+	surface: number;
+	bedrooms: number;
+	bathrooms: number;
+	garage: number;
+	floors: number;
+	constructed_area: number;
+	images: { id: number; url: string }[];
 }

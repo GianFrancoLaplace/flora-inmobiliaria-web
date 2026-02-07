@@ -1,5 +1,4 @@
 import styles from './BasicInfoSection.module.css';
-import {PropertyData} from "@/types/property.types";
 import {PropertyFormInput} from "@/types/property-form.types";
 import {OperationEnum, PropertyTypeEnum} from "@/types/prisma"
 
