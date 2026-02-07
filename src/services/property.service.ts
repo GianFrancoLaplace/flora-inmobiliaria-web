@@ -19,6 +19,8 @@ import {NextResponse} from "next/server";
 import { propertyUpdateSchema} from "@/validations/property";
 import {PropertyWithImages} from "@/types/prisma";
 
+const TEMP_SLUG = 'temp-slug';
+
 type PutPayload = {
 	property: PropertyUpdateData;
 	existingImages: Pick<ExistingImage, "id" | "position" | "isMain">[];
@@ -60,12 +62,6 @@ export class PropertyService {
 				validatedImageMetadata
 			);
 
-			const slug = crearSlug(
-				validatedProperty.category +
-				" " +
-				validatedProperty.description
-			)
-
 			return await prisma.$transaction(async (tx) => {
 
 				const property = await tx.property.create({
@@ -83,7 +79,7 @@ export class PropertyService {
 						bathrooms: validatedProperty.bathrooms,
 						floors: validatedProperty.floors,
 						constructedArea: validatedProperty.constructedArea,
-						slug: slug,
+						slug: TEMP_SLUG,
 					},
 				});
 
@@ -94,6 +90,15 @@ export class PropertyService {
 						isMain: validatedImageMetadata[idx].isMain,
 						idProperty: property.idProperty
 					}))
+				});
+
+				const slug = crearSlug(
+					`${property.category} ${property.description} ${property.idProperty}`
+				);
+
+				await tx.property.update({
+					where: { idProperty: property.idProperty },
+					data: { slug: slug },
 				});
 
 				return await tx.property.findUnique({
