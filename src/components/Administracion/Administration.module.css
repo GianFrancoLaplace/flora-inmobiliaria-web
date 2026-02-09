@@ -1,167 +1,131 @@
+/* HEADER SECTION */
+.headerSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--15px);
+    margin-bottom: var(--30px);
+    padding: 0 var(--20px);
+}
+
+.publicationsTitle {
+    font-size: var(--h1-size);
+    color: var(--primary-color-5);
+    font-weight: var(--font-weight-medium);
+
+}
+
 .sectionProperties {
     display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-
-    margin-top: var(--20px);
-    margin-right: var(--30px);
+    width: 100%;
+    justify-content: center;
 }
 
 .buttonNewPublication {
-    max-width: 15.625rem; /*250px*/
-    width: 250px;
-    height: 2.5625rem; /*41px*/
+    width: 100%;
+    max-width: 20rem;
+    height: 2.5625rem;
     border: 2px var(--primary-color-5) solid;
     background-color: var(--secondary-color-5);
     cursor: pointer;
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-bold);
+    transition: all var(--normal-transition);
 }
 
-.cardsProperties {
-    display: flex;
-    flex-direction: column;
-    margin-left: var(--20px);
-    margin-bottom: var(--10px);
-    margin-top: var(--5px);
-}
-
-.cardProperties {
-    display: flex;
-    flex-direction: row;
-
-    max-width: 55rem; /*880px*/
-    width: 100%;
-    height: 13.75rem; /*220px*/
-
-    background-color: var(--primary-color-2);
-
-    align-items: center;
-    gap: 50px;
-}
-
-.imageProperties {
-    margin-top: var(--15px);
-    margin-left: var(--15px);
-}
-
-.priceProperties h5 {
-    margin-top: var(--15px);
-
-    font-size: var(--h3-size);
+.buttonNewPublication:hover {
+    background-color: var(--secondary-color-4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--transparent-black-01);
 }
 
 .linkProperties {
     text-decoration: none;
 }
 
-.infoProperties {
+/* CONTENEDOR DE CARDS */
+.cardsProperties {
     display: flex;
     flex-direction: column;
-    margin-left: var(--30px);
-    gap: 5.375rem; /*70px*/
-    color: var(--primary-color-5);
+    gap: var(--20px);
+    padding: 0 var(--20px);
+}
+
+/* CARD INDIVIDUAL - MOBILE FIRST (vertical) */
+.cardProperties {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
     width: 100%;
+
+    background-color: var(--primary-color-2);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+
+    transition: box-shadow var(--normal-transition);
 }
 
-.restInfoProperties {
+.cardProperties:hover {
+    box-shadow: 0 4px 12px var(--transparent-black-03);
+}
+
+/* IMAGEN */
+.imageContainer {
+    width: 100%;
+    height: 12.5rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: var(--primary-color-1);
+    overflow: hidden;
+}
+
+.imageProperties {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* INFORMACIÓN */
+.infoProperties {
+    flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    gap: var(--10px);
+
+    padding: var(--20px);
+    color: var(--primary-color-5);
 }
 
+.priceProperties h2 {
+    font-size: var(--h2-size);
+    font-weight: var(--font-weight-bold);
+    margin: 0;
+}
+
+.restInfoProperties h4 {
+    margin: 0;
+    font-weight: var(--font-weight-normal);
+    line-height: 1.4;
+}
+
+/* BOTONES */
 .buttonsProperties {
     display: flex;
     flex-direction: row;
-    padding-bottom: 15%;
-    width: fit-content;
-
-    margin-left: var(--40px);
-    gap: var(--20px);
-}
-
-.buttonsProperties button {
-    background-color: transparent;
-    border: none;
-    box-shadow: none;
-
-    cursor: pointer;
-}
-
-.modalOverlay {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-
-    position: fixed;
-
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    background-color: var(--transparent-black-03);
-}
-
-.modalContent {
-    text-align: center;
-    max-width: 25rem; /*400px*/
-    width: 90%;
-    padding: var(--30px);
-    background: var(--transparent-black-07);
-    border-radius: var(--radius-l);
-    box-shadow: 0 10px 30px var(--transparent-black-03);
-}
-
-.modalContent h3 {
-    margin-bottom: var(--15px);
-    color: var(--secondary-color-1);
-}
-
-.modalContent span {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: var(--10px);
-    color: var(--secondary-color-1);
-    font-size: var(--20px);
-}
-
-.modalButtons {
-    display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     gap: var(--15px);
-    margin-top: var(--25px);
-}
 
-.cancelButton {
-    background-color: var(--secondary-color-1);
-}
-
-.cancelButton:hover {
-    background-color: var(--primary-color-4);
-}
-
-.cancelButton,
-.deleteButton {
-    padding: var(--10px) var(--25px);
-    color: var(--almost-black);
-    border: none;
-    border-radius: var(--radius-sm);
-    font-size: var(--h5-size);
-    height: max-content;
-    cursor: pointer;
-    transition: background-color var(--normal-transition);
-}
-
-.deleteButton {
-    background-color: var(--secondary-color-5);
-}
-
-.deleteButton:hover {
-    background-color: var(--error-color);
+    padding: 0 var(--20px) var(--20px);
 }
 
 .buttonsProperties button {
-    padding: var(--5px);
-    background: none;
+    padding: var(--10px);
+    background-color: transparent;
     border: none;
     border-radius: var(--radius-sm);
     cursor: pointer;
@@ -172,91 +136,134 @@
     background-color: var(--transparent-black-01);
 }
 
-.showActivePublication {
-    background-color: var(--transparent);
-}
-
+/* ESTADOS */
 .statusContainer {
     display: flex;
     justify-content: center;
     align-items: center;
     padding: var(--30px);
-    border-radius: var(--radius-sm);
-    margin: var(--15px) 0;
-    border: var(--1px) solid transparent;
-    transition: all var(--normal-transition);
+    border-radius: var(--radius-md);
+    margin: var(--20px);
     text-align: center;
-}
-
-.statusContainerLoading {
-    color: var(--primary-color-4);
-    background-color: var(--primary-color-1);
-    border-color: var(--primary-color-2);
-}
-
-.statusContainerError {
-    color: var(--error-color);
-    background-color: #ffebee;
-    border-color: #ffcdd2;
+    border: 1px solid transparent;
 }
 
 .statusContainerEmpty {
-    color: var(--secondary-text-color);
-    background-color: var(--background-color);
-    border-color: var(--border-color);
-    font-style: italic;
+    background-color: var(--primary-color-1);
+    border-color: var(--primary-color-2);
+    color: var(--primary-color-4);
 }
 
-@media (max-width: 768px) {
-    .buttonNewPublication {
-        margin-bottom: var(--50px);
+/* MODAL DE CONFIRMACIÓN */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: var(--transparent-black-03);
+    z-index: 1000;
+}
+
+.modalContent {
+    max-width: 25rem;
+    width: 90%;
+    padding: var(--30px);
+
+    background: var(--transparent-black-07);
+    border-radius: var(--radius-l);
+    box-shadow: 0 10px 30px var(--transparent-black-03);
+    text-align: center;
+}
+
+.modalContent h3,
+.modalContent span {
+    color: var(--secondary-color-1);
+}
+
+.modalContent span {
+    display: block;
+    margin-bottom: var(--10px);
+    font-size: var(--h5-size);
+}
+
+.modalButtons {
+    display: flex;
+    justify-content: center;
+    gap: var(--15px);
+    margin-top: var(--25px);
+}
+
+.cancelButton,
+.deleteButton {
+    padding: var(--10px) var(--25px);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: var(--h5-size);
+    cursor: pointer;
+    transition: all var(--normal-transition);
+}
+
+.cancelButton {
+    background-color: var(--secondary-color-1);
+    color: var(--almost-black);
+}
+
+.cancelButton:hover {
+    background-color: var(--primary-color-4);
+}
+
+.deleteButton {
+    background-color: var(--secondary-color-5);
+    color: var(--almost-black);
+}
+
+.deleteButton:hover {
+    background-color: var(--error-color);
+}
+
+/* RESPONSIVE - TABLET Y DESKTOP */
+@media (min-width: 1024px) {
+    .headerSection {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
     }
+
     .sectionProperties {
-        display: flex;
-        justify-self: center;
-        justify-content: center;
-
-        margin-left: var(--30px);
+        width: auto;
+        justify-content: flex-end;
     }
 
-    .cardsProperties {
-        justify-self: center;
-
-        margin-right: var(--15px);
-    }
-
-    .infoProperties {
-        gap: var(--20px);
-        justify-self: left;
-
-        margin-left: var(--20px);
-    }
-
-    .restInfoProperties {
-        max-width: 15.625rem; /*250px*/
-        width: 100%;
-    }
-
-    .imageProperties {
-        margin-left: 0;
-        margin-top: var(--30px);
-    }
-
-    .buttonsProperties {
-        margin-left: var(--20px);
-        margin-top: var(--20px);
-        padding-bottom: 0;
+    .buttonNewPublication {
+        width: 15.625rem;
     }
 
     .cardProperties {
+        flex-direction: row;
+        align-items: center;
+        max-width: 55rem;
+        min-height: 13.75rem;
+    }
+
+    .imageContainer {
+        flex-shrink: 0;
+        width: 17.8125rem;
+        height: 13.75rem;
+    }
+
+    .infoProperties {
+        gap: var(--15px);
+        padding: var(--20px) var(--30px);
+    }
+
+    .buttonsProperties {
         flex-direction: column;
-        align-items: start;
-        justify-content: left;
-
-        max-width: 320px; /*320px*/
-        width: 100%;
-        height: 26.25rem; /*420px*/
-
-        gap: 0;
+        padding: var(--20px);
     }
 }
