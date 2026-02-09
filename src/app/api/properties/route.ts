@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
 	  // console.error('Error en POST /api/properties:', error);
 
 	  return NextResponse.json(
-		  { error: 'Error interno' },
+		  { error: 'Error interno ' + error },
 		  { status: 500 }
 	  );
   }
