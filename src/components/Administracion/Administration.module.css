@@ -1,4 +1,3 @@
-/* HEADER SECTION */
 .headerSection {
     display: flex;
     flex-direction: column;
@@ -12,7 +11,6 @@
     font-size: var(--h1-size);
     color: var(--primary-color-5);
     font-weight: var(--font-weight-medium);
-
 }
 
 .sectionProperties {
@@ -43,7 +41,6 @@
     text-decoration: none;
 }
 
-/* CONTENEDOR DE CARDS */
 .cardsProperties {
     display: flex;
     flex-direction: column;
@@ -51,92 +48,6 @@
     padding: 0 var(--20px);
 }
 
-/* CARD INDIVIDUAL - MOBILE FIRST (vertical) */
-.cardProperties {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-
-    width: 100%;
-
-    background-color: var(--primary-color-2);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-
-    transition: box-shadow var(--normal-transition);
-}
-
-.cardProperties:hover {
-    box-shadow: 0 4px 12px var(--transparent-black-03);
-}
-
-/* IMAGEN */
-.imageContainer {
-    width: 100%;
-    height: 12.5rem;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background-color: var(--primary-color-1);
-    overflow: hidden;
-}
-
-.imageProperties {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* INFORMACIÓN */
-.infoProperties {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: var(--10px);
-
-    padding: var(--20px);
-    color: var(--primary-color-5);
-}
-
-.priceProperties h2 {
-    font-size: var(--h2-size);
-    font-weight: var(--font-weight-bold);
-    margin: 0;
-}
-
-.restInfoProperties h4 {
-    margin: 0;
-    font-weight: var(--font-weight-normal);
-    line-height: 1.4;
-}
-
-/* BOTONES */
-.buttonsProperties {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    gap: var(--15px);
-
-    padding: 0 var(--20px) var(--20px);
-}
-
-.buttonsProperties button {
-    padding: var(--10px);
-    background-color: transparent;
-    border: none;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: background-color var(--normal-transition);
-}
-
-.buttonsProperties button:hover {
-    background-color: var(--transparent-black-01);
-}
-
-/* ESTADOS */
 .statusContainer {
     display: flex;
     justify-content: center;
@@ -154,7 +65,6 @@
     color: var(--primary-color-4);
 }
 
-/* MODAL DE CONFIRMACIÓN */
 .modalOverlay {
     position: fixed;
     top: 0;
@@ -227,8 +137,7 @@
     background-color: var(--error-color);
 }
 
-/* RESPONSIVE - TABLET Y DESKTOP */
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
     .headerSection {
         flex-direction: row;
         justify-content: space-between;
@@ -244,26 +153,8 @@
         width: 15.625rem;
     }
 
-    .cardProperties {
-        flex-direction: row;
-        align-items: center;
-        max-width: 55rem;
-        min-height: 13.75rem;
-    }
-
-    .imageContainer {
-        flex-shrink: 0;
-        width: 17.8125rem;
-        height: 13.75rem;
-    }
-
-    .infoProperties {
-        gap: var(--15px);
-        padding: var(--20px) var(--30px);
-    }
-
     .buttonsProperties {
+        display: flex;
         flex-direction: column;
-        padding: var(--20px);
     }
 }

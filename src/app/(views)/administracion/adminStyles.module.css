@@ -1,5 +1,5 @@
 .container {
-    padding: 0;
+    padding: 0 0 16px 0;
     margin: 0;
 }
 
@@ -34,7 +34,7 @@
     }
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
     .propertiesLayoutFilter {
         flex-direction: row;
         gap: var(--40px);
@@ -43,7 +43,6 @@
     .propertiesLayoutFilters {
         flex-direction: row;
         flex: 1 1 25%;
-        max-width: 25%;
     }
 
     .containerContentRight {

@@ -2,12 +2,12 @@
 
 import styles from "./Administration.module.css";
 import { cactus } from "@/app/(views)/ui/fonts";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { DeleteProperty } from "@/hooks/DeleteProperty";
 import { useRouter } from "next/navigation";
 import { PropertyWithImages } from "@/types/prisma";
+import AdminCard from "@/components/Administracion/AdminCard/AdminCard";
 
 type Props = {
 	properties: PropertyWithImages[];
@@ -48,9 +48,6 @@ export default function Administration({ properties }: Props) {
 		}
 	};
 
-	const formatPrice = (price: number) =>
-		`USD ${price.toLocaleString('es-AR')}`;
-
 	return (
 		<div>
 			<div className={`${styles.headerSection} ${cactus.className}`}>
@@ -78,62 +75,11 @@ export default function Administration({ properties }: Props) {
 			) : (
 				<div className={styles.cardsProperties}>
 					{properties.map((prop) => (
-						<div key={prop.idProperty} className={`${styles.cardProperties} ${cactus.className}`}>
-							<div className={styles.imageContainer}>
-								<Image
-									src={prop.images[0]?.url?.trim() || "/backgrounds/notImage.jpg"}
-									alt={`Propiedad en ${prop.address}`}
-									width={285}
-									height={220}
-									className={styles.imageProperties}
-								/>
-							</div>
-
-							<Link href={`/propiedades/ficha/${prop.slug}`} className={styles.linkProperties}>
-								<div className={`${styles.infoProperties} ${cactus.className}`}>
-									<div className={styles.priceProperties}>
-										<h2>{formatPrice(prop.price)}</h2>
-									</div>
-									<div className={styles.restInfoProperties}>
-										<h4>{prop.address}, {prop.city}</h4>
-										<h4>{prop.bedrooms} ambientes | {prop.bedrooms} dormitorios | {prop.bathrooms} baños</h4>
-									</div>
-								</div>
-							</Link>
-
-							<div className={styles.buttonsProperties}>
-								<button
-									onClick={(e) => {
-										e.preventDefault();
-										router.push(`/administracion/${prop.slug}/edit`);
-									}}
-									type="button"
-									aria-label="Editar propiedad"
-								>
-									<Image
-										src="/icons/iconoEdit.png"
-										alt=""
-										width={25}
-										height={25}
-									/>
-								</button>
-								<button
-									onClick={(e) => {
-										e.preventDefault();
-										handleDeleteClick(prop);
-									}}
-									type="button"
-									aria-label="Eliminar propiedad"
-								>
-									<Image
-										src="/icons/deleteIcon.png"
-										alt=""
-										width={25}
-										height={25}
-									/>
-								</button>
-							</div>
-						</div>
+						<AdminCard
+							key={prop.idProperty}
+							property={prop}
+							onDelete={handleDeleteClick}
+						/>
 					))}
 				</div>
 			)}
