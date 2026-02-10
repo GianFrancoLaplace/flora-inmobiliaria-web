@@ -15,6 +15,10 @@ import { useRouter } from 'next/navigation';
 import {getBaseUrl} from "@/lib/baseURL";
 import {CheckIcon} from "lucide-react";
 
+// Imports para debug
+// import {useEffect} from "react";
+// import {PropertyTypeEnum, OperationEnum, ServiceEnum} from "@/types/prisma";
+
 export default function PropertyForm({
 	                                     mode,
 	                                     propertyTitle,
@@ -46,7 +50,8 @@ export default function PropertyForm({
 	// 	ubication: 'Calamuchita',
 	// 	description: 'Una gran casa peronista',
 	// 	images: [],
-	// 	deletedImageIds: []
+	// 	deletedImageIds: [],
+	// 	services: [ServiceEnum.agua]
 	// };
 
 	const [formData, setFormData] = useState<PropertyFormInput>({

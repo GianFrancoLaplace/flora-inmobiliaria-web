@@ -54,6 +54,7 @@ export default async function PropertyEditPage({ params }: PropertyEditPageProps
 		// Sistema de Discriminated Union para imágenes
 		images: existingImages,
 		deletedImageIds: [],
+		services: property.services ?? undefined,
 	};
 
 	return (
