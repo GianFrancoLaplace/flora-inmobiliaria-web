@@ -1,4 +1,4 @@
-import { PropertyTypeEnum, OperationEnum } from './prisma';
+import { PropertyTypeEnum, OperationEnum, ServiceEnum } from './prisma';
 import { ImageItem } from "@/types/image.types"
 
 export interface PropertyFormInput {
@@ -15,6 +15,7 @@ export interface PropertyFormInput {
 	bathrooms?: number;
 	floors?: number;
 	garage?: number;
+	services: ServiceEnum[];
 	images: ImageItem[];
 	deletedImageIds: number[];
 }

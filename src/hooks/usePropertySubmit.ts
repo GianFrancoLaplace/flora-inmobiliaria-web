@@ -5,9 +5,6 @@ export function usePropertySubmit() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	/**
-	 * Decide si crear o editar según el modo.
-	 */
 	const submit = async (
 		data: PropertyFormInput,
 		mode: FormMode,
@@ -30,11 +27,6 @@ export function usePropertySubmit() {
 		}
 	};
 
-	/**
-	 * TRANSFORMACIÓN A FORMDATA
-	 * Convierte PropertyFormInput en FormData listo para HTTP.
-	 * Función pura = mismo input siempre da mismo output (sin side effects).
-	 */
 	const buildFormData = (data: PropertyFormInput, mode: FormMode): FormData => {
 		const formData = new FormData();
 
@@ -49,7 +41,6 @@ export function usePropertySubmit() {
 		data: PropertyFormInput,
 		mode: FormMode
 	): void => {
-		// Campos obligatorios (siempre presentes)
 		formData.append('address', data.address);
 		formData.append('city', data.city);
 		formData.append('price', data.price.toString());
@@ -59,8 +50,6 @@ export function usePropertySubmit() {
 		formData.append('type', data.type!);
 		formData.append('category', data.category!);
 
-
-		// Campos opcionales (solo si tienen valor)
 		if (data.constructedArea !== undefined) {
 			formData.append('constructedArea', data.constructedArea.toString());
 		}
@@ -76,15 +65,11 @@ export function usePropertySubmit() {
 		if (data.floors !== undefined) {
 			formData.append('floors', data.floors.toString());
 		}
+		if (data.services && data.services.length >= 0) {
+			formData.append('services', JSON.stringify(data.services));
+		}
 	};
 
-	/**
-	 * AGREGAR CAMPOS DE IMÁGENES
-	 * Lógica diferenciada según modo CREATE vs EDIT.
-	 *
-	 * CREATE: Solo envía imágenes nuevas con metadata
-	 * EDIT: Envía config de existentes + deleted IDs + nuevas con metadata
-	 */
 	const addImageFields = (
 		formData: FormData,
 		data: PropertyFormInput,
@@ -126,9 +111,6 @@ export function usePropertySubmit() {
 		}
 	};
 
-	/**
-	 * HTTP POST - Crear propiedad
-	 */
 	const submitCreate = async (formData: FormData) => {
 		const response = await fetch('/api/properties', {
 			method: 'POST',
@@ -142,10 +124,6 @@ export function usePropertySubmit() {
 		return await response.json();
 	};
 
-	/**
-	 * HTTP PUT - Actualizar propiedad
-	 * TODO: endpoint PUT /api/properties/[id]
-	 */
 	const submitEdit = async (formData: FormData, propertyId: string) => {
 		const response = await fetch(`/api/properties/${propertyId}`, {
 			method: 'PUT',

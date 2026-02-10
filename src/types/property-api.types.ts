@@ -1,10 +1,5 @@
-import { PropertyTypeEnum, OperationEnum } from './prisma';
-import { ImageMetadata } from './property-form.types';
+import { PropertyTypeEnum, OperationEnum, ServiceEnum } from './prisma';
 
-/**
- * DTO para crear propiedad vía API
- * Usado en PropertyService.create()
- */
 export interface CreatePropertyDto {
 	address: string;
 	city: string;
@@ -19,6 +14,7 @@ export interface CreatePropertyDto {
 	bathrooms?: number;
 	floors?: number;
 	constructedArea?: number;
+	services?: ServiceEnum[];
 }
 
 export interface PropertyUpdateData {
@@ -28,13 +24,14 @@ export interface PropertyUpdateData {
 	price?: number;
 	description?: string;
 	type?: PropertyTypeEnum;
-	category?:OperationEnum;
+	category?: OperationEnum;
 	surface?: number;
 	bedrooms?: number;
 	bathrooms?: number;
 	garage?: number;
 	floors?: number;
 	constructed_area?: number;
+	services?: ServiceEnum[];
 }
 
 export interface PropertyData {
@@ -45,12 +42,13 @@ export interface PropertyData {
 	price: number;
 	description: string;
 	type: PropertyTypeEnum;
-	category:OperationEnum;
+	category: OperationEnum;
 	surface: number;
 	bedrooms: number;
 	bathrooms: number;
 	garage: number;
 	floors: number;
 	constructed_area: number;
+	services: ServiceEnum[];
 	images: { id: number; url: string }[];
 }

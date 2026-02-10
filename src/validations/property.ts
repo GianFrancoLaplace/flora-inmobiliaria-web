@@ -1,5 +1,7 @@
 import { z } from "zod";
-import { OperationEnum, PropertyTypeEnum } from "@prisma/client";
+import { OperationEnum, PropertyTypeEnum, ServiceEnum } from "@/types/prisma";
+
+const serviceEnumSchema = z.nativeEnum(ServiceEnum);
 
 const optionalNonEmptyString = (field: string, min = 2, max = 200) =>
     z
@@ -71,6 +73,8 @@ export const propertyUpdateSchema = z
         type: z.nativeEnum(PropertyTypeEnum).optional(),
 
         category: z.nativeEnum(OperationEnum).optional(),
+
+	    services: z.array(serviceEnumSchema),
     })
     .superRefine((data, ctx) => {
         if (

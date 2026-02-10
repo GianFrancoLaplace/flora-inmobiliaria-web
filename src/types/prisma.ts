@@ -18,6 +18,7 @@ export type {
 export {
 	PropertyTypeEnum,
 	OperationEnum,
+	ServiceEnum
 } from '@prisma/client';
 
 export type PropertyWithImages = PropertyDbModel & {
