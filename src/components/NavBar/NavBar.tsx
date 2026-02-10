@@ -1,76 +1,276 @@
-'use client';
+"use client";
 
-import styles from './NavBar.module.css'
-import {cactus} from "@/app/(views)/ui/fonts";
-import Image from "next/image";
 import Link from "next/link";
-import { useState } from 'react';
-import { usePathname } from 'next/navigation';
-import { handleSignOut } from '../../lib/actions';
+import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
+import { Menu, X, ChevronDown } from "lucide-react";
+
+import styles from "./NavBar.module.css";
+
+type NavItem = {
+	label: string;
+	href: string;
+	type?: "link" | "dropdown";
+	children?: { label: string; href: string }[];
+};
 
 export default function NavBar() {
 	const pathname = usePathname();
-	const isHome = pathname === '/';
-	const isLogin = pathname === '/login';
-	const isI_WantSell = pathname === '/quiero-vender';
-	const isOur = pathname === '/nosotros';
-	const isAdmin = pathname === '/administracion';
+	const isHome = pathname === "/";
 
-	const [isOpen, setIsOpen] = useState(false);
-	const toggleMenu = () => setIsOpen(!isOpen);
+	const [isScrolled, setIsScrolled] = useState(false);
+	const [drawerOpen, setDrawerOpen] = useState(false);
+	const [dropdownOpen, setDropdownOpen] = useState(false);
+
+	const navItems: NavItem[] = useMemo(
+		() => [
+			{ label: "Inicio", href: "/" },
+			{
+				label: "Propiedades",
+				href: "/propiedades",
+				type: "dropdown",
+				children: [
+					{ label: "Venta", href: "/propiedades?operacion=venta" },
+					{ label: "Alquiler", href: "/propiedades?operacion=alquiler" },
+				],
+			},
+			{ label: "Quiero vender", href: "/quiero-vender" },
+			{ label: "Sobre nosotros", href: "/nosotros" },
+		],
+		[]
+	);
+
+	useEffect(() => {
+		const onScroll = () => {
+			setIsScrolled(window.scrollY > 10);
+		};
+
+		onScroll();
+		window.addEventListener("scroll", onScroll, { passive: true });
+		return () => window.removeEventListener("scroll", onScroll as any);
+	}, []);
+
+	// Si cambia la ruta, cerramos overlays
+	useEffect(() => {
+		setDrawerOpen(false);
+		setDropdownOpen(false);
+	}, [pathname]);
+
+	const headerClass = [
+		styles.header,
+		isHome && !isScrolled ? styles.headerTransparent : styles.headerSolid,
+		isScrolled ? styles.headerShadow : "",
+	]
+		.filter(Boolean)
+		.join(" ");
+
+	const isActive = (href: string) => {
+		// Activo por ruta base, ignorando query/hash
+		const base = href.split("?")[0].split("#")[0];
+		if (base === "/") return pathname === "/";
+		return pathname.startsWith(base);
+	};
 
 	return (
-		<nav className={`${styles.navProperties} ${isHome ? styles.absoluteNav : isLogin ? styles.absoluteNav : isI_WantSell ? styles.absoluteNav : isOur ? styles.absoluteNav : styles.staticNav}`}>
-			<ul className={`${styles.logoProperties}`}>
-				<Link href="/">
+		<header className={headerClass}>
+			<div className={styles.inner}>
+				{/* Logo */}
+				<Link href="/" className={styles.logoLink} aria-label="Ir al inicio">
 					<Image
-						src={'/logos/fullLogo.png'}
-						alt={'minimalist inmobiliaria yellow logo'}
-						width={423}
-						height={90}
+						src="/logos/fullLogo.png"
+						alt="Flora Cordeiro Inmobiliaria"
+						width={170}
+						height={44}
+						className={styles.logo}
+						priority
 					/>
 				</Link>
-			</ul>
-			<ul className={styles.btnBurgerProperties}>
-				<button onClick={toggleMenu}>
-					<Image
-						src={'/icons/iconoMenu.png'}
-						alt={"icono menú hamburguesa"}
-						width={40}
-						height={40}
-					/>
-				</button>
-			</ul>
 
-			<ul className={`${styles.sectionProperties} ${isOpen ? styles.openNav : styles.closeNav} ${cactus.className}`}>
-				<li><a href={"/"}>Inicio</a></li>
-				<li><a href={"/propiedades"}>Propiedades</a></li>
-				<li><a href={"/nosotros"}>Nosotros</a></li>
-				<li><a href={"/quiero-vender"}>Quiero vender</a></li>
-				<li>
-					{pathname === '/administracion' ? (
+				{/* Desktop nav */}
+				<nav className={styles.navDesktop} aria-label="Navegación principal">
+					<Link
+						className={`${styles.link} ${isActive("/") ? styles.active : ""}`}
+						href="/"
+					>
+						Inicio
+					</Link>
+
+					{/* Dropdown Propiedades */}
+					<div
+						className={styles.dropdown}
+						onMouseEnter={() => setDropdownOpen(true)}
+						onMouseLeave={() => setDropdownOpen(false)}
+					>
 						<button
-							onClick={async () => {
-								await handleSignOut();
-								window.location.href = "/";
-							}}
-							className={` ${styles.logoutButton} ${cactus.className}`}
+							type="button"
+							className={`${styles.link} ${
+								isActive("/propiedades") ? styles.active : ""
+							} ${styles.dropdownTrigger}`}
+							aria-haspopup="menu"
+							aria-expanded={dropdownOpen}
+							onClick={() => setDropdownOpen((v) => !v)}
 						>
-							<h3>Cerrar Sesión</h3>
+							Propiedades <ChevronDown size={16} className={styles.chev} />
 						</button>
-					) : (
-						<Link href="/login">
-							<Image
-								src={'/icons/iconoUser.png'}
-								alt={'Iniciar sesión'}
-								className={styles.iconoProperties}
-								width={20}
-								height={20}
-							/>
-						</Link>
-					)}
-				</li>
-			</ul>
-		</nav>
+
+						<div
+							className={`${styles.dropdownMenu} ${
+								dropdownOpen ? styles.dropdownMenuOpen : ""
+							}`}
+							role="menu"
+						>
+							<Link className={styles.dropdownItem} href="/propiedades">
+								Ver todas
+							</Link>
+							<Link
+								className={styles.dropdownItem}
+								href="/propiedades?operacion=venta"
+							>
+								Venta
+							</Link>
+							<Link
+								className={styles.dropdownItem}
+								href="/propiedades?operacion=alquiler"
+							>
+								Alquiler
+							</Link>
+						</div>
+					</div>
+
+					<Link
+						className={`${styles.link} ${
+							isActive("/quiero-vender") ? styles.active : ""
+						}`}
+						href="/quiero-vender"
+					>
+						Quiero vender
+					</Link>
+
+					<Link className={styles.link} href="/nosotros">
+						Sobre nosotros
+					</Link>
+
+					{/* CTA suave */}
+					<Link href="/propiedades" className={styles.cta}>
+						Ver propiedades
+					</Link>
+				</nav>
+
+				{/* Mobile button */}
+				<button
+					type="button"
+					className={styles.mobileBtn}
+					aria-label="Abrir menú"
+					onClick={() => setDrawerOpen(true)}
+				>
+					<Menu size={22} />
+				</button>
+			</div>
+
+			{/* Drawer mobile */}
+			{drawerOpen && (
+				<div
+					className={styles.drawerOverlay}
+					role="dialog"
+					aria-modal="true"
+					aria-label="Menú"
+					onClick={() => setDrawerOpen(false)}
+				>
+					<div
+						className={styles.drawerPanel}
+						onClick={(e) => e.stopPropagation()}
+					>
+						<div className={styles.drawerTop}>
+							<Link
+								href="/"
+								className={styles.drawerLogo}
+								onClick={() => setDrawerOpen(false)}
+							>
+								<Image
+									src="/logos/fullLogo.png"
+									alt="Flora Cordeiro Inmobiliaria"
+									width={150}
+									height={40}
+									className={styles.logo}
+								/>
+							</Link>
+
+							<button
+								type="button"
+								className={styles.drawerClose}
+								aria-label="Cerrar menú"
+								onClick={() => setDrawerOpen(false)}
+							>
+								<X size={20} />
+							</button>
+						</div>
+
+						<div className={styles.drawerBody}>
+							<Link
+								className={styles.drawerLink}
+								href="/"
+								onClick={() => setDrawerOpen(false)}
+							>
+								Inicio
+							</Link>
+
+							<details className={styles.drawerDetails}>
+								<summary className={styles.drawerSummary}>
+									Propiedades <ChevronDown size={16} />
+								</summary>
+								<div className={styles.drawerSub}>
+									<Link
+										className={styles.drawerSubLink}
+										href="/propiedades"
+										onClick={() => setDrawerOpen(false)}
+									>
+										Ver todas
+									</Link>
+									<Link
+										className={styles.drawerSubLink}
+										href="/propiedades?operacion=venta"
+										onClick={() => setDrawerOpen(false)}
+									>
+										Venta
+									</Link>
+									<Link
+										className={styles.drawerSubLink}
+										href="/propiedades?operacion=alquiler"
+										onClick={() => setDrawerOpen(false)}
+									>
+										Alquiler
+									</Link>
+								</div>
+							</details>
+
+							<Link
+								className={styles.drawerLink}
+								href="/#quiero-vender"
+								onClick={() => setDrawerOpen(false)}
+							>
+								Quiero vender
+							</Link>
+
+							<Link
+								className={styles.drawerLink}
+								href="/#sobre-nosotros"
+								onClick={() => setDrawerOpen(false)}
+							>
+								Sobre nosotros
+							</Link>
+
+							<Link
+								className={styles.drawerCta}
+								href="/propiedades"
+								onClick={() => setDrawerOpen(false)}
+							>
+								Ver propiedades
+							</Link>
+						</div>
+					</div>
+				</div>
+			)}
+		</header>
 	);
 }
