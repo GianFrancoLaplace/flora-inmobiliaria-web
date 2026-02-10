@@ -32,7 +32,8 @@ export default function PropertyForm({
 		ubication: '',
 		description: '',
 		images: [],
-		deletedImageIds: []
+		deletedImageIds: [],
+		services: []
 	};
 
 	// const defaultFormData: PropertyFormInput = {
