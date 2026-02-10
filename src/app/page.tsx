@@ -3,79 +3,76 @@ import { cactus } from "@/app/(views)/ui/fonts";
 import HomeF from "@/components/Home/Home";
 import FilterGroup from "@/components/FilterButtons/FilterGroup";
 import BigCardsGrid from "@/components/BigCards/BigCardsGrid";
-import Link from 'next/link';
-import { PropertyService } from '@/services/property.service';
-import {OperationEnum, PropertyTypeEnum} from "@/types/prisma";
+import Link from "next/link";
 
-const filtrosTipoPropiedad = [
-	"Departamentos",
-	"Lotes",
-	"Casas",
-	"Locales",
-	"Campos",
-];
+import { prisma } from "@/lib/prisma";
 
-type PageProps = {
-	searchParams: Promise<{
-		tipo?: string;
-		operacion?: string;
-		maxValue?: string;
-	}>;
-};
+const filtrosTipoPropiedad = ["Departamentos", "Lotes", "Casas", "Locales", "Campos"];
 
-export default async function Page({ searchParams }: PageProps) {
-	const propertyService = new PropertyService();
-
-	const params = await searchParams;
-
-	const filters = {
-		types: params.tipo?.split(',').filter(Boolean) as PropertyTypeEnum[] | undefined,
-		operations: params.operacion?.split(',').filter(Boolean) as OperationEnum[] | undefined,
-		maxPrice: params.maxValue ? Number(params.maxValue) : undefined,
-	};
-
-	const properties = await propertyService.findMany(filters);
+export default async function Page() {
+	const properties = await prisma.property.findMany({
+		orderBy: { idProperty: "desc" }, // "novedades"
+		take: 6,
+		include: {
+			images: {
+				orderBy: { position: "asc" },
+				take: 1,
+			},
+		},
+	});
 
 	return (
 		<div className={`${styles.page} ${cactus.className} ${styles.container}`}>
 			<HomeF />
 
-			<div className={styles.presentationProperties}>
-				<h1>Tu próxima propiedad, nuestra prioridad</h1>
-				<h5>
-					Combinamos experiencia, compromiso y un trato cercano para ayudarte a encontrar el lugar que estás
-					buscando. Ya sea que quieras comprar, vender o alquilar, te acompañamos en cada paso con
-					asesoramiento personalizado y total transparencia. Descubrí una nueva forma de hacer negocios
-					inmobiliarios, centrada en vos.
-				</h5>
+			<section className={styles.presentationProperties}>
+				<header className={styles.heroText}>
+					<h1>Tu próxima propiedad, nuestra prioridad</h1>
+					<p>
+						Combinamos experiencia, compromiso y un trato cercano para ayudarte a encontrar el lugar que estás
+						buscando. Ya sea que quieras comprar, vender o alquilar, te acompañamos en cada paso con asesoramiento
+						personalizado y total transparencia.
+					</p>
 
-				<div className={styles.messageButtonProperties}>
-					<Link href={"https://wa.me/2494208037"} className={styles.linkProperties}>
-						<button className={`${styles.messageBtn} ${cactus.className}`}>
-							Enviar un mensaje
-						</button>
-					</Link>
-				</div>
+					<div className={styles.actions}>
+						<Link href={"https://wa.me/2494208037"} className={styles.linkProperties}>
+							<button className={`${styles.primaryBtn} ${cactus.className}`}>
+								Enviar un mensaje
+							</button>
+						</Link>
 
-				<div>
+						<Link href={"/propiedades"} className={styles.linkProperties}>
+							<button className={`${styles.secondaryBtn} ${cactus.className}`}>
+								Ver propiedades
+							</button>
+						</Link>
+					</div>
+				</header>
+
+				<div className={styles.quickFilters}>
 					<FilterGroup
 						title=""
 						filters={filtrosTipoPropiedad}
+						targetPath="/propiedades"
 					/>
 				</div>
 
-				<div>
-					<BigCardsGrid properties={properties} />
+				<div className={styles.sectionHeader}>
+					<h2>Novedades</h2>
+					<p>Últimas propiedades publicadas</p>
 				</div>
 
-				<div className={styles.mainCardsGridProperties}>
+				<section className={styles.cardsSection}>
+					<BigCardsGrid properties={properties} />
+				</section>
+				<div className={styles.bottomCta}>
 					<Link href={"/propiedades"} className={styles.linkProperties}>
 						<button className={`${styles.allPropertiesBtn} ${cactus.className}`}>
 							Ver todas las propiedades
 						</button>
 					</Link>
 				</div>
-			</div>
+			</section>
 		</div>
 	);
 }

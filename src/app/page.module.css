@@ -108,3 +108,114 @@
         font-size: 18px;
     }
 }
+.presentationProperties {
+    width: min(1100px, 92vw);
+    margin: 0 auto 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    text-align: center;
+}
+
+.heroText h1 {
+    margin: 16px 0 0;
+    font-size: clamp(24px, 3vw, 40px);
+    letter-spacing: -0.02em;
+}
+
+.heroText p {
+    margin: 10px auto 0;
+    max-width: 860px;
+    font-size: 14px;
+    line-height: 1.6;
+    opacity: 0.82;
+}
+
+.actions {
+    margin-top: 14px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.primaryBtn {
+    width: 260px;
+    cursor: pointer;
+    border-radius: 999px;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: var(--secondary-color-5);
+    color: var(--almost-black);
+    font-weight: 800;
+    padding: 12px 16px;
+    transition: transform 160ms ease, opacity 160ms ease;
+}
+.primaryBtn:hover { opacity: 0.92; transform: translateY(-1px); }
+
+.secondaryBtn {
+    width: 260px;
+    cursor: pointer;
+    border-radius: 999px;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: rgba(255,255,255,0.8);
+    color: var(--almost-black);
+    font-weight: 800;
+    padding: 12px 16px;
+    transition: transform 160ms ease, background 160ms ease;
+}
+.secondaryBtn:hover { background: rgba(255,255,255,1); transform: translateY(-1px); }
+
+.quickFilters {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.sectionHeader {
+    margin-top: 14px;
+    width: 100%;
+}
+.sectionHeader h2 {
+    margin: 0;
+    font-size: 18px;
+    letter-spacing: -0.01em;
+}
+.sectionHeader p {
+    margin: 6px 0 0;
+    font-size: 13px;
+    opacity: 0.7;
+}
+
+.bottomCta {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+.allPropertiesBtn {
+    width: min(520px, 92vw);
+    cursor: pointer;
+    border-radius: 999px;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: var(--secondary-color-4);
+    color: var(--almost-black);
+    font-weight: 900;
+    padding: 13px 16px;
+    transition: transform 160ms ease, opacity 160ms ease;
+}
+.allPropertiesBtn:hover { opacity: 0.92; transform: translateY(-1px); }
+.cardsSection {
+    width: 100%;
+    max-width: 1200px; /* 👈 CLAVE */
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+.page {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.page:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
+}
