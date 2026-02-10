@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import FiltroToggle from "./FilterButtons";
 import styles from "./FilterButtons.module.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
