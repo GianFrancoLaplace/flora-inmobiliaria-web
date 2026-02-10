@@ -1,60 +1,29 @@
-.propertyGrid {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    gap: var(--15px);
-    padding: var(--20px);
-    margin: var(--20px);
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 14px;
 }
 
-.allPropertiesBtn {
-    width: 100%;
-    max-width: 28.125rem;/*450px*/
-    margin-bottom: var(--20px);
-    align-self: center;
-    background-color: var(--secondary-color-4);
+.empty {
+    padding: 18px 14px;
+    color: rgba(0,0,0,0.65);
 }
 
-.linkProperties {
-    text-decoration: none;
-}
-
-.viewButton {
-    visibility: visible;
-}
-
-.notViewButton {
-    visibility: hidden;
-}
-
-
-
-
+/* 2 columnas */
 @media (min-width: 768px) {
-    .propertyGrid {
-
-        display: grid;
+    .grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-
-
-        justify-content: center;
-        align-items: center;
-        max-width: 100%;
-        row-gap: var(--50px);
-        column-gap: var(--20px);
-        margin: 0 auto;
+        gap: 22px;
+        padding: 16px 18px;
     }
-
-
 }
 
-
+/* 3-4 columnas fluid */
 @media (min-width: 1024px) {
-    .propertyGrid {
-        grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    .grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 24px;
+        padding: 8px 0;
     }
-
-
 }

@@ -1,167 +1,159 @@
-.imageContainerProperties {
+/* Wrapper: permite que las flechas se salgan */
+.carousel {
     position: relative;
     width: 100%;
-    overflow: hidden;
+    overflow: visible;      /* 👈 flechas afuera */
+    touch-action: pan-y;
+}
+
+/* Frame: recorta contenido con borde/redondeo */
+.frame {
+    position: relative;
+    width: 100%;
     height: 22rem;
+    overflow: hidden;       /* 👈 solo recorta imagen/overlay */
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.03);
 }
 
-.imageContainerProperties:hover .containerAddImage,
-.imageContainerProperties:hover .messageCardPropertie {
-    visibility: visible;
+/* Imagen completa (sin recorte) */
+.image {
+    object-fit: contain;         /* 👈 completa, sin zoom */
+    background: rgba(0, 0, 0, 0.18); /* bandas elegantes si hay */
+    opacity: 0;
+    transform: none;             /* 👈 NO zoom */
+    transition: opacity 250ms ease;
+}
+
+.imageActive {
     opacity: 1;
+    transform: none;
 }
 
-.containerImagesEmptyFileProperties{
-    visibility: visible;
-    opacity: 1;
-}
-
-.imageProperties {
-    object-fit: cover;
-    opacity: 0;
-    transform: scale(0.98);
-    transition: opacity ease-out 0.5s;
+/* Skeleton */
+.skeleton {
     position: absolute;
-    top: 0;
-    left: 0;
+    inset: 0;
+    background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.03),
+            rgba(255, 255, 255, 0.08),
+            rgba(255, 255, 255, 0.03)
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.2s infinite;
+    z-index: 1;
 }
 
-.containerAddImage {
-    display: flex;
-    flex-direction: row;
-    background-color: var(--transparent-black-07);
-    position: absolute;
-    visibility: hidden;
-    transition: opacity 1s ease;
+.skeletonHidden {
     opacity: 0;
-    z-index: 10;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    gap: var(--20px);
+    transition: opacity 200ms ease;
+    pointer-events: none;
 }
 
-.containerAddImageForEmptyFile{
-    display: flex;
-    flex-direction: row;
-    background-color: var(--transparent-black-07);
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Overlay suave (no ensucia tanto con contain) */
+.overlay {
     position: absolute;
-    transition: opacity 1s ease;
-    z-index: 10;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    gap: var(--20px);
-}
-
-.withoutImageProperties{
-    background-image: url("/logos/fullLogo.png");
-    background-size: auto;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-.messageCardPropertie {
-    background-color: var(--transparent-black-07);
-    max-width: 31.625rem; /*506px*/
-    width: 100%;
-    height: 7.5rem; /*120px*/
-    position: absolute;
-    justify-self: center;
-    align-content: center;
-    text-align: center;
-    margin-top: 15.625rem; /*250px*/
-    z-index: 11;
-    opacity: 0;
-}
-
-.messageCardPropertie p {
-    font-size: var(--h3-size);
-    color: var(--primary-color-1);
-}
-
-.buttonMessageProperties {
-    display: flex;
-    flex-direction: row;
-}
-
-.buttonMessageProperties button {
-    max-width: 12.5rem; /*200px*/
-    width: 100%;
-    height: var(--30px);
-    cursor: pointer;
-    transition: background-color ease-out 0.5s;
-}
-
-.aceptButtonProperties {
-    background-color: var(--secondary-color-5);
-}
-
-.aceptButtonProperties:hover {
-    background-color: var(--error-color);
-}
-
-.inputProperties {
-    display: none;
-    opacity: 0;
-}
-
-.labelAddImageProperties {
-    display: flex;
-    width: 16.5rem; /*200px*/
-    height: var(--50px);
-    background-color: var(--secondary-color-2);
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--10px);
-    cursor: pointer;
-}
-
-.deleteIconProperties {
-    background-color: var(--secondary-color-2);
-    width: var(--50px);
-    height: var(--50px);
-    border-radius: var(--10px);
-    border: none;
-    box-shadow: none;
-}
-
-.containerAddImage button {
-    cursor: pointer;
-}
-
-.notVisible {
-    visibility: hidden;
-}
-
-.imagePropertiesActive {
-    opacity: 1;
-    transform: scale(1);
+    inset: 0;
+    background:
+            linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0) 40%),
+            linear-gradient(0deg, rgba(0,0,0,0.22), rgba(0,0,0,0) 45%);
     z-index: 2;
+    pointer-events: none;
 }
 
-.buttonProperties {
+/* Controles: centrados vertical y “afuera” */
+.controls {
     position: absolute;
+    inset: 0;
     display: flex;
-    justify-content: center;
-    justify-self: center;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 4;
+    pointer-events: none;     /* solo botones clickeables */
+    opacity: 0;
+    transition: opacity 180ms ease;
+}
+
+.carousel:hover .controls {
+    opacity: 1;
+}
+
+.navBtn {
+    pointer-events: auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(20, 20, 20, 0.55);
+    backdrop-filter: blur(6px);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: transform 120ms ease, background 120ms ease;
+}
+
+/* 👇 “sobre el límite” */
+.navBtn:first-child { transform: translateX(-18px); }
+.navBtn:last-child  { transform: translateX(18px); }
+
+.navBtn:hover {
+    background: rgba(20, 20, 20, 0.7);
+}
+.navBtn:first-child:hover { transform: translateX(-18px) translateY(-1px); }
+.navBtn:last-child:hover  { transform: translateX(18px) translateY(-1px); }
+
+.navBtn:focus-visible {
+    outline: 2px solid rgba(255, 214, 0, 0.85);
+    outline-offset: 2px;
+}
+
+/* Dots */
+.dots {
+    position: absolute;
+    left: 50%;
     bottom: 10px;
-    gap: var(--50px);
-    z-index: 11;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 5;
 }
 
-.buttonProperties button {
-    width: var(--50px);
-    height: var(--50px);
-    background-color: var(--secondary-color-3);
-    border: none;
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.18);
+    cursor: pointer;
+    padding: 0;
 }
 
+.dotActive {
+    background: rgba(255, 214, 0, 0.9);
+    border-color: rgba(255, 214, 0, 0.9);
+}
+
+/* Counter */
+.counter {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    z-index: 5;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(20, 20, 20, 0.55);
+    backdrop-filter: blur(6px);
+}
 
 @media (min-width: 768px) {
-    .imageContainerProperties {
-        height: 37.5rem;
-    }
+    .frame { height: 37.5rem; }
 }
