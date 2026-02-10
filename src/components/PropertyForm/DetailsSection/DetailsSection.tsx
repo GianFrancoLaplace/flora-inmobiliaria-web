@@ -1,6 +1,6 @@
 import styles from './DetailsSection.module.css';
 import {PropertyFormInput} from "@/types/property-form.types";
-import {PropertyTypeEnum} from "@/types/prisma";
+import {PropertyTypeEnum, ServiceEnum} from "@/types/prisma";
 
 interface DetailsSectionProps {
 	formData: PropertyFormInput;
@@ -8,10 +8,25 @@ interface DetailsSectionProps {
 	errors: Record<string, string>;
 }
 
+const SERVICE_LABELS: Record<ServiceEnum, string> = {
+	[ServiceEnum.agua]: 'Agua',
+	[ServiceEnum.luz]: 'Luz',
+	[ServiceEnum.gas]: 'Gas',
+	[ServiceEnum.internet]: 'Internet',
+	[ServiceEnum.cloacas]: 'Cloacas',
+};
+
 export default function DetailsSection({ formData, onChange, errors }: DetailsSectionProps) {
 	const type = formData.type;
 
-	// Estado vacío si no hay tipo seleccionado
+	const handleServiceToggle = (service: ServiceEnum) => {
+		const currentServices = formData.services || [];
+		const newServices = currentServices.includes(service)
+			? currentServices.filter(s => s !== service)
+			: [...currentServices, service];
+		onChange('services', newServices);
+	};
+
 	if (!type) {
 		return (
 			<section className={styles.section}>
@@ -157,6 +172,27 @@ export default function DetailsSection({ formData, onChange, errors }: DetailsSe
 					</div>
 				)}
 
+			</div>
+
+			{/* SERVICIOS - Todos los tipos (opcional) */}
+			<div className={styles.servicesSection}>
+				<label className={styles.label}>
+					Servicios disponibles
+				</label>
+				<p className={styles.hint}>Opcional - Selecciona los servicios que tiene la propiedad</p>
+				<div className={styles.checkboxGrid}>
+					{Object.values(ServiceEnum).map((service) => (
+						<label key={service} className={styles.checkboxLabel}>
+							<input
+								type="checkbox"
+								checked={formData.services?.includes(service) || false}
+								onChange={() => handleServiceToggle(service)}
+								className={styles.checkbox}
+							/>
+							<span>{SERVICE_LABELS[service]}</span>
+						</label>
+					))}
+				</div>
 			</div>
 		</section>
 	);
