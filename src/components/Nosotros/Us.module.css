@@ -6,83 +6,137 @@
 
 .backgroundNavProperties {
     background-image: url("../../../public/backgrounds/tandil-us.webp");
-    background-size: 100%;
-    position: relative;
-    align-content: center;
+    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    z-index: 1;
 
+    position: relative;
     width: 100%;
-    height: 13rem; /*208px*/
+    height: 22rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .backgroundNavProperties::before {
     content: "";
     position: absolute;
     inset: 0;
+    background-color: rgba(0, 0, 0, 0.55); /* overlay más elegante */
     z-index: 1;
-
-    background-color: var(--transparent-black-07);
 }
 
 .infoImageProperties {
+    position: relative;
+    z-index: 2;
+    color: white;
+
     display: flex;
     flex-direction: column;
-    z-index: 2;
-    position: relative;
-    width: fit-content;
-    justify-self: center;
-    margin-top: var(--25px);
-    color: var(--primary-color-1);
-}
+    gap: 6px;
 
+}
 .h5Properties {
     display: flex;
     width: fit-content;
-
     margin: 0 auto;
     white-space: nowrap;
 }
 
-.generalInfoProperties {
+/* Sección valores */
+.aboutSection {
+    width: min(1100px, 92vw);
+    margin: 0 auto;
+    padding: var(--50px) 0 var(--20px);
+
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-top: var(--50px);
-    margin-bottom: var(--20px);
-    gap: var(--30px);
+    gap: var(--25px);
 }
 
-.generalInfoProperties, .description{
-    text-align: justify;
-}
-
-.missionAndVisionProperties {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--20px);
-}
-
-.infoProperties {
-    display: flex;
-    flex-direction: column;
+.aboutIntro {
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
 
-    max-width: 23rem; /*370px*/
-    width: 100%;
-
-    gap: var(--15px);
-
+.sectionTitle {
+    margin: 0;
     color: var(--primary-color-5);
+    font-size: clamp(22px, 2.4vw, 34px);
+    letter-spacing: -0.02em;
+}
+
+.sectionText {
+    margin: 0 auto;
+    max-width: 900px;
+    color: var(--primary-color-4);
+    font-size: 14px;
+    line-height: 1.7;
+    opacity: 0.92;
+}
+
+/* Grid 3 columnas en desktop */
+.valuesGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+.valueCard {
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    padding: 16px 16px 14px;
+
+    box-shadow: 0 10px 24px var(--transparent-black-01);
+    backdrop-filter: blur(8px);
+
+    transition: transform 160ms ease, box-shadow 160ms ease, border 160ms ease;
+}
+
+.valueCard:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 0, 0, 0.14);
+    box-shadow: 0 14px 30px var(--transparent-black-02);
+}
+
+.valueTitle {
+    margin: 0 0 8px;
+    color: var(--primary-color-5);
+    font-size: 16px;
+    letter-spacing: -0.01em;
+}
+
+.valueText {
+    margin: 0;
+    color: var(--primary-color-4);
+    font-size: 13.5px;
+    line-height: 1.65;
+}
+
+/* Separador */
+.underline {
+    width: min(1100px, 92vw);
+    height: 1px;
+    margin: 8px auto 0;
+    background: rgba(0, 0, 0, 0.08);
+}
+
+/* Perfil (mitad imagen / mitad texto) */
+.profileSection {
+    width: min(1100px, 92vw);
+    margin: 0 auto;
+    padding: var(--20px) 0 var(--30px);
 }
 
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(14px);
     }
     to {
         opacity: 1;
@@ -93,90 +147,78 @@
 .container {
     display: flex;
     flex-direction: column;
-    align-items: center;
-
-    width: 100%;
-
+    align-items: stretch;
     gap: var(--20px);
 }
 
 .imageContainer {
-    animation: fadeInUp 0.8s ease-out forwards;
+    animation: fadeInUp 0.7s ease-out forwards;
 }
 
 .textContainer {
     flex: 1;
     opacity: 0;
-
-    padding-inline: var(--50px);
-
-    animation: fadeInUp 0.8s ease-out 0.2s forwards;
+    animation: fadeInUp 0.7s ease-out 0.12s forwards;
 }
 
 .image {
     object-fit: cover;
     display: block;
-
-    max-width: 100%;
+    width: 100%;
     height: auto;
 
     background-color: var(--secondary-color-1);
+    border-radius: 18px;
+    box-shadow: 0 14px 34px var(--transparent-black-02);
 }
 
 .title {
-    margin-bottom: 0;
-
-    font-size: var(--h1-size);
+    margin: 0;
+    font-size: clamp(22px, 2.2vw, 30px);
     color: var(--primary-color-5);
-    white-space: nowrap;
+    letter-spacing: -0.02em;
+}
+
+.role {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: var(--primary-color-4);
+    opacity: 0.85;
 }
 
 .description {
-    margin-bottom: var(--15px);
+    margin-top: 14px;
+    margin-bottom: 0;
 
-    font-size: var(--h4-size);
-    line-height: 1.7;
+    font-size: 14px;
+    line-height: 1.75;
     color: var(--primary-color-4);
 }
 
+/* Responsive */
 @media (min-width: 700px) {
-    .generalInfoProperties {
-        flex-direction: row;
-        gap: var(--50px);
-    }
-
     .backgroundNavProperties {
-        height: 25rem;
+        height: 22rem;
     }
 
-    .missionAndVisionProperties {
-        width: 30%;
-    }
-
-    .missionAndVisionProperties .infoProperties {
-        text-align: justify;
-        text-align: center;
-        width: 100%;
-    }
-
-    .infoProperties {
-        text-align: justify;
-        text-align: center;
-        width: 30%;
+    .valuesGrid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
     }
 }
 
 @media (min-width: 1024px) {
     .container {
         flex-direction: row;
-        margin-bottom: var(--20px);
+        gap: 26px;
+        align-items: center;
     }
 
-    .image {
-        padding-left: var(--20px);
+    .imageContainer {
+        width: 44%;
     }
 
     .textContainer {
-        padding-inline: var(--20px);
+        width: 56%;
     }
 }

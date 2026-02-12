@@ -14,7 +14,7 @@ import {
 
 export default function Footer() {
     return (
-        <footer className={styles.footer}>
+        <footer id="contacto" className={styles.footer}>
             <div className={styles.inner}>
                 {/* Marca */}
                 <div className={styles.brand}>
@@ -159,3 +159,4 @@ export default function Footer() {
         </footer>
     );
 }
+

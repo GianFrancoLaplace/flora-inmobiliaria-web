@@ -2,56 +2,105 @@
 
 import styles from "./SalesForm.module.css";
 import { cactus } from "@/app/(views)/ui/fonts";
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
+
+type FormData = {
+    name: string;
+    tel: string;
+    email: string;
+    propType: string;
+    coment: string;
+    wantSell: boolean;
+    wantRent: boolean;
+};
 
 export default function SalesForm() {
-    // Estado para guardar los datos del formulario
-    const [formData, setFormData] = useState({
-        name: '',
-        tel: '',
-        email: '',
-        propType: '',
-        coment: ''
+    const [formData, setFormData] = useState<FormData>({
+        name: "",
+        tel: "",
+        email: "",
+        propType: "",
+        coment: "",
+        wantSell: false,
+        wantRent: false,
     });
 
-    // Estado para manejar el proceso de envío
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState("");
+    const [formError, setFormError] = useState<string | null>(null);
 
-    // Función para actualizar el estado cuando el usuario escribe
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isValid = useMemo(() => {
+        return (
+            formData.name.trim().length >= 2 &&
+            formData.tel.trim().length >= 6 &&
+            formData.email.trim().length >= 5 &&
+            formData.propType.trim().length >= 2 &&
+            formData.coment.trim().length >= 5
+        );
+    }, [formData]);
+
+    const handleChange = (
+        e: React.ChangeEvent<
+            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >
+    ) => {
         const { name, value } = e.target;
-        setFormData(prevState => ({
-            ...prevState,
+
+        setFormData((prev) => ({
+            ...prev,
             [name]: value,
         }));
+
+        setFormError(null);
+        setMessage("");
     };
 
-    // PFunción para manejar el envío del formulario
+    const handleCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, checked } = e.target;
+
+        setFormData((prev) => ({
+            ...prev,
+            [name]: checked,
+        }));
+
+        setFormError(null);
+        setMessage("");
+    };
+
     const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault(); // Previene la recarga de la página
+        e.preventDefault();
+        setMessage("");
+        setFormError(null);
+
         setIsSubmitting(true);
-        setMessage('');
 
         try {
-            const response = await fetch('/api/send', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+            const response = await fetch("/api/send", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
             });
 
             const result = await response.json();
 
             if (response.ok) {
-                setMessage('¡Propuesta enviada con éxito! Nos pondremos en contacto pronto.');
-                setFormData({ name: '', tel: '', email: '', propType: '', coment: '' });
+                setMessage("¡Listo! Recibimos tu solicitud. Te contactamos a la brevedad.");
+                setFormData({
+                    name: "",
+                    tel: "",
+                    email: "",
+                    propType: "",
+                    coment: "",
+                    wantSell: false,
+                    wantRent: false,
+                });
             } else {
-                setMessage(`Error al enviar: ${result.error || 'Inténtelo de nuevo más tarde.'}`);
+                setFormError(
+                    result?.error || "No se pudo enviar. Probá nuevamente en unos minutos."
+                );
             }
-        } catch (Error) {
-            setMessage('Ocurrió un error de red. Por favor, revise su conexión.');
+        } catch {
+            setFormError("Ocurrió un error de red. Revisá tu conexión e intentá nuevamente.");
         } finally {
             setIsSubmitting(false);
         }
@@ -59,57 +108,153 @@ export default function SalesForm() {
 
     return (
         <section className={styles.page}>
-            <div className={styles.titleProperties}>
-                <h1>Vendé tu propiedad</h1>
-                <h4>Completá el formulario con tus datos y nos contactaremos a la brevedad para continuar con el proceso</h4>
-            </div>
-            <div className={styles.loginContainer}>
-                <form onSubmit={handleSubmit}>
-                    <div className={styles.fieldProperties}>
-                        <label htmlFor="name">Nombre y apellido</label>
-                        <input
-                            type="text" id="name" name="name" required
-                            placeholder="Nombre y apellido" className={styles.input}
-                            value={formData.name} onChange={handleChange}
-                        />
+            <header className={styles.header}>
+                <h1 className={`${styles.title} ${cactus.className}`}>
+                    Vendé o alquilá tu propiedad
+                </h1>
+
+                <p className={styles.subtitle}>
+                    Completá el formulario y coordinamos una tasación o una visita para
+                    avanzar con la mejor estrategia.
+                </p>
+
+                <div className={styles.notice} role="note">
+                    <span className={styles.noticeDot} />
+                    <p className={styles.noticeText}>
+                        Podés indicar si te interesa <strong>vender</strong>,{" "}
+                        <strong>alquilar</strong> o <strong>ambas</strong>. Si todavía no lo
+                        definiste, no hay problema: lo vemos juntos.
+                    </p>
+                </div>
+            </header>
+
+            <div className={styles.card}>
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    <div className={styles.grid}>
+                        <div className={styles.field}>
+                            <label htmlFor="name">Nombre y apellido</label>
+                            <input
+                                id="name"
+                                name="name"
+                                type="text"
+                                placeholder="Ej: Juan Pérez"
+                                value={formData.name}
+                                onChange={handleChange}
+                                required
+                                autoComplete="name"
+                            />
+                        </div>
+
+                        <div className={styles.field}>
+                            <label htmlFor="tel">Teléfono</label>
+                            <input
+                                id="tel"
+                                name="tel"
+                                type="tel"
+                                placeholder="Ej: 2494 20-8037"
+                                value={formData.tel}
+                                onChange={handleChange}
+                                required
+                                autoComplete="tel"
+                            />
+                            <p className={styles.help}>Incluí código de área. Te contactamos por WhatsApp.</p>
+                        </div>
+
+                        <div className={styles.field}>
+                            <label htmlFor="email">E-mail</label>
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                placeholder="tuemail@dominio.com"
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                                autoComplete="email"
+                            />
+                        </div>
+
+                        <div className={styles.field}>
+                            <label htmlFor="propType">Tipo de propiedad</label>
+                            <select
+                                id="propType"
+                                name="propType"
+                                value={formData.propType}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value="" disabled>
+                                    Seleccionar…
+                                </option>
+                                <option value="Departamento">Departamento</option>
+                                <option value="Casa">Casa</option>
+                                <option value="Lote">Lote</option>
+                                <option value="Local">Local</option>
+                                <option value="Campo">Campo</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
                     </div>
-                    <div className={styles.fieldProperties}>
-                        <label htmlFor="tel">Teléfono</label>
-                        <input
-                            type="text" id="tel" name="tel" required
-                            placeholder="Teléfono" className={styles.input}
-                            value={formData.tel} onChange={handleChange}
-                        />
+
+                    <div className={styles.intentRow}>
+                        <label className={styles.checkboxLabel}>
+                            <input
+                                type="checkbox"
+                                name="wantSell"
+                                checked={formData.wantSell}
+                                onChange={handleCheckbox}
+                            />
+                            <span>
+                Quiero <strong>vender</strong>
+              </span>
+                        </label>
+
+                        <label className={styles.checkboxLabel}>
+                            <input
+                                type="checkbox"
+                                name="wantRent"
+                                checked={formData.wantRent}
+                                onChange={handleCheckbox}
+                            />
+                            <span>
+                Quiero <strong>alquilar</strong>
+              </span>
+                        </label>
+
+                        <p className={styles.intentHint}>
+                            Opcional: marcá una opción para orientar la consulta. Si todavía no decidiste, podés dejarlo sin marcar.
+                        </p>
                     </div>
-                    <div className={styles.fieldProperties}>
-                        <label htmlFor="email">E-mail</label>
-                        <input
-                            type="email" id="email" name="email" required
-                            placeholder="E-mail" className={styles.input}
-                            value={formData.email} onChange={handleChange}
-                        />
-                    </div>
-                    <div className={styles.fieldProperties}>
-                        <label htmlFor="propType">Tipo de propiedad</label>
-                        <input
-                            type="text" id="propType" name="propType" required
-                            placeholder="Tipo de propiedad" className={styles.input}
-                            value={formData.propType} onChange={handleChange}
-                        />
-                    </div>
-                    <div className={styles.fieldProperties}>
+
+                    <div className={styles.field}>
                         <label htmlFor="coment">Comentarios</label>
-                        <input
-                            type="text" id="coment" name="coment" required
-                            placeholder="Comentarios" className={styles.input}
-                            value={formData.coment} onChange={handleChange}
+                        <textarea
+                            id="coment"
+                            name="coment"
+                            placeholder="Ej: zona, ambientes, estado, si está ocupada y cualquier detalle relevante…"
+                            value={formData.coment}
+                            onChange={handleChange}
+                            required
+                            rows={4}
                         />
                     </div>
-                    <button type="submit" className={`${styles.loginBtn} ${cactus.className}`} disabled={isSubmitting}>
-                        {isSubmitting ? 'Enviando...' : 'Enviar propuesta'}
+
+                    {(formError || message) && (
+                        <p
+                            className={formError ? styles.feedbackError : styles.feedbackOk}
+                            aria-live="polite"
+                        >
+                            {formError || message}
+                        </p>
+                    )}
+
+                    <button
+                        type="submit"
+                        className={`${styles.submit} ${cactus.className}`}
+                        disabled={isSubmitting || !isValid}
+                    >
+                        {isSubmitting ? "Enviando..." : "Enviar solicitud"}
                     </button>
-                    {/* Mensaje de feedback para el usuario */}
-                    {message && <p className={styles.feedbackMessage}>{message}</p>}
                 </form>
             </div>
         </section>

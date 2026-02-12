@@ -86,6 +86,17 @@
 body {
     background-color: var(--background-color);
 }
+
+html {
+    scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+}
+
 * {
     box-sizing: border-box;
     padding: 0;

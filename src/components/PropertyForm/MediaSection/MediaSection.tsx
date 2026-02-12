@@ -221,6 +221,15 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
 								</svg>
 								<p>Agregar más</p>
+								<input
+									ref={fileInputRef}
+									type="file"
+									multiple
+									accept="image/jpeg,image/jpg,image/png,image/webp"
+									onChange={handleFileInput}
+									className={styles.fileInput}
+									data-testid="file-input-more"
+								/>
 							</div>
 						</div>
 					</div>

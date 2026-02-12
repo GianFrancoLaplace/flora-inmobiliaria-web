@@ -5,6 +5,22 @@
     border-top: 3px solid var(--secondary-color-5);
 }
 
+.footer:target .inner,
+.footer:target .bottom {
+    animation: footerReveal 520ms ease-out both;
+}
+
+@keyframes footerReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Layout principal */
 .inner {
     width: min(1200px, 100%);
@@ -181,4 +197,11 @@
     outline: 2px solid var(--secondary-color-5);
     outline-offset: 3px;
     border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .footer:target .inner,
+    .footer:target .bottom {
+        animation: none;
+    }
 }

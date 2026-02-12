@@ -21,7 +21,8 @@ export default function NavBar() {
 
 	const [isScrolled, setIsScrolled] = useState(false);
 	const [drawerOpen, setDrawerOpen] = useState(false);
-	const [dropdownOpen, setDropdownOpen] = useState(false);
+	const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
+	const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
 
 	const navItems: NavItem[] = useMemo(
 		() => [
@@ -31,30 +32,30 @@ export default function NavBar() {
 				href: "/propiedades",
 				type: "dropdown",
 				children: [
+					{ label: "Ver todas", href: "/propiedades" },
 					{ label: "Venta", href: "/propiedades?operacion=venta" },
 					{ label: "Alquiler", href: "/propiedades?operacion=alquiler" },
 				],
 			},
 			{ label: "Quiero vender", href: "/quiero-vender" },
 			{ label: "Sobre nosotros", href: "/nosotros" },
+			{ label: "Contacto", href: "/#contacto" },
 		],
 		[]
 	);
 
 	useEffect(() => {
-		const onScroll = () => {
-			setIsScrolled(window.scrollY > 10);
-		};
-
+		const onScroll = () => setIsScrolled(window.scrollY > 10);
 		onScroll();
 		window.addEventListener("scroll", onScroll, { passive: true });
 		return () => window.removeEventListener("scroll", onScroll as any);
 	}, []);
 
-	// Si cambia la ruta, cerramos overlays
 	useEffect(() => {
+		// al cambiar de ruta, cerramos todo
 		setDrawerOpen(false);
-		setDropdownOpen(false);
+		setDesktopDropdownOpen(false);
+		setMobileDropdownOpen(false);
 	}, [pathname]);
 
 	const headerClass = [
@@ -66,11 +67,12 @@ export default function NavBar() {
 		.join(" ");
 
 	const isActive = (href: string) => {
-		// Activo por ruta base, ignorando query/hash
 		const base = href.split("?")[0].split("#")[0];
 		if (base === "/") return pathname === "/";
 		return pathname.startsWith(base);
 	};
+
+	const contactHref = isHome ? "#contacto" : "/#contacto";
 
 	return (
 		<header className={headerClass}>
@@ -99,8 +101,8 @@ export default function NavBar() {
 					{/* Dropdown Propiedades */}
 					<div
 						className={styles.dropdown}
-						onMouseEnter={() => setDropdownOpen(true)}
-						onMouseLeave={() => setDropdownOpen(false)}
+						onMouseEnter={() => setDesktopDropdownOpen(true)}
+						onMouseLeave={() => setDesktopDropdownOpen(false)}
 					>
 						<button
 							type="button"
@@ -108,15 +110,21 @@ export default function NavBar() {
 								isActive("/propiedades") ? styles.active : ""
 							} ${styles.dropdownTrigger}`}
 							aria-haspopup="menu"
-							aria-expanded={dropdownOpen}
-							onClick={() => setDropdownOpen((v) => !v)}
+							aria-expanded={desktopDropdownOpen}
+							onClick={() => setDesktopDropdownOpen((v) => !v)}
 						>
-							Propiedades <ChevronDown size={16} className={styles.chev} />
+							Propiedades{" "}
+							<ChevronDown
+								size={16}
+								className={`${styles.chev} ${
+									desktopDropdownOpen ? styles.chevOpen : ""
+								}`}
+							/>
 						</button>
 
 						<div
 							className={`${styles.dropdownMenu} ${
-								dropdownOpen ? styles.dropdownMenuOpen : ""
+								desktopDropdownOpen ? styles.dropdownMenuOpen : ""
 							}`}
 							role="menu"
 						>
@@ -147,11 +155,17 @@ export default function NavBar() {
 						Quiero vender
 					</Link>
 
-					<Link className={styles.link} href="/nosotros">
+					<Link
+						className={`${styles.link} ${isActive("/nosotros") ? styles.active : ""}`}
+						href="/nosotros"
+					>
 						Sobre nosotros
 					</Link>
 
-					{/* CTA suave */}
+					<Link className={styles.link} href={contactHref}>
+						Contacto
+					</Link>
+
 					<Link href="/propiedades" className={styles.cta}>
 						Ver propiedades
 					</Link>
@@ -177,10 +191,7 @@ export default function NavBar() {
 					aria-label="Menú"
 					onClick={() => setDrawerOpen(false)}
 				>
-					<div
-						className={styles.drawerPanel}
-						onClick={(e) => e.stopPropagation()}
-					>
+					<div className={styles.drawerPanel} onClick={(e) => e.stopPropagation()}>
 						<div className={styles.drawerTop}>
 							<Link
 								href="/"
@@ -202,72 +213,74 @@ export default function NavBar() {
 								aria-label="Cerrar menú"
 								onClick={() => setDrawerOpen(false)}
 							>
-								<X size={20} />
+								<X size={18} />
 							</button>
 						</div>
 
-						<div className={styles.drawerBody}>
-							<Link
-								className={styles.drawerLink}
-								href="/"
-								onClick={() => setDrawerOpen(false)}
-							>
-								Inicio
-							</Link>
+						<nav className={styles.drawerNav} aria-label="Navegación móvil">
+							{navItems.map((item) => {
+								if (item.type === "dropdown" && item.children) {
+									return (
+										<div key={item.label} className={styles.drawerGroup}>
+											<button
+												type="button"
+												className={`${styles.drawerLink} ${styles.drawerDropdownBtn}`}
+												onClick={() => setMobileDropdownOpen((v) => !v)}
+												aria-expanded={mobileDropdownOpen}
+											>
+												<span>Propiedades</span>
+												<ChevronDown
+													size={16}
+													className={`${styles.chev} ${
+														mobileDropdownOpen ? styles.chevOpen : ""
+													}`}
+												/>
+											</button>
 
-							<details className={styles.drawerDetails}>
-								<summary className={styles.drawerSummary}>
-									Propiedades <ChevronDown size={16} />
-								</summary>
-								<div className={styles.drawerSub}>
+											<div
+												className={`${styles.drawerSub} ${
+													mobileDropdownOpen ? styles.drawerSubOpen : ""
+												}`}
+											>
+												{item.children.map((c) => (
+													<Link
+														key={c.href}
+														href={c.label === "Contacto" ? contactHref : c.href}
+														className={styles.drawerSubLink}
+														onClick={() => setDrawerOpen(false)}
+													>
+														{c.label}
+													</Link>
+												))}
+											</div>
+										</div>
+									);
+								}
+
+								const href = item.label === "Contacto" ? contactHref : item.href;
+
+								return (
 									<Link
-										className={styles.drawerSubLink}
-										href="/propiedades"
+										key={item.href}
+										href={href}
+										className={`${styles.drawerLink} ${
+											isActive(item.href) ? styles.drawerActive : ""
+										}`}
 										onClick={() => setDrawerOpen(false)}
 									>
-										Ver todas
+										{item.label}
 									</Link>
-									<Link
-										className={styles.drawerSubLink}
-										href="/propiedades?operacion=venta"
-										onClick={() => setDrawerOpen(false)}
-									>
-										Venta
-									</Link>
-									<Link
-										className={styles.drawerSubLink}
-										href="/propiedades?operacion=alquiler"
-										onClick={() => setDrawerOpen(false)}
-									>
-										Alquiler
-									</Link>
-								</div>
-							</details>
+								);
+							})}
 
 							<Link
-								className={styles.drawerLink}
-								href="/#quiero-vender"
-								onClick={() => setDrawerOpen(false)}
-							>
-								Quiero vender
-							</Link>
-
-							<Link
-								className={styles.drawerLink}
-								href="/#sobre-nosotros"
-								onClick={() => setDrawerOpen(false)}
-							>
-								Sobre nosotros
-							</Link>
-
-							<Link
-								className={styles.drawerCta}
 								href="/propiedades"
+								className={styles.drawerCta}
 								onClick={() => setDrawerOpen(false)}
 							>
 								Ver propiedades
 							</Link>
-						</div>
+						</nav>
 					</div>
 				</div>
 			)}

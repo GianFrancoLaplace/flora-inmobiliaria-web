@@ -3,7 +3,9 @@
  */
 
 import { z } from 'zod';
-import {OperationEnum, PropertyTypeEnum} from '@/types/prisma'
+import {OperationEnum, PropertyTypeEnum, ServiceEnum} from '@/types/prisma'
+
+const serviceEnumSchema = z.nativeEnum(ServiceEnum);
 
 export const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB en bytes
 
@@ -136,6 +138,7 @@ export const createPropertySchema = z.object({
 		.min(0, 'El número de cocheras no puede ser negativo')
 		.max(50, 'El número de cocheras excede el límite (50)')
 		.optional(),
+	services: z.array(serviceEnumSchema).optional(),
 })
 	.superRefine((data, ctx) => {
 		/**

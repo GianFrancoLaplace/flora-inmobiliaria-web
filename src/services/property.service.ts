@@ -42,15 +42,8 @@ export class PropertyService {
 		files: File[],
 		imageMetadata: ImageMetadata[]) {
 
-		// console.log("CREATE", dto);
-
-		// Parse & validate en una línea - throws ZodError si falla
 		const validatedProperty = createPropertySchema.parse(dto);
 		const validatedImageMetadata = imageMetadataArraySchema.parse(imageMetadata);
-
-		// console.log("PROPERTY", validatedProperty);
-		// console.log("IMAGEMETADATA", validatedImageMetadata);
-
 
 		let uploadedImages: CloudinaryResult[] = [];
 
@@ -58,7 +51,7 @@ export class PropertyService {
 
 			uploadedImages = await this.imageService.uploadMultiple(
 				files,
-				0, // propertyId temporal - lo reemplazamos después
+				0,
 				validatedImageMetadata
 			);
 
@@ -79,6 +72,7 @@ export class PropertyService {
 						bathrooms: validatedProperty.bathrooms,
 						floors: validatedProperty.floors,
 						constructedArea: validatedProperty.constructedArea,
+						services: validatedProperty.services || [],
 						slug: TEMP_SLUG,
 					},
 				});
@@ -181,9 +175,17 @@ export class PropertyService {
 			}
 
 			const updatedProperty = await prisma.$transaction(async (tx) => {
+				const dataToUpdate: any = {
+					...parsed.data,
+				};
+
+				if (property.services !== undefined) {
+					dataToUpdate.services = property.services || [];
+				}
+
 				const updated = await tx.property.update({
 					where: { idProperty: propertyId },
-					data: parsed.data,
+					data: dataToUpdate,
 				});
 
 				if (deletedImageIds.length > 0) {
@@ -229,58 +231,53 @@ export class PropertyService {
 		}
 	}
 
-
-
-	 async GET(id: number) {
+	async GET(id: number) {
 		try {
 			const property = await prisma.property.findUnique({
-			where: { idProperty: id },
-			include: {
-				images: {
-				orderBy: { position: "asc" }, 
+				where: { idProperty: id },
+				include: {
+					images: {
+						orderBy: { position: "asc" },
+					},
 				},
-			},
 			});
 
 			if (!property) {
-			return NextResponse.json({ message: "property no encontrada" }, { status: 404 });
+				return NextResponse.json({ message: "property no encontrada" }, { status: 404 });
 			}
 
 			const propertyResponse: PropertyData = {
-			id: property.idProperty,
-			address: property.address,
-			city: property.city || "",
-			ubication: property.ubication || "",
-			price: property.price,
-			description: property.description || "",
-			type: property.type,
-			category: property.category,
-			surface: property.surface,
-			bedrooms: property.bedrooms || 0,
-			bathrooms: property.bathrooms || 0,
-			garage: property.garage || 0,
-			floors: property.floors || 0,
-			constructed_area: property.constructedArea || 0,
+				id: property.idProperty,
+				address: property.address,
+				city: property.city || "",
+				ubication: property.ubication || "",
+				price: property.price,
+				description: property.description || "",
+				type: property.type,
+				category: property.category,
+				surface: property.surface,
+				bedrooms: property.bedrooms || 0,
+				bathrooms: property.bathrooms || 0,
+				garage: property.garage || 0,
+				floors: property.floors || 0,
+				constructed_area: property.constructedArea || 0,
+				services: property.services || [],
 
-			images: property.images.map((img) => ({
-				id: img.idImage,
-				url: img.url ?? "",
-				position: img.position,     
-				isMain: img.isMain,         
-			})),
+				images: property.images.map((img) => ({
+					id: img.idImage,
+					url: img.url ?? "",
+					position: img.position,
+					isMain: img.isMain,
+				})),
 			};
 
 			return NextResponse.json(propertyResponse, { status: 200 });
 		} catch (error) {
 			console.error("Error al obtener la property:", error);
 			return NextResponse.json(
-			{ message: "Error al obtener la property" },
-			{ status: 500 }
+				{ message: "Error al obtener la property" },
+				{ status: 500 }
 			);
 		}
-}
-
-
-
-
+	}
 }

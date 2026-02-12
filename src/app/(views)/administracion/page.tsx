@@ -37,8 +37,9 @@ export default async function AdminPage({ searchParams }: PageProps) {
 			<div>
 				<div className={styles.propertiesLayoutFilter}>
 					<div className={styles.propertiesLayoutFilters}>
-						<UnifiedFilter
-						/>
+						<UnifiedFilter />
+					</div>
+					<div className={styles.containerContentRight}>
 						<Admns properties={properties} />
 					</div>
 				</div>

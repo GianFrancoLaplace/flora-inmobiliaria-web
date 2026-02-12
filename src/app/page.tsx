@@ -1,7 +1,6 @@
 import styles from "./page.module.css";
 import { cactus } from "@/app/(views)/ui/fonts";
 import HomeF from "@/components/Home/Home";
-import FilterGroup from "@/components/FilterButtons/FilterGroup";
 import BigCardsGrid from "@/components/BigCards/BigCardsGrid";
 import Link from "next/link";
 
@@ -27,13 +26,6 @@ export default async function Page() {
 
 			<section className={styles.presentationProperties}>
 				<header className={styles.heroText}>
-					<h1>Tu próxima propiedad, nuestra prioridad</h1>
-					<p>
-						Combinamos experiencia, compromiso y un trato cercano para ayudarte a encontrar el lugar que estás
-						buscando. Ya sea que quieras comprar, vender o alquilar, te acompañamos en cada paso con asesoramiento
-						personalizado y total transparencia.
-					</p>
-
 					<div className={styles.actions}>
 						<Link href={"https://wa.me/2494208037"} className={styles.linkProperties}>
 							<button className={`${styles.primaryBtn} ${cactus.className}`}>
@@ -48,14 +40,6 @@ export default async function Page() {
 						</Link>
 					</div>
 				</header>
-
-				<div className={styles.quickFilters}>
-					<FilterGroup
-						title=""
-						filters={filtrosTipoPropiedad}
-						targetPath="/propiedades"
-					/>
-				</div>
 
 				<div className={styles.sectionHeader}>
 					<h2>Novedades</h2>

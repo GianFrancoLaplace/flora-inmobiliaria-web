@@ -1,55 +1,53 @@
-/* Layout general */
+.container {
+    padding: 0 0 16px 0;
+    margin: 0;
+}
+
 .propertiesLayoutFilter {
     display: flex;
-    flex-direction: row;
-
+    flex-direction: column;
     min-height: calc(100vh - 200px);
-
-    gap: 2rem;
+    gap: var(--20px);
     padding: 0;
     margin: 0;
 }
 
-/* Columna izquierda: filtros */
 .propertiesLayoutFilters {
     display: flex;
+    flex-direction: column;
     justify-content: flex-start;
-    flex: 1 1 25%;
-
-    max-width: 25%;
+    flex: 1 1 100%;
+    max-width: 100%;
     box-sizing: border-box;
 }
 
-/* Columna derecha: cards de administración */
 .containerContentRight {
-    flex: 1 1 75%;
-
-    max-width: 75%;
-
-    padding-right: 2rem;
-
+    flex: 1 1 100%;
+    max-width: 100%;
+    padding-right: 0;
     box-sizing: border-box;
-}
-
-
-/* En mobile: apilar verticalmente */
-@media (max-width: 900px) {
-    .propertiesLayoutFilter {
-        flex-direction: column;
-    }
-
-    .propertiesLayoutFilter,
-    .containerContentRight {
-        flex: 1 1 100%;
-
-        max-width: 100%;
-
-        padding-right: 0;
-    }
 }
 
 @media (max-width: 720px) {
     .container {
         margin-top: 110px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .propertiesLayoutFilter {
+        flex-direction: row;
+        gap: var(--40px);
+    }
+
+    .propertiesLayoutFilters {
+        flex-direction: row;
+        flex: 1 1 25%;
+    }
+
+    .containerContentRight {
+        flex: 1 1 75%;
+        max-width: 75%;
+        padding-right: var(--40px);
     }
 }
