@@ -11,11 +11,7 @@ export const authConfig = {
 
             // Caso 1: El usuario intenta acceder a la página de administración
             if (isOnAdministration) {
-                if (isLoggedIn) {
-                    // Si está en /Administration y ha iniciado sesión, permite el acceso.
-                    return true;
-                }
-                return true;
+                return isLoggedIn;
             }
 
             else if (isLoggedIn) {
