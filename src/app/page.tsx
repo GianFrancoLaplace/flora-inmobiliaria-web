@@ -11,7 +11,7 @@ const filtrosTipoPropiedad = ["Departamentos", "Lotes", "Casas", "Locales", "Cam
 export default async function Page() {
 	const properties = await prisma.property.findMany({
 		orderBy: { idProperty: "desc" }, // "novedades"
-		take: 6,
+		take: 3,
 		include: {
 			images: {
 				orderBy: { position: "asc" },

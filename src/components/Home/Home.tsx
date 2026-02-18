@@ -15,8 +15,7 @@ export default function Home() {
                 </h1>
 
                 <p className={styles.subtitle}>
-                    Te acompañamos en compra, venta y alquiler en Tandil con asesoramiento
-                    personalizado y una gestión clara en cada paso.
+	                Asesoramiento personalizado en compra, venta y alquiler en Tandil.
                 </p>
             </div>
         </section>

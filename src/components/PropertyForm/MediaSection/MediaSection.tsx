@@ -17,6 +17,7 @@ interface MediaSectionProps {
 export default function MediaSection({ value, onChange, errors }: MediaSectionProps) {
 	const [isDragging, setIsDragging] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const fileInputMoreRef = useRef<HTMLInputElement>(null);
 
 	const handleFiles = (files: FileList | null) => {
 		if (!files) return;
@@ -216,13 +217,13 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 						))}
 
 						<div className={styles.imageCard}>
-							<div className={styles.addMoreCard} onClick={handleClickUpload}>
+							<div className={styles.addMoreCard} >
 								<svg className={styles.plusIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
 								</svg>
 								<p>Agregar más</p>
 								<input
-									ref={fileInputRef}
+									ref={fileInputMoreRef}
 									type="file"
 									multiple
 									accept="image/jpeg,image/jpg,image/png,image/webp"
