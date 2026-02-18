@@ -158,7 +158,7 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 							ref={fileInputRef}
 							type="file"
 							multiple
-							accept="image/jpeg,image/jpg,image/png,image/webp"
+							accept="image/*"
 							onChange={handleFileInput}
 							className={styles.fileInput}
 							data-testid="file-input"
