@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PropertyWithImages } from "@/types/prisma";
+import { TYPE_LABELS, OPERATION_LABELS, buildSpecsLine } from "@/utils/propertyUtils";
 
 type Props = {
 	property: PropertyWithImages;
@@ -18,8 +19,26 @@ export default function AdminCard({ property, onDelete }: Props) {
 	const formatPrice = (price: number) =>
 		`USD ${price.toLocaleString('es-AR')}`;
 
+	const typeLabel = TYPE_LABELS[property.type];
+	const operationLabel = OPERATION_LABELS[property.category];
+
+	const specsLine = buildSpecsLine(property.type, {
+		bedrooms: property.bedrooms,
+		bathrooms: property.bathrooms,
+		garage: property.garage,
+		surface: property.surface,
+		constructedArea: property.constructedArea,
+	});
+
+	const addressLine = property.city
+		? `${property.address}, ${property.city}`
+		: property.address;
+
 	return (
-		<div className={`${styles.cardProperties} ${cactus.className}`}>
+		<Link
+			href={`/propiedades/${property.slug}`}
+			className={`${styles.cardProperties} ${cactus.className}`}
+		>
 			<div className={styles.imageContainer}>
 				<Image
 					src={property.images[0]?.url?.trim() || "/backgrounds/notImage.jpg"}
@@ -40,6 +59,7 @@ export default function AdminCard({ property, onDelete }: Props) {
 						<button
 							onClick={(e) => {
 								e.preventDefault();
+								e.stopPropagation();
 								router.push(`/administracion/${property.slug}/editar`);
 							}}
 							type="button"
@@ -56,6 +76,7 @@ export default function AdminCard({ property, onDelete }: Props) {
 						<button
 							onClick={(e) => {
 								e.preventDefault();
+								e.stopPropagation();
 								onDelete(property);
 							}}
 							type="button"
@@ -72,13 +93,12 @@ export default function AdminCard({ property, onDelete }: Props) {
 					</div>
 				</div>
 
-				<Link href={`/propiedades/${property.slug}`} className={styles.linkProperties}>
-					<div className={styles.restInfoProperties}>
-						<h4>{property.address}, {property.city}</h4>
-						<h4>{property.bedrooms} ambientes | {property.bedrooms} dormitorios | {property.bathrooms} baños</h4>
-					</div>
-				</Link>
+				<div className={styles.restInfoProperties}>
+					<h4>{addressLine}</h4>
+					<h4>{typeLabel} · {operationLabel}</h4>
+					{specsLine && <h4>{specsLine}</h4>}
+				</div>
 			</div>
-		</div>
+		</Link>
 	);
 }

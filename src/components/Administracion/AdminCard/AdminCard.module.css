@@ -9,6 +9,11 @@
     border-radius: var(--radius-md);
     overflow: hidden;
 
+    /* necesario porque Link renderiza un <a> */
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+
     transition: box-shadow var(--normal-transition);
 }
 
@@ -63,6 +68,10 @@
     flex-direction: row;
     gap: var(--10px);
     flex-shrink: 0;
+
+    /* garantiza que los botones queden por encima del link */
+    position: relative;
+    z-index: 1;
 }
 
 .buttonsProperties button {
@@ -92,11 +101,6 @@
 .deleteButton:hover {
     background-color: var(--error-color);
     border-color: var(--error-color);
-}
-
-.linkProperties {
-    text-decoration: none;
-    color: inherit;
 }
 
 .restInfoProperties h4 {
