@@ -3,76 +3,98 @@
 import Link from "next/link";
 import Image from "next/image";
 import styles from "./BigCard.module.css";
+import { PropertyTypeEnum, OperationEnum } from "@prisma/client";
+import { TYPE_LABELS, OPERATION_LABELS, buildSpecsLine } from "@/utils/propertyUtils";
 
 type Img = { url?: string | null; isMain?: boolean | null };
+
 type PropertyLike = {
-    idProperty?: number;
-    id?: number;
-    slug?: string | null;
-    price?: number | null;
-    category?: string | null;
-    type?: string | null;
-    address?: string | null;
-    city?: string | null;
-    bedrooms?: number | null;
-    bathrooms?: number | null;
-    images?: Img[] | null;
+	idProperty?: number;
+	id?: number;
+	slug?: string | null;
+	price?: number | null;
+	category?: OperationEnum | null;
+	type?: PropertyTypeEnum | null;
+	address?: string | null;
+	city?: string | null;
+	bedrooms?: number | null;
+	bathrooms?: number | null;
+	garage?: number | null;
+	surface?: number | null;
+	constructedArea?: number | null;
+	images?: Img[] | null;
 };
 
 type Props = {
-    property: PropertyLike;
-    label?: string;
+	property: PropertyLike;
+	label?: string;
 };
 
 export default function BigCard({ property, label }: Props) {
-    if (!property) return null;
+	if (!property) return null;
 
-    const firstImg =
-        property.images?.find((i) => i?.isMain)?.url ||
-        property.images?.[0]?.url ||
-        "/backgrounds/notImage.jpg";
+	const firstImg =
+		property.images?.find((i) => i?.isMain)?.url ||
+		property.images?.[0]?.url ||
+		"/backgrounds/notImage.jpg";
 
-    const href =
-        property.slug
-            ? `/propiedades/${property.slug}`
-            : `/propiedades/ficha/${property.idProperty ?? property.id ?? ""}`;
+	const href =
+		property.slug
+			? `/propiedades/${property.slug}`
+			: `/propiedades/ficha/${property.idProperty ?? property.id ?? ""}`;
 
-    const price = property.price ?? 0;
-    const operation = property.category ?? "";
-    const addressLine = [property.address, property.city].filter(Boolean).join(", ");
-    const bedrooms = property.bedrooms ?? 0;
-    const bathrooms = property.bathrooms ?? 0;
+	const price = property.price ?? 0;
+	const addressLine = [property.address, property.city].filter(Boolean).join(", ");
 
-    return (
-        <Link href={href} className={styles.page} aria-label="Ver propiedad">
-            {label ? <span className={styles.addedLabel}>{label}</span> : null}
+	// Badge: label externo tiene prioridad, si no hay muestra el tipo
+	const badgeText = label ?? (property.type ? TYPE_LABELS[property.type] : null);
 
-            {/* Wrapper SI o SI para next/image fill */}
-            <div className={styles.imageWrap}>
-                <Image
-                    src={firstImg}
-                    alt={addressLine || "Propiedad"}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className={styles.cardBackground}
-                    priority={false}
-                />
-            </div>
+	// Operación formateada
+	const operationText = property.category
+		? OPERATION_LABELS[property.category]
+		: "Operación";
 
-            <div className={styles.detailsProperties}>
-                <div className={styles.rowTop}>
-                    <h3 className={styles.price}>
-                        USD {price.toLocaleString("es-AR")} <span className={styles.sep}>|</span>{" "}
-                        {operation || "operación"}
-                    </h3>
-                </div>
+	// Specs
+	const specsLine = property.type
+		? buildSpecsLine(property.type, {
+			bedrooms: property.bedrooms,
+			bathrooms: property.bathrooms,
+			garage: property.garage,
+			surface: property.surface,
+			constructedArea: property.constructedArea,
+		})
+		: "";
 
-                <p className={styles.address}>{addressLine || "Tandil"}</p>
+	return (
+		<Link href={href} className={styles.page} aria-label="Ver propiedad">
+			{badgeText ? <span className={styles.addedLabel}>{badgeText}</span> : null}
 
-                <p className={styles.specs}>
-                    {bedrooms} dormitorios <span className={styles.sep}>|</span> {bathrooms} baños
-                </p>
-            </div>
-        </Link>
-    );
+			<div className={styles.imageWrap}>
+				<Image
+					src={firstImg}
+					alt={addressLine || "Propiedad"}
+					fill
+					sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+					className={styles.cardBackground}
+					priority={false}
+				/>
+			</div>
+
+			<div className={styles.detailsProperties}>
+				<div className={styles.rowTop}>
+					<h3 className={styles.price}>
+						USD {price.toLocaleString("es-AR")}{" "}
+						<span className={styles.sep}>|</span>{" "}
+						{operationText}
+					</h3>
+				</div>
+
+				<p className={styles.address}>{addressLine || "Tandil"}</p>
+
+				{specsLine && (
+					<p className={styles.specs}>{specsLine}</p>
+				)}
+			</div>
+		</Link>
+	);
 }
