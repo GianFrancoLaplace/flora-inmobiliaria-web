@@ -90,6 +90,13 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
+		if (error instanceof Error && error.message.startsWith("IMAGE_FORMAT_ERROR:")) {
+			return NextResponse.json(
+				{ error: error.message.replace("IMAGE_FORMAT_ERROR:", "").trim() },
+				{ status: 400 }
+			);
+		}
+
 		return NextResponse.json(
 			{ error: 'Error interno' },
 			{ status: 500 }

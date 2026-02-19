@@ -30,11 +30,15 @@ export interface ImagesValidationResult {
  * Verifica tipo MIME y tamaño
  */
 export function validateImageFile(file: File): ImageValidationResult {
+	const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'];
+	const fileExtension = file.name.split('.').pop()?.toLowerCase() ?? '';
+	const hasAllowedExtension = allowedExtensions.includes(fileExtension);
+
 	// Validar tipo MIME
-	if (!ALLOWED_IMAGE_TYPES.includes(file.type as any)) {
+	if (!ALLOWED_IMAGE_TYPES.includes(file.type as any) && !hasAllowedExtension) {
 		return {
 			valid: false,
-			error: `Tipo no permitido: ${file.type}. Permitidos: jpeg, jpg, png, webp`,
+			error: `Tipo no permitido: ${file.type || 'desconocido'}. Permitidos: jpeg, jpg, png, webp, heic, heif`,
 		};
 	}
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, DragEvent, ChangeEvent } from 'react';
+import { useState, DragEvent, ChangeEvent } from 'react';
 import styles from './MediaSection.module.css';
 import {ImageItem, NewImage} from "@/types/image.types";
 import {
@@ -16,10 +16,59 @@ interface MediaSectionProps {
 
 export default function MediaSection({ value, onChange, errors }: MediaSectionProps) {
 	const [isDragging, setIsDragging] = useState(false);
-	const fileInputRef = useRef<HTMLInputElement>(null);
-	const fileInputMoreRef = useRef<HTMLInputElement>(null);
+	const PREVIEW_FALLBACK_SRC = '/backgrounds/notImage.jpg';
 
-	const handleFiles = (files: FileList | null) => {
+	const canRenderImage = (src: string): Promise<boolean> => {
+		return new Promise((resolve) => {
+			let settled = false;
+			const finish = (value: boolean) => {
+				if (settled) return;
+				settled = true;
+				resolve(value);
+			};
+
+			const img = new Image();
+			const timeoutId = setTimeout(() => finish(false), 400);
+
+			img.onload = () => {
+				clearTimeout(timeoutId);
+				finish(true);
+			};
+			img.onerror = () => {
+				clearTimeout(timeoutId);
+				finish(false);
+			};
+			img.src = src;
+		});
+	};
+
+	const createPreview = async (file: File): Promise<string> => {
+		try {
+			const objectUrl = URL.createObjectURL(file);
+			const renderable = await canRenderImage(objectUrl);
+			if (renderable) {
+				return objectUrl;
+			}
+			return PREVIEW_FALLBACK_SRC;
+		} catch {
+			return await new Promise((resolve) => {
+				const reader = new FileReader();
+				reader.onload = async () => {
+					const result = reader.result as string;
+					if (!result) {
+						resolve(PREVIEW_FALLBACK_SRC);
+						return;
+					}
+					const renderable = await canRenderImage(result);
+					resolve(renderable ? result : PREVIEW_FALLBACK_SRC);
+				};
+				reader.onerror = () => resolve(PREVIEW_FALLBACK_SRC);
+				reader.readAsDataURL(file);
+			});
+		}
+	};
+
+	const handleFiles = async (files: FileList | null) => {
 		if (!files) return;
 
 		const fileArray = Array.from(files);
@@ -34,15 +83,19 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 				continue;
 			}
 
-			const newImage: ImageItem = {
-				type: 'new',
-				file,
-				preview: URL.createObjectURL(file),
-				position: value.length + newImages.length,
-				isMain: value.length === 0 && newImages.length === 0
-			};
+			try {
+				const newImage: ImageItem = {
+					type: 'new',
+					file,
+					preview: await createPreview(file),
+					position: value.length + newImages.length,
+					isMain: value.length === 0 && newImages.length === 0
+				};
 
-			newImages.push(newImage);
+				newImages.push(newImage);
+			} catch {
+				alert(`${file.name}: no se pudo preparar la previsualización.`);
+			}
 		}
 
 		if (newImages.length > 0) {
@@ -85,15 +138,11 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 		e.preventDefault();
 		e.stopPropagation();
 		setIsDragging(false);
-		handleFiles(e.dataTransfer.files);
+		void handleFiles(e.dataTransfer.files);
 	};
 
 	const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
-		handleFiles(e.target.files);
-	};
-
-	const handleClickUpload = () => {
-		fileInputRef.current?.click();
+		void handleFiles(e.target.files);
 	};
 
 	const handleRemoveImage = (index: number) => {
@@ -131,7 +180,6 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 						onDragLeave={handleDragLeave}
 						onDragOver={handleDragOver}
 						onDrop={handleDrop}
-						onClick={handleClickUpload}
 					>
 						<div className={styles.dropzoneContent}>
 							<svg
@@ -155,7 +203,6 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 							</p>
 						</div>
 						<input
-							ref={fileInputRef}
 							type="file"
 							multiple
 							accept="image/*"
@@ -223,10 +270,9 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 								</svg>
 								<p>Agregar más</p>
 								<input
-									ref={fileInputMoreRef}
 									type="file"
 									multiple
-									accept="image/jpeg,image/jpg,image/png,image/webp"
+									accept="image/*"
 									onChange={handleFileInput}
 									className={styles.fileInput}
 									data-testid="file-input-more"

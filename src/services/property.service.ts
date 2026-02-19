@@ -227,6 +227,14 @@ export class PropertyService {
 			}
 
 			console.error("PUT property failed:", error);
+
+			if (error instanceof Error && error.message.startsWith("IMAGE_FORMAT_ERROR:")) {
+				return NextResponse.json(
+					{ message: error.message.replace("IMAGE_FORMAT_ERROR:", "").trim() },
+					{ status: 400 }
+				);
+			}
+
 			return NextResponse.json({ message: "Error interno" }, { status: 500 });
 		}
 	}
