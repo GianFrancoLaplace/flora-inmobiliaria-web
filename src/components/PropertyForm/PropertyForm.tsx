@@ -67,7 +67,20 @@ export default function PropertyForm({
 	const router = useRouter();
 
 	const handleChange = (field: string, value: any) => {
-		setFormData(prev => ({...prev, [field]: value}));
+		setFormData(prev => {
+			const updated = { ...prev, [field]: value };
+
+			// Al cambiar tipo, limpiar campos que no aplican
+			if (field === 'type') {
+				updated.bedrooms = undefined;
+				updated.bathrooms = undefined;
+				updated.constructedArea = undefined;
+				updated.floors = undefined;
+				updated.garage = undefined;
+			}
+
+			return updated;
+		});
 
 		if (errors[field]) {
 			setErrors(prev => {

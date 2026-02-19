@@ -61,6 +61,7 @@ export default function BasicInfoSection({ formData, onChange, errors }: BasicIn
 						<option value={PropertyTypeEnum.departamento}>Departamento</option>
 						<option value={PropertyTypeEnum.casa}>Casa</option>
 						<option value={PropertyTypeEnum.lote}>Lote</option>
+						<option value={PropertyTypeEnum.local_comercial}>Local</option>
 					</select>
 					{errors.type && (
 						<p className={styles.error}>{errors.type}</p>

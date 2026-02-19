@@ -6,11 +6,9 @@ import Link from "next/link";
 
 import { prisma } from "@/lib/prisma";
 
-const filtrosTipoPropiedad = ["Departamentos", "Lotes", "Casas", "Locales", "Campos"];
-
 export default async function Page() {
 	const properties = await prisma.property.findMany({
-		orderBy: { idProperty: "desc" }, // "novedades"
+		orderBy: { idProperty: "desc" },
 		take: 3,
 		include: {
 			images: {

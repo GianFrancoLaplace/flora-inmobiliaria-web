@@ -101,7 +101,6 @@
     font-size: 0.92rem;
 }
 
-/* Added: flex so icon + text align correctly */
 .spec {
     display: inline-flex;
     align-items: center;
