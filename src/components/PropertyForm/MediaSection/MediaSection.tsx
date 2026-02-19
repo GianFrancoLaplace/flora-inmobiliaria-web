@@ -19,7 +19,20 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const fileInputMoreRef = useRef<HTMLInputElement>(null);
 
-	const handleFiles = (files: FileList | null) => {
+	const createPreview = async (file: File): Promise<string> => {
+		try {
+			return URL.createObjectURL(file);
+		} catch {
+			return await new Promise((resolve, reject) => {
+				const reader = new FileReader();
+				reader.onload = () => resolve(reader.result as string);
+				reader.onerror = () => reject(new Error('No se pudo generar la vista previa'));
+				reader.readAsDataURL(file);
+			});
+		}
+	};
+
+	const handleFiles = async (files: FileList | null) => {
 		if (!files) return;
 
 		const fileArray = Array.from(files);
@@ -37,7 +50,7 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 			const newImage: ImageItem = {
 				type: 'new',
 				file,
-				preview: URL.createObjectURL(file),
+				preview: await createPreview(file),
 				position: value.length + newImages.length,
 				isMain: value.length === 0 && newImages.length === 0
 			};
@@ -85,11 +98,11 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 		e.preventDefault();
 		e.stopPropagation();
 		setIsDragging(false);
-		handleFiles(e.dataTransfer.files);
+		void handleFiles(e.dataTransfer.files);
 	};
 
 	const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
-		handleFiles(e.target.files);
+		void handleFiles(e.target.files);
 	};
 
 	const handleClickUpload = () => {
@@ -226,7 +239,7 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 									ref={fileInputMoreRef}
 									type="file"
 									multiple
-									accept="image/jpeg,image/jpg,image/png,image/webp"
+									accept="image/*"
 									onChange={handleFileInput}
 									className={styles.fileInput}
 									data-testid="file-input-more"
