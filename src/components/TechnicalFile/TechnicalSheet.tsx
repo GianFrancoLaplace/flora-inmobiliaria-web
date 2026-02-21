@@ -124,7 +124,7 @@ export default function TechnicalSheet({ property }: PropertyViewProps) {
 							<div className={styles.featuresGrid}>
 								{property.surface ? (
 									<PropertyItem
-										imgSrc="/icons/superficie.png"
+										imgSrc="/icons/sup.png"
 										label="Superficie"
 										value={`${property.surface} m²`}
 									/>
@@ -132,7 +132,7 @@ export default function TechnicalSheet({ property }: PropertyViewProps) {
 
 								{property.constructedArea ? (
 									<PropertyItem
-										imgSrc="/icons/superficie_cubierta.png"
+										imgSrc="/icons/subCub.png"
 										label="Sup. cubierta"
 										value={`${property.constructedArea} m²`}
 									/>
@@ -140,7 +140,7 @@ export default function TechnicalSheet({ property }: PropertyViewProps) {
 
 								{property.bedrooms ? (
 									<PropertyItem
-										imgSrc="/icons/dormitorios.png"
+										imgSrc="/icons/dorms.png"
 										label="Dormitorios"
 										value={property.bedrooms}
 									/>
