@@ -8,7 +8,7 @@
     flex-direction: column;
     min-height: calc(100vh - 200px);
     gap: var(--20px);
-    padding: 0;
+    padding: 0 0 0 var(--20px);
     margin: 0;
 }
 
