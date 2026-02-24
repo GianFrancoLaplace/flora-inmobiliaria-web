@@ -313,4 +313,14 @@
     .mobileBtn {
         display: none;
     }
+
+    .link{
+        font-size: 12px;
+    }
+}
+
+@media (min-width: 1280px){
+    .link{
+        font-size: 14px;
+    }
 }

@@ -173,7 +173,7 @@
 .applyBtn:hover { opacity: 0.92; transform: translateY(-1px); }
 
 /* Desktop: sticky sidebar */
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
     .mobileBar {
         display: none;
     }

@@ -7,7 +7,7 @@
 
 .empty {
     padding: 18px 14px;
-    color: rgba(0,0,0,0.65);
+    color: rgba(0, 0, 0, 0.65);
 }
 
 /* 2 columnas */
@@ -19,10 +19,10 @@
     }
 }
 
-/* 3-4 columnas fluid */
+/* 2-3 columnas fluid */
 @media (min-width: 1024px) {
     .grid {
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         gap: 24px;
         padding: 8px 0;
     }
