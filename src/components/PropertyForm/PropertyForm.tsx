@@ -1,30 +1,29 @@
 'use client';
 
-import {FormEvent, useState} from 'react';
+import { FormEvent, useState } from 'react';
 import styles from './PropertyForm.module.css';
 import DescriptionSection from "@/components/PropertyForm/DescriptionSection/DescriptionSection";
 import LocationSection from "@/components/PropertyForm/LocationSection/LocationSection";
 import DetailsSection from "@/components/PropertyForm/DetailsSection/DetailsSection";
 import BasicInfoSection from "@/components/PropertyForm/BasicInfoSection/BasicInfoSection";
 import MediaSection from "@/components/PropertyForm/MediaSection/MediaSection";
-import {FormMode, PropertyFormInput, PropertyFormProps} from "@/types/property-form.types";
-import {createPropertySchema} from "@/validations/property.schema";
-import {usePropertySubmit} from "@/hooks/usePropertySubmit";
-import {ImageItem} from "@/types/image.types";
+import { FormMode, PropertyFormInput, PropertyFormProps } from "@/types/property-form.types";
+import { createPropertySchema } from "@/validations/property.schema";
+import { usePropertySubmit } from "@/hooks/usePropertySubmit";
+import { ImageItem } from "@/types/image.types";
 import { useRouter } from 'next/navigation';
-import {getBaseUrl} from "@/lib/baseURL";
-import {CheckIcon} from "lucide-react";
+import { CheckIcon } from "lucide-react";
 
 // Imports para debug
 // import {useEffect} from "react";
 // import {PropertyTypeEnum, OperationEnum, ServiceEnum} from "@/types/prisma";
 
 export default function PropertyForm({
-	                                     mode,
-	                                     propertyTitle,
-	                                     propertyId,
-	                                     initialData,
-                                     }: PropertyFormProps) {
+	mode,
+	propertyTitle,
+	propertyId,
+	initialData,
+}: PropertyFormProps) {
 
 	const defaultFormData: PropertyFormInput = {
 		type: undefined,
@@ -169,8 +168,8 @@ export default function PropertyForm({
 
 			// Redirigir después de 2 segundos a la lista de propiedades o al detalle
 			setTimeout(() => {
-				router.replace(getBaseUrl() + '/administracion');
 				router.refresh();
+				router.replace('/administracion');
 			}, 2000);
 		} catch (error) {
 			console.error('Error al guardar:', error);
