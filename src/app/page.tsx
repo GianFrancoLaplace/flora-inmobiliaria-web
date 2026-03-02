@@ -1,3 +1,5 @@
+export const revalidate = 60;
+
 import styles from "./page.module.css";
 import { cactus } from "@/app/(views)/ui/fonts";
 import HomeF from "@/components/Home/Home";
