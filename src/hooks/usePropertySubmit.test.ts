@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { usePropertySubmit } from './usePropertySubmit';
 import { FormMode, PropertyFormInput } from '@/types/property-form.types';
-import { PropertyTypeEnum, OperationEnum } from '@/types/prisma';
+import { PropertyTypeEnum, OperationEnum, CurrencyEnum, ServiceEnum } from '@/types/prisma';
 
 // Global fetch mock
 const mockFetch = vi.fn();
@@ -40,12 +40,13 @@ describe('usePropertySubmit', () => {
 			address: 'Av. Corrientes 1234',
 			city: 'Buenos Aires',
 			price: 150000,
-			currency: 'USD' as const,
+			currency: CurrencyEnum.USD,
 			surface: 120,
 			description: 'Hermoso departamento en el centro',
 			ubication: 'https://maps.google.com/?q=Corrientes+1234',
 			type: PropertyTypeEnum.departamento,
 			category: OperationEnum.venta,
+			services: [ServiceEnum.agua],
 			constructedArea: 100,
 			bedrooms: 3,
 			bathrooms: 2,
@@ -147,6 +148,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.campo,
 				category: OperationEnum.venta,
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
@@ -277,6 +279,7 @@ describe('usePropertySubmit', () => {
 			ubication: 'https://maps.google.com',
 			type: PropertyTypeEnum.casa,
 			category: OperationEnum.alquiler,
+			services: [],
 			bedrooms: 4,
 			bathrooms: 3,
 			garage: 2,
@@ -426,6 +429,7 @@ describe('usePropertySubmit', () => {
 			ubication: 'https://maps.google.com',
 			type: PropertyTypeEnum.casa,
 			category: OperationEnum.venta,
+			services: [],
 			images: [],
 			deletedImageIds: []
 		};
@@ -563,6 +567,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.lote,
 				category: OperationEnum.venta,
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
@@ -594,6 +599,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.local_comercial,
 				category: OperationEnum.alquiler,
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
@@ -625,6 +631,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.departamento,
 				category: OperationEnum.venta,
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
@@ -658,6 +665,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.casa,
 				category: OperationEnum.venta,
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
@@ -691,6 +699,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.casa,
 				category: OperationEnum.venta,
+				services: [],
 				images: Array.from({ length: 10 }, (_, i) => ({
 					type: 'new' as const,
 					file: createMockFile(`image-${i}.jpg`),
@@ -730,6 +739,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.departamento,
 				category: OperationEnum.alquiler,
+				services: [],
 				images: [
 					{
 						type: 'existing',
@@ -799,6 +809,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.casa,
 				category: OperationEnum.venta,
+				services: [],
 				images: [],
 				deletedImageIds: [999999, 888888, 777777]
 			};
@@ -854,6 +865,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.departamento,
 				category: OperationEnum.alquiler,
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
@@ -877,6 +889,7 @@ describe('usePropertySubmit', () => {
 				surface: 80,
 				description: 'Test',
 				ubication: 'https://maps.google.com',
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
@@ -909,6 +922,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.casa,
 				category: OperationEnum.venta,
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
@@ -942,6 +956,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.departamento,
 				category: OperationEnum.alquiler,
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
