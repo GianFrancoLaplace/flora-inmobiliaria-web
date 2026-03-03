@@ -190,7 +190,7 @@
 .drawerPanel {
     width: min(92vw, 360px);
     height: 100%;
-    background: rgba(12, 12, 12, 0.92);
+    background: #000;
     border-left: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: -30px 0 80px rgba(0, 0, 0, 0.45);
     padding: 16px;
