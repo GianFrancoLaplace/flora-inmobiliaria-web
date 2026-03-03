@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -90,7 +90,7 @@ export default function NavBar() {
 				</Link>
 
 				{/* Desktop nav */}
-				<nav className={styles.navDesktop} aria-label="Navegación principal">
+				<nav className={styles.navDesktop} aria-label="NavegaciÃ³n principal">
 					<Link
 						className={`${styles.link} ${isActive("/") ? styles.active : ""}`}
 						href="/"
@@ -175,7 +175,7 @@ export default function NavBar() {
 				<button
 					type="button"
 					className={styles.mobileBtn}
-					aria-label="Abrir menú"
+					aria-label="Abrir menÃº"
 					onClick={() => setDrawerOpen(true)}
 				>
 					<Menu size={22} />
@@ -188,10 +188,10 @@ export default function NavBar() {
 					className={styles.drawerOverlay}
 					role="dialog"
 					aria-modal="true"
-					aria-label="Menú"
+					aria-label="MenÃº"
 					onClick={() => setDrawerOpen(false)}
 				>
-					<div className={styles.drawerPanel} onClick={(e) => e.stopPropagation()}>
+					<div className={styles.drawerPanel} style={{ background: "#000", position: "fixed", top: 0, right: 0, bottom: 0, height: "100dvh", overflowY: "auto" }} onClick={(e) => e.stopPropagation()}>
 						<div className={styles.drawerTop}>
 							<Link
 								href="/"
@@ -210,14 +210,14 @@ export default function NavBar() {
 							<button
 								type="button"
 								className={styles.drawerClose}
-								aria-label="Cerrar menú"
+								aria-label="Cerrar menÃº"
 								onClick={() => setDrawerOpen(false)}
 							>
 								<X size={18} />
 							</button>
 						</div>
 
-						<nav className={styles.drawerNav} aria-label="Navegación móvil">
+						<nav className={styles.drawerNav} aria-label="NavegaciÃ³n mÃ³vil">
 							{navItems.map((item) => {
 								if (item.type === "dropdown" && item.children) {
 									return (
@@ -287,3 +287,4 @@ export default function NavBar() {
 		</header>
 	);
 }
+
