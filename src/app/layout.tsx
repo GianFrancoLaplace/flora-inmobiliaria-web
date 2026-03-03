@@ -116,7 +116,7 @@ export default function RootLayout({
 	};
 
 	return (
-		<html lang="es">
+		<html lang="es" style={{ colorScheme: "dark" }}>
 		<body className={`${cactus.className}`}>
 		{/* Script JSON-LD inyectado correctamente en el body */}
 		<script
@@ -132,3 +132,4 @@ export default function RootLayout({
 		</html>
 	);
 }
+
