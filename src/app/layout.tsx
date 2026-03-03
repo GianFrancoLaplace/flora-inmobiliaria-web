@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import './(views)/ui/globals.css';
 import { cactus } from "@/app/(views)/ui/fonts";
 import NavBar from "@/components/NavBar/NavBar";
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 		template: '%s | Flora Cordeiro Inmobiliaria'
 	},
 
-	description: 'Inmobiliaria especializada en Tandil. Más de 10 años de experiencia en compra, venta y alquiler de propiedades. Atención personalizada por Flora Cordeiro.',
+	description: 'Inmobiliaria especializada en Tandil. MÃ¡s de 10 aÃ±os de experiencia en compra, venta y alquiler de propiedades. AtenciÃ³n personalizada por Flora Cordeiro.',
 
 	keywords: [
 		'inmobiliaria tandil',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 		'departamentos tandil',
 		'alquiler tandil',
 		'flora cordeiro',
-		'bienes raíces tandil'
+		'bienes raÃ­ces tandil'
 	],
 
 	authors: [{ name: 'Flora Cordeiro' }],
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
 		url: BASE_URL,
 		siteName: 'Flora Cordeiro Inmobiliaria',
 		title: 'Flora Cordeiro - Tu Inmobiliaria de Confianza en Tandil',
-		description: 'Encontrá tu próxima propiedad en Tandil. Casas, departamentos, terrenos y más. Atención personalizada.',
+		description: 'EncontrÃ¡ tu prÃ³xima propiedad en Tandil. Casas, departamentos, terrenos y mÃ¡s. AtenciÃ³n personalizada.',
 		images: [
 			{
 				url: '/homeBackground.jpg', // TODO: Subir imagen
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
 		],
 	},
 
-	// Verificación de plataformas
+	// VerificaciÃ³n de plataformas
 	verification: {
 		google: '5XxYTljI-V7ytErFMbV1yrAL6QzawUMcHoEZhvU7iHg',
 	},
@@ -116,7 +116,7 @@ export default function RootLayout({
 	};
 
 	return (
-		<html lang="es" style={{ colorScheme: "dark" }}>
+		<html lang="es">
 		<body className={`${cactus.className}`}>
 		{/* Script JSON-LD inyectado correctamente en el body */}
 		<script
@@ -132,4 +132,5 @@ export default function RootLayout({
 		</html>
 	);
 }
+
 
