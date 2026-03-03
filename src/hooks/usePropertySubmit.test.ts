@@ -40,6 +40,7 @@ describe('usePropertySubmit', () => {
 			address: 'Av. Corrientes 1234',
 			city: 'Buenos Aires',
 			price: 150000,
+			currency: 'USD' as const,
 			surface: 120,
 			description: 'Hermoso departamento en el centro',
 			ubication: 'https://maps.google.com/?q=Corrientes+1234',
@@ -110,6 +111,7 @@ describe('usePropertySubmit', () => {
 			expect(formData.get('address')).toBe('Av. Corrientes 1234');
 			expect(formData.get('city')).toBe('Buenos Aires');
 			expect(formData.get('price')).toBe('150000');
+			expect(formData.get('currency')).toBe('USD');
 			expect(formData.get('surface')).toBe('120');
 			expect(formData.get('description')).toBe('Hermoso departamento en el centro');
 			expect(formData.get('ubication')).toBe('https://maps.google.com/?q=Corrientes+1234');

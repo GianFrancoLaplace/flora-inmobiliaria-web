@@ -8,7 +8,7 @@ interface DescriptionSectionProps {
 }
 
 export default function DescriptionSection({ formData, onChange, errors }: DescriptionSectionProps) {
-	const maxCharacters = 200;
+	const maxCharacters = 1000;
 	const charCount = formData.description?.length || 0;
 
 	const handleDescriptionChange = (value: string) => {

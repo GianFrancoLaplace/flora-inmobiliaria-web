@@ -1,10 +1,11 @@
-import { PropertyTypeEnum, OperationEnum, ServiceEnum } from './prisma';
+import { PropertyTypeEnum, OperationEnum, ServiceEnum, CurrencyEnum } from './prisma';
 
 export interface CreatePropertyDto {
 	address: string;
 	city: string;
 	category: OperationEnum;
 	price: number;
+	currency: CurrencyEnum;
 	description: string;
 	surface: number;
 	ubication: string;
@@ -22,6 +23,7 @@ export interface PropertyUpdateData {
 	city?: string;
 	ubication?: string;
 	price?: number;
+	currency?: CurrencyEnum;
 	description?: string;
 	type?: PropertyTypeEnum;
 	category?: OperationEnum;
@@ -40,6 +42,7 @@ export interface PropertyData {
 	city: string;
 	ubication: string;
 	price: number;
+	currency: CurrencyEnum;
 	description: string;
 	type: PropertyTypeEnum;
 	category: OperationEnum;

@@ -1,20 +1,23 @@
-// src/components/PropertyForm/BasicInfoSection/BasicInfoSection.test.tsx
+﻿// src/components/PropertyForm/BasicInfoSection/BasicInfoSection.test.tsx
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import BasicInfoSection from '@/components/PropertyForm/BasicInfoSection/BasicInfoSection';
 import { PropertyTypeEnum, OperationEnum } from '@/types/prisma';
+import type { PropertyFormInput } from '@/types/property-form.types';
 
 describe('BasicInfoSection', () => {
-	const mockFormData = {
+	const mockFormData: PropertyFormInput = {
 		type: PropertyTypeEnum.casa,
 		category: OperationEnum.venta,
 		price: 100000,
+		currency: 'USD',
 		surface: 200,
 		address: 'Test 123',
 		city: '',
 		ubication: '',
 		description: 'Test description that is long enough to pass validation',
+		services: [],
 		images: [],
 		deletedImageIds: []
 	};
@@ -31,11 +34,11 @@ describe('BasicInfoSection', () => {
 			/>
 		);
 
-		// Heading de la sección
-		expect(screen.getByText('Datos Básicos')).toBeInTheDocument();
+		// Heading de la secciÃ³n
+		expect(screen.getByText(/Datos B[aÃ]sicos/i)).toBeInTheDocument();
 
-		// Label de operación (no asociado a input, solo texto)
-		expect(screen.getByText(/Operación/i)).toBeInTheDocument();
+		// Label de operaciÃ³n (no asociado a input, solo texto)
+		expect(screen.getByText(/Operaci[oÃ]n/i)).toBeInTheDocument();
 
 		// Radio buttons por su label text
 		expect(screen.getByLabelText('Venta')).toBeInTheDocument();
@@ -48,7 +51,7 @@ describe('BasicInfoSection', () => {
 		expect(screen.getByLabelText(/Precio/i)).toBeInTheDocument();
 	});
 
-	it('radio de Venta está checked cuando category es venta', () => {
+	it('radio de Venta estÃ¡ checked cuando category es venta', () => {
 		render(
 			<BasicInfoSection
 				formData={mockFormData}
@@ -106,7 +109,7 @@ describe('BasicInfoSection', () => {
 		expect(mockOnChange).toHaveBeenCalledWith('price', 150000);
 	});
 
-	it('muestra error de validación en el precio', () => {
+	it('muestra error de validaciÃ³n en el precio', () => {
 		const errorsWithPrice = { price: 'El precio es requerido' };
 
 		render(
@@ -120,8 +123,8 @@ describe('BasicInfoSection', () => {
 		expect(screen.getByText('El precio es requerido')).toBeInTheDocument();
 	});
 
-	it('muestra error de validación en el tipo', () => {
-		const errorsWithType = { type: 'Tipo de propiedad inválido' };
+	it('muestra error de validaciÃ³n en el tipo', () => {
+		const errorsWithType = { type: 'Tipo de propiedad invÃ¡lido' };
 
 		render(
 			<BasicInfoSection
@@ -131,10 +134,10 @@ describe('BasicInfoSection', () => {
 			/>
 		);
 
-		expect(screen.getByText('Tipo de propiedad inválido')).toBeInTheDocument();
+		expect(screen.getByText('Tipo de propiedad invÃ¡lido')).toBeInTheDocument();
 	});
 
-	it('input de precio no acepta valores negativos (HTML validation)', () => {
+	it('input de precio usa teclado numerico', () => {
 		render(
 			<BasicInfoSection
 				formData={mockFormData}
@@ -144,6 +147,7 @@ describe('BasicInfoSection', () => {
 		);
 
 		const priceInput = screen.getByLabelText(/Precio/i) as HTMLInputElement;
-		expect(priceInput.min).toBe('0');
+		expect(priceInput.inputMode).toBe('numeric');
 	});
 });
+

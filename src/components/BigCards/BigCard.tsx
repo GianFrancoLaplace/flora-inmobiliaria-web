@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import styles from "./BigCard.module.css";
 import { PropertyTypeEnum, OperationEnum } from "@prisma/client";
+import { CurrencyEnum } from "@/types/prisma";
 import { TYPE_LABELS, OPERATION_LABELS, buildSpecsLine } from "@/utils/propertyUtils";
 
 type Img = { url?: string | null; isMain?: boolean | null };
@@ -13,6 +14,7 @@ type PropertyLike = {
 	id?: number;
 	slug?: string | null;
 	price?: number | null;
+	currency?: CurrencyEnum | null;
 	category?: OperationEnum | null;
 	type?: PropertyTypeEnum | null;
 	address?: string | null;
@@ -44,6 +46,7 @@ export default function BigCard({ property, label }: Props) {
 			: `/propiedades/ficha/${property.idProperty ?? property.id ?? ""}`;
 
 	const price = property.price ?? 0;
+	const currency = property.currency ?? CurrencyEnum.USD;
 	const addressLine = [property.address, property.city].filter(Boolean).join(", ");
 
 	// Badge: label externo tiene prioridad, si no hay muestra el tipo
@@ -83,7 +86,7 @@ export default function BigCard({ property, label }: Props) {
 			<div className={styles.detailsProperties}>
 				<div className={styles.rowTop}>
 					<h3 className={styles.price}>
-						USD {price.toLocaleString("es-AR")}{" "}
+						{currency} {price.toLocaleString("es-AR")}{" "}
 						<span className={styles.sep}>|</span>{" "}
 						{operationText}
 					</h3>

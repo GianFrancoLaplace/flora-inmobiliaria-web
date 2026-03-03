@@ -5,7 +5,7 @@ import {NextRequest, NextResponse} from 'next/server';
 import {prisma} from '@/lib/prisma';
 import {PropertyUpdateData} from '@/types/property-api.types';
 import {PropertyService} from "@/services/property.service";
-import {OperationEnum, PropertyTypeEnum, ServiceEnum} from "@/types/prisma";
+import {CurrencyEnum, OperationEnum, PropertyTypeEnum, ServiceEnum} from "@/types/prisma";
 const propertyService = new PropertyService();
 
 
@@ -31,6 +31,7 @@ export async function PUT(
 		ubication: String(formData.get("ubication") ?? ""),
 		description: String(formData.get("description") ?? ""),
 		price: Number(formData.get("price")),
+		currency: (formData.get("currency") as CurrencyEnum) || CurrencyEnum.USD,
 		surface: Number(formData.get("surface")),
 		type: formData.get("type") as PropertyTypeEnum,
 		category: formData.get("category") as OperationEnum,

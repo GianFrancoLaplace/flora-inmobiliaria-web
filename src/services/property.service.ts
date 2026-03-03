@@ -12,7 +12,7 @@ import {prisma} from "@/lib/prisma";
 import {createPropertySchema} from "@/validations/property.schema";
 import { crearSlug } from "@/lib/generateSlug"
 import {ImageService} from "@/services/image.service";
-import {OperationEnum, PropertyTypeEnum} from "@prisma/client"
+import {CurrencyEnum, OperationEnum, PropertyTypeEnum} from "@/types/prisma"
 import {CloudinaryResult} from "@/types/cloudinary.types";
 import {imageMetadataArraySchema} from "@/validations/property.schema";
 import {NextResponse} from "next/server";
@@ -63,6 +63,7 @@ export class PropertyService {
 						city: validatedProperty.city,
 						category: validatedProperty.category as OperationEnum,
 						price: validatedProperty.price,
+						currency: validatedProperty.currency as CurrencyEnum,
 						description: validatedProperty.description,
 						ubication: validatedProperty.ubication,
 						type: validatedProperty.type,
@@ -149,6 +150,10 @@ export class PropertyService {
 			if (filters.maxPrice !== undefined) {
 				where.price.lte = filters.maxPrice;
 			}
+		}
+
+		if (filters.currency !== undefined) {
+			where.currency = filters.currency;
 		}
 
 		return where;
@@ -254,12 +259,16 @@ export class PropertyService {
 				return NextResponse.json({ message: "property no encontrada" }, { status: 404 });
 			}
 
+			const propertyCurrency =
+				(property as { currency?: CurrencyEnum }).currency ?? CurrencyEnum.USD;
+
 			const propertyResponse: PropertyData = {
 				id: property.idProperty,
 				address: property.address,
 				city: property.city || "",
 				ubication: property.ubication || "",
 				price: property.price,
+				currency: propertyCurrency,
 				description: property.description || "",
 				type: property.type,
 				category: property.category,

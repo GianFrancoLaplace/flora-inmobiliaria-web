@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { OperationEnum, PropertyTypeEnum, ServiceEnum } from "@/types/prisma";
+import { CurrencyEnum, OperationEnum, PropertyTypeEnum, ServiceEnum } from "@/types/prisma";
 
 const serviceEnumSchema = z.nativeEnum(ServiceEnum);
 
@@ -46,7 +46,7 @@ export const propertyUpdateSchema = z
             .positive("Precio debe ser mayor a 0")
             .max(1_000_000_000, "Precio demasiado alto")
             .optional(),
-
+        currency: z.nativeEnum(CurrencyEnum).optional(),
         surface: z
             .number({ invalid_type_error: "Superficie debe ser número" })
             .int("Superficie debe ser entera")
@@ -114,3 +114,4 @@ export const propertyUpdateSchema = z
     });
 
 export type PropertyUpdateDataValidated = z.infer<typeof propertyUpdateSchema>;
+

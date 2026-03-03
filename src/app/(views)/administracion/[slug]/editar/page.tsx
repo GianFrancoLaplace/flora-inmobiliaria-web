@@ -3,6 +3,7 @@ import {FormMode, PropertyFormInput} from "@/types/property-form.types";
 import { prisma } from  '@/lib/prisma'
 import {notFound} from "next/navigation";
 import {ImageItem} from "@/types/image.types";
+import { CurrencyEnum } from "@/types/prisma";
 
 interface PropertyEditPageProps {
 	params: Promise<{ slug: string }>;
@@ -35,6 +36,8 @@ export default async function PropertyEditPage({ params }: PropertyEditPageProps
 	}));
 
 	const propertyInput: Partial<PropertyFormInput> = {
+		// Compatible mientras Prisma Client local puede estar sin regenerate
+		currency: (property as { currency?: CurrencyEnum }).currency ?? CurrencyEnum.USD,
 		address: property.address ?? undefined,
 		city: property.city ?? undefined,
 		description: property.description ?? undefined,

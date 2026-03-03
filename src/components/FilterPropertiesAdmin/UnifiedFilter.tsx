@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 
-import { OperationEnum, PropertyTypeEnum } from "@/types/prisma";
+import { CurrencyEnum, OperationEnum, PropertyTypeEnum } from "@/types/prisma";
 import FiltroToggle from "../FilterButtons/FilterButtons";
 import styles from "./filterPropAdmin.module.css";
 
@@ -15,7 +15,6 @@ const UnifiedFilter: React.FC = () => {
 
 	const [isOpen, setIsOpen] = useState(false);
 
-	// --- Maps UI -> DB
 	const operacionLabels: Record<string, OperationEnum> = useMemo(
 		() => ({
 			"Quiero comprar": OperationEnum.venta,
@@ -33,7 +32,6 @@ const UnifiedFilter: React.FC = () => {
 		[]
 	);
 
-	// --- Maps DB -> UI
 	const operacionLabelsReverse: Record<OperationEnum, string> = useMemo(
 		() => ({
 			[OperationEnum.venta]: "Quiero comprar",
@@ -53,9 +51,9 @@ const UnifiedFilter: React.FC = () => {
 		[]
 	);
 
-	const operacionesEnUrl =
-		searchParams.get("operacion")?.split(",").filter(Boolean) || [];
+	const operacionesEnUrl = searchParams.get("operacion")?.split(",").filter(Boolean) || [];
 	const tiposEnUrl = searchParams.get("tipo")?.split(",").filter(Boolean) || [];
+	const selectedCurrency = (searchParams.get("currency") as CurrencyEnum | null) ?? CurrencyEnum.USD;
 
 	const activosOperacion = operacionesEnUrl
 		.map((op) => operacionLabelsReverse[op as OperationEnum])
@@ -85,22 +83,26 @@ const UnifiedFilter: React.FC = () => {
 
 	const handleMaxValueChange = useDebouncedCallback((value: string) => {
 		const params = new URLSearchParams(searchParams.toString());
-
 		if (value && value.trim() !== "") params.set("maxValue", value);
 		else params.delete("maxValue");
-
 		router.replace(`${pathname}?${params.toString()}`, { scroll: false });
 	}, 250);
+
+	const handleCurrencyChange = (currency: CurrencyEnum) => {
+		const params = new URLSearchParams(searchParams.toString());
+		params.set("currency", currency);
+		router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+	};
 
 	const clearAll = () => {
 		const params = new URLSearchParams(searchParams.toString());
 		params.delete("operacion");
 		params.delete("tipo");
 		params.delete("maxValue");
+		params.delete("currency");
 		router.replace(`${pathname}?${params.toString()}`, { scroll: false });
 	};
 
-	// Lock scroll cuando el drawer está abierto (mobile)
 	useEffect(() => {
 		if (!isOpen) return;
 		const prev = document.body.style.overflow;
@@ -112,23 +114,19 @@ const UnifiedFilter: React.FC = () => {
 
 	const filtrosOperacion = Object.keys(operacionLabels);
 	const filtrosPropiedad = Object.keys(propiedadLabels);
-
 	const maxValueDefault = searchParams.get("maxValue") || "";
 
 	return (
 		<aside className={styles.sidebar} aria-label="Filtros de propiedades">
-			{/* Mobile toolbar */}
 			<div className={styles.mobileBar}>
 				<button className={styles.openBtn} onClick={() => setIsOpen(true)}>
-					☰ Filtrar
+					Filtrar
 				</button>
-
 				<button className={styles.clearBtn} onClick={clearAll} type="button">
 					Limpiar
 				</button>
 			</div>
 
-			{/* Desktop sticky panel */}
 			<div className={styles.desktopPanel}>
 				<div className={styles.panelHeader}>
 					<h3 className={styles.panelTitle}>Filtros</h3>
@@ -138,8 +136,24 @@ const UnifiedFilter: React.FC = () => {
 				</div>
 
 				<div className={styles.section}>
+					<h4 className={styles.sectionTitle}>Moneda</h4>
+					<div className={styles.togglesRow}>
+						<FiltroToggle
+							label="USD"
+							isActive={selectedCurrency === CurrencyEnum.USD}
+							onToggle={() => handleCurrencyChange(CurrencyEnum.USD)}
+						/>
+						<FiltroToggle
+							label="ARS"
+							isActive={selectedCurrency === CurrencyEnum.ARS}
+							onToggle={() => handleCurrencyChange(CurrencyEnum.ARS)}
+						/>
+					</div>
+				</div>
+
+				<div className={styles.section}>
 					<label htmlFor="maxValueInputDesktop" className={styles.sectionTitle}>
-						Valor máximo
+						Valor maximo ({selectedCurrency})
 					</label>
 					<input
 						id="maxValueInputDesktop"
@@ -153,7 +167,7 @@ const UnifiedFilter: React.FC = () => {
 				</div>
 
 				<div className={styles.section}>
-					<h4 className={styles.sectionTitle}>Operación</h4>
+					<h4 className={styles.sectionTitle}>Operacion</h4>
 					<div className={styles.toggles}>
 						{filtrosOperacion.map((item) => (
 							<FiltroToggle
@@ -181,7 +195,6 @@ const UnifiedFilter: React.FC = () => {
 				</div>
 			</div>
 
-			{/* Mobile drawer */}
 			{isOpen && (
 				<div
 					className={styles.overlay}
@@ -194,13 +207,29 @@ const UnifiedFilter: React.FC = () => {
 						<div className={styles.drawerHeader}>
 							<h3 className={styles.panelTitle}>Filtros</h3>
 							<button className={styles.closeBtn} onClick={() => setIsOpen(false)} aria-label="Cerrar">
-								✕
+								x
 							</button>
 						</div>
 
 						<div className={styles.section}>
+							<h4 className={styles.sectionTitle}>Moneda</h4>
+							<div className={styles.togglesRow}>
+								<FiltroToggle
+									label="USD"
+									isActive={selectedCurrency === CurrencyEnum.USD}
+									onToggle={() => handleCurrencyChange(CurrencyEnum.USD)}
+								/>
+								<FiltroToggle
+									label="ARS"
+									isActive={selectedCurrency === CurrencyEnum.ARS}
+									onToggle={() => handleCurrencyChange(CurrencyEnum.ARS)}
+								/>
+							</div>
+						</div>
+
+						<div className={styles.section}>
 							<label htmlFor="maxValueInputMobile" className={styles.sectionTitle}>
-								Valor máximo
+								Valor maximo ({selectedCurrency})
 							</label>
 							<input
 								id="maxValueInputMobile"
@@ -214,7 +243,7 @@ const UnifiedFilter: React.FC = () => {
 						</div>
 
 						<div className={styles.section}>
-							<h4 className={styles.sectionTitle}>Operación</h4>
+							<h4 className={styles.sectionTitle}>Operacion</h4>
 							<div className={styles.toggles}>
 								{filtrosOperacion.map((item) => (
 									<FiltroToggle

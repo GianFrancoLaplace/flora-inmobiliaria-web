@@ -1,15 +1,14 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import './(views)/ui/globals.css';
 import { cactus } from "@/app/(views)/ui/fonts";
 import NavBar from "@/components/NavBar/NavBar";
 import Footer from "@/components/Footer/Footer";
 import WhatsAppRedirection from "@/components/WhatsAppRedirection/WhatsAppRedirection";
 
-// URL base definida para evitar repeticiones
 let BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL : "";
 
 if (!BASE_URL) {
-	BASE_URL = 'https://flora-inmobiliaria-web.vercel.app/';  // TODO: HARDCODEADO
+	BASE_URL = 'https://flora-inmobiliaria-web.vercel.app/';  
 }
 
 export const metadata: Metadata = {
@@ -20,7 +19,7 @@ export const metadata: Metadata = {
 		template: '%s | Flora Cordeiro Inmobiliaria'
 	},
 
-	description: 'Inmobiliaria especializada en Tandil. MÃ¡s de 10 aÃ±os de experiencia en compra, venta y alquiler de propiedades. AtenciÃ³n personalizada por Flora Cordeiro.',
+	description: 'Inmobiliaria especializada en Tandil. Más de 10 años de experiencia en compra, venta y alquiler de propiedades. Atención personalizada por Flora Cordeiro.',
 
 	keywords: [
 		'inmobiliaria tandil',
@@ -29,7 +28,7 @@ export const metadata: Metadata = {
 		'departamentos tandil',
 		'alquiler tandil',
 		'flora cordeiro',
-		'bienes raÃ­ces tandil'
+		'bienes raíces tandil'
 	],
 
 	authors: [{ name: 'Flora Cordeiro' }],
@@ -42,10 +41,10 @@ export const metadata: Metadata = {
 		url: BASE_URL,
 		siteName: 'Flora Cordeiro Inmobiliaria',
 		title: 'Flora Cordeiro - Tu Inmobiliaria de Confianza en Tandil',
-		description: 'EncontrÃ¡ tu prÃ³xima propiedad en Tandil. Casas, departamentos, terrenos y mÃ¡s. AtenciÃ³n personalizada.',
+		description: 'Encontrá tu próxima propiedad en Tandil. Casas, departamentos, terrenos y más. Atención personalizada.',
 		images: [
 			{
-				url: '/homeBackground.jpg', // TODO: Subir imagen
+				url: '/homeBackground.jpg',
 				width: 1200,
 				height: 630,
 				alt: 'Flora Cordeiro Inmobiliaria - Tandil',
@@ -53,7 +52,7 @@ export const metadata: Metadata = {
 		],
 	},
 
-	// VerificaciÃ³n de plataformas
+	// Verificación de plataformas
 	verification: {
 		google: '5XxYTljI-V7ytErFMbV1yrAL6QzawUMcHoEZhvU7iHg',
 	},
@@ -116,7 +115,7 @@ export default function RootLayout({
 	};
 
 	return (
-		<html lang="es">
+		<html lang="es" style={{ colorScheme: "dark" }}>
 		<body className={`${cactus.className}`}>
 		{/* Script JSON-LD inyectado correctamente en el body */}
 		<script
@@ -132,5 +131,4 @@ export default function RootLayout({
 		</html>
 	);
 }
-
 

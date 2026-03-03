@@ -30,6 +30,7 @@ export default function PropertyForm({
 		type: undefined,
 		category: undefined,
 		price: 0,
+		currency: "USD",
 		surface: 0,
 		address: '',
 		city: '',

@@ -4,13 +4,14 @@ import ContactInformation from '@/components/features/ContactInformation/Contact
 import '../ui/fonts';
 import styles from './adminStyles.module.css';
 import UnifiedFilter from '@/components/FilterPropertiesAdmin/UnifiedFilter';
-import { PropertyTypeEnum, OperationEnum } from '@/types/prisma';
+import { CurrencyEnum, PropertyTypeEnum, OperationEnum } from '@/types/prisma';
 
 type PageProps = {
 	searchParams: Promise<{
 		tipo?: string;
 		operacion?: string;
 		maxValue?: string;
+		currency?: string;
 	}>;
 };
 
@@ -23,6 +24,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
 		types: params.tipo?.split(',').filter(Boolean) as PropertyTypeEnum[] | undefined,
 		operations: params.operacion?.split(',').filter(Boolean) as OperationEnum[] | undefined,
 		maxPrice: params.maxValue ? Number(params.maxValue) : undefined,
+		currency: params.currency as CurrencyEnum | undefined,
 	};
 
 	const properties = await propertyService.findMany(filters);

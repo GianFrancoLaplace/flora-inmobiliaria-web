@@ -62,7 +62,7 @@ export default function TechnicalSheet({ property }: PropertyViewProps) {
 							<div className={styles.priceBox}>
 								<p className={styles.priceLabel}>Precio</p>
 								<p className={styles.priceValue}>
-									USD {property.price.toLocaleString("es-AR")}
+									{property.currency} {property.price.toLocaleString("es-AR")}
 								</p>
 
 								<Link
@@ -97,7 +97,7 @@ export default function TechnicalSheet({ property }: PropertyViewProps) {
 							<div className={styles.priceBox}>
 								<p className={styles.priceLabel}>Precio</p>
 								<p className={styles.priceValue}>
-									USD {property.price.toLocaleString("es-AR")}
+									{property.currency} {property.price.toLocaleString("es-AR")}
 								</p>
 								<Link
 									href="https://wa.me/2494208037"
@@ -195,7 +195,7 @@ export default function TechnicalSheet({ property }: PropertyViewProps) {
 						<div className={styles.stickyBox}>
 							<p className={styles.priceLabel}>Precio</p>
 							<p className={styles.priceValue}>
-								USD {property.price.toLocaleString("es-AR")}
+								{property.currency} {property.price.toLocaleString("es-AR")}
 							</p>
 
 							<Link

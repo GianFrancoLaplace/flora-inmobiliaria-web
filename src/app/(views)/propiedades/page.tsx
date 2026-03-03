@@ -1,5 +1,5 @@
 import type { PropertyFilters } from "@/types/property.filter.types";
-import { OperationEnum, PropertyTypeEnum } from "@prisma/client";
+import { CurrencyEnum, OperationEnum, PropertyTypeEnum } from "@/types/prisma";
 
 import ContactInformation from "@/components/features/ContactInformation/ContactInformation";
 import PropertiesClient from "./PropertiesClient";
@@ -33,6 +33,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
 
 	const tipoParam = toStringParam(searchParams.tipo);
 	const operacionParam = toStringParam(searchParams.operacion);
+	const currencyParam = toStringParam(searchParams.currency);
 
 	// soporta ambos nombres por si ya tenías uno:
 	const maxValueParam = toStringParam(searchParams.maxValue);
@@ -45,12 +46,13 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
 	const minPrice = parseNumber(minValueParam);
 
 	const filters: PropertyFilters | undefined =
-		(types?.length || operations?.length || minPrice !== undefined || maxPrice !== undefined)
+		(types?.length || operations?.length || minPrice !== undefined || maxPrice !== undefined || currencyParam)
 			? {
 				types,
 				operations,
 				minPrice,
 				maxPrice,
+				currency: (currencyParam as CurrencyEnum | undefined),
 			}
 			: undefined;
 

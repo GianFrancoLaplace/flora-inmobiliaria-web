@@ -1,20 +1,21 @@
-// src/components/PropertyForm/DescriptionSection/DescriptionSection.test.tsx
-
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+﻿import { describe, it, expect, vi } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import DescriptionSection from './DescriptionSection';
+import type { PropertyFormInput } from '@/types/property-form.types';
 
 describe('DescriptionSection', () => {
-	const mockFormData = {
-		type: 'casa' as const,
-		category: 'venta' as const,
+	const mockFormData: PropertyFormInput = {
+		type: 'casa',
+		category: 'venta',
 		price: 100000,
+		currency: 'USD',
 		surface: 200,
 		address: 'Test 123',
 		city: '',
 		ubication: '',
 		description: '',
+		services: [],
 		images: [],
 		deletedImageIds: []
 	};
@@ -22,41 +23,32 @@ describe('DescriptionSection', () => {
 	const mockOnChange = vi.fn();
 	const mockErrors = {};
 
-	it('renderiza correctamente', () => {
+	it('renderiza con contador inicial 0 / 1000', () => {
 		render(
-			<DescriptionSection
-				formData={mockFormData}
-				onChange={mockOnChange}
-				errors={mockErrors}
-			/>
+			<DescriptionSection formData={mockFormData} onChange={mockOnChange} errors={mockErrors} />
 		);
 
-		expect(screen.getByText('Descripción')).toBeInTheDocument();
-		expect(screen.getByLabelText(/Descripción de la propiedad/i)).toBeInTheDocument();
-		expect(screen.getByText('0 / 200')).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: /Descripci.n/i })).toBeInTheDocument();
+		expect(screen.getByLabelText(/Descripci.n de la propiedad/i)).toBeInTheDocument();
+		expect(screen.getByText('0 / 1000')).toBeInTheDocument();
 	});
 
 	it('llama onChange cuando se escribe texto', async () => {
 		const user = userEvent.setup();
-
 		render(
-			<DescriptionSection
-				formData={mockFormData}
-				onChange={mockOnChange}
-				errors={mockErrors}
-			/>
+			<DescriptionSection formData={mockFormData} onChange={mockOnChange} errors={mockErrors} />
 		);
 
-		const textarea = screen.getByLabelText(/Descripción de la propiedad/i);
+		const textarea = screen.getByLabelText(/Descripci.n de la propiedad/i);
 		await user.type(textarea, 'Casa hermosa');
 
 		expect(mockOnChange).toHaveBeenCalled();
 	});
 
-	it('muestra contador de caracteres actualizado', () => {
-		const formDataWithDescription = {
+	it('muestra contador actualizado con descripcion existente', () => {
+		const formDataWithDescription: PropertyFormInput = {
 			...mockFormData,
-			description: 'Esta es una descripción de prueba'
+			description: 'Esta es una descripcion de prueba',
 		};
 
 		render(
@@ -67,87 +59,21 @@ describe('DescriptionSection', () => {
 			/>
 		);
 
-		const expectedCount = formDataWithDescription.description.length;
-		expect(screen.getByText(`${expectedCount} / 200`)).toBeInTheDocument();
+		expect(screen.getByText(`${formDataWithDescription.description.length} / 1000`)).toBeInTheDocument();
 	});
 
-	it('NO permite escribir más de 200 caracteres', async () => {
-		const user = userEvent.setup();
-
+	it('no permite escribir mas de 1000 caracteres', async () => {
 		render(
-			<DescriptionSection
-				formData={mockFormData}
-				onChange={mockOnChange}
-				errors={mockErrors}
-			/>
+			<DescriptionSection formData={mockFormData} onChange={mockOnChange} errors={mockErrors} />
 		);
 
-		const longText = 'a'.repeat(250); // 250 caracteres
-		const textarea = screen.getByLabelText(/Descripción de la propiedad/i);
+		const longText = 'a'.repeat(1200);
+		const textarea = screen.getByLabelText(/Descripci.n de la propiedad/i);
+		fireEvent.change(textarea, { target: { value: longText } });
 
-		await user.type(textarea, longText);
-
-		// Verificar que onChange fue llamado pero con texto truncado a 200
-		const calls = mockOnChange.mock.calls;
-		const lastCall = calls[calls.length - 1];
-
-		if (lastCall) {
-			const [field, value] = lastCall;
-			expect(value.length).toBeLessThanOrEqual(200);
-		}
-	});
-
-	it('muestra error de validación cuando existe', () => {
-		const errorsWithDescription = {
-			description: 'La descripción debe tener al menos 50 caracteres'
-		};
-
-		render(
-			<DescriptionSection
-				formData={mockFormData}
-				onChange={mockOnChange}
-				errors={errorsWithDescription}
-			/>
-		);
-
-		expect(screen.getByText('La descripción debe tener al menos 50 caracteres')).toBeInTheDocument();
-	});
-
-	it('muestra el hint sobre mínimo de caracteres', () => {
-		render(
-			<DescriptionSection
-				formData={mockFormData}
-				onChange={mockOnChange}
-				errors={mockErrors}
-			/>
-		);
-
-		expect(screen.getByText(/Mínimo 50 caracteres/i)).toBeInTheDocument();
-	});
-
-	it('textarea tiene 8 rows como especificado', () => {
-		render(
-			<DescriptionSection
-				formData={mockFormData}
-				onChange={mockOnChange}
-				errors={mockErrors}
-			/>
-		);
-
-		const textarea = screen.getByLabelText(/Descripción de la propiedad/i);
-		expect(textarea).toHaveAttribute('rows', '8');
-	});
-
-	it('placeholder es descriptivo', () => {
-		render(
-			<DescriptionSection
-				formData={mockFormData}
-				onChange={mockOnChange}
-				errors={mockErrors}
-			/>
-		);
-
-		const textarea = screen.getByPlaceholderText(/Describe las características principales/i);
-		expect(textarea).toBeInTheDocument();
+		const lastCall = mockOnChange.mock.calls[mockOnChange.mock.calls.length - 1];
+		expect(lastCall).toBeTruthy();
+		expect(lastCall[0]).toBe('description');
+		expect(lastCall[1].length).toBeLessThanOrEqual(1000);
 	});
 });

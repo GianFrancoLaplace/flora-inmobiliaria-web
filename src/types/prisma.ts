@@ -21,6 +21,11 @@ export {
 	ServiceEnum
 } from '@prisma/client';
 
+export enum CurrencyEnum {
+	USD = "USD",
+	ARS = "ARS",
+}
+
 export type PropertyWithImages = PropertyDbModel & {
 	images: ImageDbModel[];
 };

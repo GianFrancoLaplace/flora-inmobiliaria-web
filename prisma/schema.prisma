@@ -12,6 +12,7 @@ model Property {
   idProperty      Int              @id @default(autoincrement()) @map("id_property")
   description     String
   price           Int
+  currency        CurrencyEnum     @default(USD)
   type            PropertyTypeEnum
   category        OperationEnum
   address         String
@@ -75,4 +76,11 @@ enum ServiceEnum {
   cloacas
 
   @@map("service_enum")
+}
+
+enum CurrencyEnum {
+  USD
+  ARS
+
+  @@map("currency_enum")
 }

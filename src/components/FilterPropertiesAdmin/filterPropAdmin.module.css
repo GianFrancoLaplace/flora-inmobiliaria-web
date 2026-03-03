@@ -110,6 +110,11 @@
     gap: 10px;
 }
 
+.togglesRow {
+    display: flex;
+    gap: 10px;
+}
+
 /* Mobile drawer */
 .overlay {
     position: fixed;
