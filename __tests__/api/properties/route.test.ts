@@ -39,7 +39,7 @@ describe('POST /api/properties', () => {
 	const validCasaData = {
 		address: '123 Fake Street',
 		city: 'Tandil',
-		state: 'venta' as const,
+		category: 'venta' as const,
 		price: 150000,
 		description: 'Casa hermosa con jardín y cochera doble para toda la familia',
 		ubication: '-37.3217, -59.1332',
@@ -60,7 +60,7 @@ describe('POST /api/properties', () => {
 	const validDepartamentoData = {
 		address: 'Av. Libertador 456',
 		city: 'Tandil',
-		state: 'alquiler' as const,
+		category: 'alquiler' as const,
 		price: 80000,
 		description: 'Departamento luminoso en edificio moderno con amenities completos',
 		ubication: '-37.3217, -59.1332',
@@ -78,7 +78,7 @@ describe('POST /api/properties', () => {
 	const validTerrenoData = {
 		address: 'Ruta 226 Km 15',
 		city: 'Tandil',
-		state: 'venta' as const,
+		category: 'venta' as const,
 		price: 50000,
 		description: 'Terreno apto para construcción con escritura al día y servicios',
 		ubication: '-37.3217, -59.1332',
@@ -221,6 +221,10 @@ describe('POST /api/properties', () => {
 								neighborhood: null,
 								slug: 'venta-casa-hermosa-con-jardin',
 							}),
+							update: vi.fn().mockResolvedValue({
+								idProperty: 1,
+								slug: 'venta-casa-hermosa-con-jardin',
+							}),
 							findUnique: vi.fn().mockResolvedValue(mockCreatedProperty),
 						},
 						image: {
@@ -269,13 +273,17 @@ describe('POST /api/properties', () => {
 							create: vi.fn().mockResolvedValue({
 								idProperty: 2,
 								...validDepartamentoData,
-								category: validDepartamentoData.state,
+								category: validDepartamentoData.category,
+								slug: 'alquiler-departamento-luminoso',
+							}),
+							update: vi.fn().mockResolvedValue({
+								idProperty: 2,
 								slug: 'alquiler-departamento-luminoso',
 							}),
 							findUnique: vi.fn().mockResolvedValue({
 								idProperty: 2,
 								...validDepartamentoData,
-								category: validDepartamentoData.state,
+								category: validDepartamentoData.category,
 								slug: 'alquiler-departamento-luminoso',
 								images: [{
 									idImage: 1,
@@ -336,7 +344,7 @@ describe('POST /api/properties', () => {
 							create: vi.fn().mockResolvedValue({
 								idProperty: 3,
 								...validTerrenoData,
-								category: validTerrenoData.state,
+								category: validTerrenoData.category,
 								slug: 'venta-terreno-apto-construccion',
 								bedrooms: null,
 								bathrooms: null,
@@ -344,10 +352,14 @@ describe('POST /api/properties', () => {
 								floors: null,
 								garage: null,
 							}),
+							update: vi.fn().mockResolvedValue({
+								idProperty: 3,
+								slug: 'venta-terreno-apto-construccion',
+							}),
 							findUnique: vi.fn().mockResolvedValue({
 								idProperty: 3,
 								...validTerrenoData,
-								category: validTerrenoData.state,
+								category: validTerrenoData.category,
 								slug: 'venta-terreno-apto-construccion',
 								images: [{
 									idImage: 1,
@@ -430,7 +442,9 @@ describe('POST /api/properties', () => {
 
 			expect(response.status).toBe(400);
 			expect(data).toHaveProperty('errors');
-			expect(JSON.stringify(data.errors)).toContain('baño');
+			expect(
+				data.errors.some((err: { path?: string[] }) => err.path?.includes('bathrooms'))
+			).toBe(true);
 		});
 
 		it('should reject DEPARTAMENTO without bedrooms', async () => {
@@ -472,7 +486,9 @@ describe('POST /api/properties', () => {
 
 			expect(response.status).toBe(400);
 			expect(data).toHaveProperty('errors');
-			expect(JSON.stringify(data.errors)).toContain('baño');
+			expect(
+				data.errors.some((err: { path?: string[] }) => err.path?.includes('bathrooms'))
+			).toBe(true);
 		});
 
 		it('should reject CASA with constructedArea > surface', async () => {
@@ -494,7 +510,7 @@ describe('POST /api/properties', () => {
 
 			expect(response.status).toBe(400);
 			expect(data).toHaveProperty('errors');
-			expect(JSON.stringify(data.errors)).toContain('área construida');
+			expect(data.errors.some((err: { path?: string[] }) => err.path?.includes('constructedArea'))).toBe(true);
 		});
 	});
 
@@ -541,7 +557,9 @@ describe('POST /api/properties', () => {
 
 			expect(response.status).toBe(400);
 			expect(data).toHaveProperty('errors');
-			expect(JSON.stringify(data.errors)).toContain('descripción');
+			expect(
+				data.errors.some((err: { path?: string[] }) => err.path?.includes('description'))
+			).toBe(true);
 		});
 
 		it('should reject invalid property type', async () => {
@@ -764,7 +782,7 @@ describe('POST /api/properties', () => {
 			const casaSinOpcionales = {
 				address: validCasaData.address,
 				city: validCasaData.city,
-				state: validCasaData.state,
+				category: validCasaData.category,
 				price: validCasaData.price,
 				description: validCasaData.description,
 				ubication: validCasaData.ubication,
@@ -796,15 +814,19 @@ describe('POST /api/properties', () => {
 							create: vi.fn().mockResolvedValue({
 								idProperty: 1,
 								...casaSinOpcionales,
-								category: casaSinOpcionales.state,
+								category: casaSinOpcionales.category,
 								constructedArea: null,
 								floors: null,
 								garage: null,
 							}),
+							update: vi.fn().mockResolvedValue({
+								idProperty: 1,
+								slug: 'venta-casa-hermosa-con-jardin',
+							}),
 							findUnique: vi.fn().mockResolvedValue({
 								idProperty: 1,
 								...casaSinOpcionales,
-								category: casaSinOpcionales.state,
+								category: casaSinOpcionales.category,
 								images: [{
 									idImage: 1,
 									url: mockCloudinaryResult[0].url,
@@ -838,3 +860,4 @@ describe('POST /api/properties', () => {
 		});
 	});
 });
+

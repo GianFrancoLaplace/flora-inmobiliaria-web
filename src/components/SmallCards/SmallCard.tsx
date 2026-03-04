@@ -55,7 +55,7 @@ export default function SmallCard({ property }: Props) {
 			<div className={styles.body}>
 				<div className={styles.topRow}>
 					<p className={styles.price}>
-						{property.price ? `USD ${money(property.price)}` : "Consultar precio"}
+						{property.price ? `${property.currency ?? "USD"} ${money(property.price)}` : "Consultar precio"}
 					</p>
 					<span className={styles.pill}>{pill}</span>
 				</div>

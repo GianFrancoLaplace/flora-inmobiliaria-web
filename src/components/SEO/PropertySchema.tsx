@@ -1,8 +1,8 @@
-import { PropertyTypes } from '@/types/property.types'
-import {getBaseUrl} from "@/lib/baseURL";
+import type { PropertyWithImages } from "@/types/prisma";
+import { getBaseUrl } from "@/lib/baseURL";
 
 interface PropertySchemaProps {
-	property: PropertyTypes
+	property: PropertyWithImages
 }
 
 export function PropertySchema({ property }: PropertySchemaProps) {
@@ -11,16 +11,16 @@ export function PropertySchema({ property }: PropertySchemaProps) {
 		'@type': 'RealEstateListing',
 		name: `${property.type} en ${property.address}`,
 		description: property.description,
-		url: `${getBaseUrl()}/propiedades/ficha/${property.id}`,
+		url: `${getBaseUrl()}/propiedades/${property.slug}`,
 
 		offers: {
 			'@type': 'Offer',
 			price: property.price,
-			priceCurrency: 'ARS',
-			availability: property.state === 'venta'
+			priceCurrency: property.currency ?? 'USD',
+			availability: property.category === 'venta'
 				? 'https://schema.org/InStock'
 				: 'https://schema.org/OutOfStock',
-			url: `${getBaseUrl()}/propiedades/ficha/${property.id}`,
+			url: `${getBaseUrl()}/propiedades/${property.slug}`,
 		},
 
 		address: {

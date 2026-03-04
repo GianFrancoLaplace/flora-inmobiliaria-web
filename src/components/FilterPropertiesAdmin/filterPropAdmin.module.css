@@ -95,8 +95,13 @@
     border: 1px solid rgba(0,0,0,0.10);
     padding: 12px 12px;
     background: rgba(255,255,255,0.95);
+    color: var(--almost-black);
+    caret-color: var(--almost-black);
     outline: none;
     transition: box-shadow 160ms ease, border-color 160ms ease;
+}
+.input::placeholder {
+    color: rgba(0, 0, 0, 0.45);
 }
 .input:focus {
     border-color: rgba(255, 214, 0, 0.85);
@@ -107,6 +112,11 @@
 .toggles {
     display: flex;
     flex-direction: column;
+    gap: 10px;
+}
+
+.togglesRow {
+    display: flex;
     gap: 10px;
 }
 

@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { usePropertySubmit } from './usePropertySubmit';
 import { FormMode, PropertyFormInput } from '@/types/property-form.types';
-import { PropertyTypeEnum, OperationEnum } from '@/types/prisma';
+import { PropertyTypeEnum, OperationEnum, CurrencyEnum, ServiceEnum } from '@/types/prisma';
 
 // Global fetch mock
 const mockFetch = vi.fn();
@@ -40,11 +40,13 @@ describe('usePropertySubmit', () => {
 			address: 'Av. Corrientes 1234',
 			city: 'Buenos Aires',
 			price: 150000,
+			currency: CurrencyEnum.USD,
 			surface: 120,
 			description: 'Hermoso departamento en el centro',
 			ubication: 'https://maps.google.com/?q=Corrientes+1234',
 			type: PropertyTypeEnum.departamento,
 			category: OperationEnum.venta,
+			services: [ServiceEnum.agua],
 			constructedArea: 100,
 			bedrooms: 3,
 			bathrooms: 2,
@@ -110,6 +112,7 @@ describe('usePropertySubmit', () => {
 			expect(formData.get('address')).toBe('Av. Corrientes 1234');
 			expect(formData.get('city')).toBe('Buenos Aires');
 			expect(formData.get('price')).toBe('150000');
+			expect(formData.get('currency')).toBe('USD');
 			expect(formData.get('surface')).toBe('120');
 			expect(formData.get('description')).toBe('Hermoso departamento en el centro');
 			expect(formData.get('ubication')).toBe('https://maps.google.com/?q=Corrientes+1234');
@@ -145,6 +148,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.campo,
 				category: OperationEnum.venta,
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
@@ -190,24 +194,37 @@ describe('usePropertySubmit', () => {
 		});
 
 		it('should manage loading states correctly', async () => {
-			mockFetch.mockResolvedValueOnce({
-				ok: true,
-				json: async () => ({ id: 4 })
-			});
+			let resolveFetch!: (value: { ok: boolean; json: () => Promise<{ id: number }> }) => void;
+			mockFetch.mockImplementationOnce(
+				() =>
+					new Promise((resolve) => {
+						resolveFetch = resolve as typeof resolveFetch;
+					})
+			);
 
 			const { result } = renderHook(() => usePropertySubmit());
 
 			expect(result.current.isLoading).toBe(false);
 
-			const submitPromise = result.current.submit(mockPropertyData, FormMode.CREATE);
+			let submitPromise!: Promise<unknown>;
+			act(() => {
+				submitPromise = result.current.submit(mockPropertyData, FormMode.CREATE);
+			});
 
 			await waitFor(() => {
 				expect(result.current.isLoading).toBe(true);
 			});
 
+			resolveFetch({
+				ok: true,
+				json: async () => ({ id: 4 })
+			});
+
 			await submitPromise;
 
-			expect(result.current.isLoading).toBe(false);
+			await waitFor(() => {
+				expect(result.current.isLoading).toBe(false);
+			});
 		});
 
 		it('should handle all PropertyTypeEnum values correctly', async () => {
@@ -275,6 +292,7 @@ describe('usePropertySubmit', () => {
 			ubication: 'https://maps.google.com',
 			type: PropertyTypeEnum.casa,
 			category: OperationEnum.alquiler,
+			services: [],
 			bedrooms: 4,
 			bathrooms: 3,
 			garage: 2,
@@ -424,6 +442,7 @@ describe('usePropertySubmit', () => {
 			ubication: 'https://maps.google.com',
 			type: PropertyTypeEnum.casa,
 			category: OperationEnum.venta,
+			services: [],
 			images: [],
 			deletedImageIds: []
 		};
@@ -532,7 +551,9 @@ describe('usePropertySubmit', () => {
 			await result.current.submit(basicData, FormMode.CREATE);
 
 			// Error should be cleared
-			expect(result.current.error).toBe(null);
+			await waitFor(() => {
+				expect(result.current.error).toBe(null);
+			});
 		});
 
 		it('should ensure isLoading=false even if error occurs (finally block)', async () => {
@@ -561,6 +582,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.lote,
 				category: OperationEnum.venta,
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
@@ -592,6 +614,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.local_comercial,
 				category: OperationEnum.alquiler,
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
@@ -623,6 +646,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.departamento,
 				category: OperationEnum.venta,
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
@@ -656,6 +680,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.casa,
 				category: OperationEnum.venta,
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
@@ -689,6 +714,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.casa,
 				category: OperationEnum.venta,
+				services: [],
 				images: Array.from({ length: 10 }, (_, i) => ({
 					type: 'new' as const,
 					file: createMockFile(`image-${i}.jpg`),
@@ -728,6 +754,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.departamento,
 				category: OperationEnum.alquiler,
+				services: [],
 				images: [
 					{
 						type: 'existing',
@@ -797,6 +824,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.casa,
 				category: OperationEnum.venta,
+				services: [],
 				images: [],
 				deletedImageIds: [999999, 888888, 777777]
 			};
@@ -852,6 +880,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.departamento,
 				category: OperationEnum.alquiler,
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
@@ -875,6 +904,7 @@ describe('usePropertySubmit', () => {
 				surface: 80,
 				description: 'Test',
 				ubication: 'https://maps.google.com',
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
@@ -907,6 +937,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.casa,
 				category: OperationEnum.venta,
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
@@ -940,6 +971,7 @@ describe('usePropertySubmit', () => {
 				ubication: 'https://maps.google.com',
 				type: PropertyTypeEnum.departamento,
 				category: OperationEnum.alquiler,
+				services: [],
 				images: [],
 				deletedImageIds: []
 			};
@@ -965,7 +997,9 @@ describe('usePropertySubmit', () => {
 			// Third submit succeeds
 			mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({ id: 24 }) });
 			await result.current.submit(data, FormMode.CREATE);
-			expect(result.current.error).toBe(null);
+			await waitFor(() => {
+				expect(result.current.error).toBe(null);
+			});
 		});
 	});
 });

@@ -1,4 +1,4 @@
-import {OperationEnum, PropertyTypeEnum, ServiceEnum} from "@/types/prisma";
+import {CurrencyEnum, OperationEnum, PropertyTypeEnum, ServiceEnum} from "@/types/prisma";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -23,8 +23,10 @@ export async function POST(request: NextRequest) {
 		const createPropertyDTO: CreatePropertyDto = {
 			address: formData.get("address") as string,
 			city: formData.get("city") as string,
-			category: formData.get("category") as OperationEnum,
+			// Backward compatibility: some clients/tests still send "state"
+			category: (formData.get("category") ?? formData.get("state")) as OperationEnum,
 			price: Number(formData.get("price")),
+			currency: (formData.get("currency") as CurrencyEnum) || CurrencyEnum.USD,
 			description: formData.get("description") as string,
 			ubication: formData.get("ubication") as string,
 			type: formData.get("type") as PropertyTypeEnum,
@@ -46,8 +48,9 @@ export async function POST(request: NextRequest) {
 				? Number(formData.get("floors"))
 				: undefined,
 
-			constructedArea: formData.get("constructed_area")
-				? Number(formData.get("constructed_area"))
+			// Backward compatibility between snake_case and camelCase payloads
+			constructedArea: (formData.get("constructed_area") ?? formData.get("constructedArea"))
+				? Number(formData.get("constructed_area") ?? formData.get("constructedArea"))
 				: undefined,
 
 			services: services,

@@ -1,5 +1,5 @@
 import type { PropertyFilters } from "@/types/property.filter.types";
-import { OperationEnum, PropertyTypeEnum } from "@prisma/client";
+import { CurrencyEnum, OperationEnum, PropertyTypeEnum } from "@/types/prisma";
 
 import ContactInformation from "@/components/features/ContactInformation/ContactInformation";
 import PropertiesClient from "./PropertiesClient";
@@ -10,6 +10,8 @@ import { PropertyService } from "@/services/property.service";
 type PageProps = {
 	searchParams: Record<string, string | string[] | undefined>;
 };
+
+const INT32_MAX = 2_147_483_647;
 
 function toStringParam(v: string | string[] | undefined): string | undefined {
 	if (!v) return undefined;
@@ -25,7 +27,10 @@ function parseEnumList<T extends string>(value?: string): T[] | undefined {
 function parseNumber(value?: string): number | undefined {
 	if (!value) return undefined;
 	const n = Number(value);
-	return Number.isFinite(n) ? n : undefined;
+	if (!Number.isFinite(n)) return undefined;
+	if (n < 0) return 0;
+	if (n > INT32_MAX) return INT32_MAX;
+	return Math.trunc(n);
 }
 
 export default async function PropertiesPage({ searchParams }: PageProps) {
@@ -33,6 +38,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
 
 	const tipoParam = toStringParam(searchParams.tipo);
 	const operacionParam = toStringParam(searchParams.operacion);
+	const currencyParam = toStringParam(searchParams.currency);
 
 	// soporta ambos nombres por si ya tenías uno:
 	const maxValueParam = toStringParam(searchParams.maxValue);
@@ -45,12 +51,13 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
 	const minPrice = parseNumber(minValueParam);
 
 	const filters: PropertyFilters | undefined =
-		(types?.length || operations?.length || minPrice !== undefined || maxPrice !== undefined)
+		(types?.length || operations?.length || minPrice !== undefined || maxPrice !== undefined || currencyParam)
 			? {
 				types,
 				operations,
 				minPrice,
 				maxPrice,
+				currency: (currencyParam as CurrencyEnum | undefined),
 			}
 			: undefined;
 

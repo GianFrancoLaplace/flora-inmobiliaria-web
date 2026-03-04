@@ -1,10 +1,11 @@
-import {OperationEnum, PropertyTypeEnum} from "@prisma/client";
+import {CurrencyEnum, OperationEnum, PropertyTypeEnum} from "@/types/prisma";
 
 export interface PropertyFilters {
 	types?: PropertyTypeEnum[];
 	operations?: OperationEnum[];
 	minPrice?: number;
 	maxPrice?: number;
+	currency?: CurrencyEnum;
 }
 
 export interface WhereClause {
@@ -18,4 +19,5 @@ export interface WhereClause {
 		gte?: number;
 		lte?: number;
 	};
+	currency?: CurrencyEnum;
 }

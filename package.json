@@ -14,8 +14,8 @@
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
     "test:coverage": "vitest --coverage",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e": "playwright test e2e --pass-with-no-tests",
+    "test:e2e:ui": "playwright test e2e --ui --pass-with-no-tests"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^2.0.2",

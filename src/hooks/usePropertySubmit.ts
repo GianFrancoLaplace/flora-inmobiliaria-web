@@ -44,6 +44,7 @@ export function usePropertySubmit() {
 		formData.append('address', data.address);
 		formData.append('city', data.city);
 		formData.append('price', data.price.toString());
+		formData.append('currency', data.currency ?? "USD");
 		formData.append('surface', data.surface.toString());
 		formData.append('description', data.description);
 		formData.append('ubication', data.ubication);

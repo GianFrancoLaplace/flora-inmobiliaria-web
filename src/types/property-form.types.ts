@@ -1,10 +1,11 @@
-import { PropertyTypeEnum, OperationEnum, ServiceEnum } from './prisma';
+import { PropertyTypeEnum, OperationEnum, ServiceEnum, CurrencyEnum } from './prisma';
 import { ImageItem } from "@/types/image.types"
 
 export interface PropertyFormInput {
 	type?: PropertyTypeEnum;
 	category?: OperationEnum;
 	price: number;
+	currency?: CurrencyEnum;
 	surface: number;
 	address: string;
 	city: string;

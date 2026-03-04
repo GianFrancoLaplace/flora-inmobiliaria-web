@@ -1,6 +1,6 @@
 import styles from './BasicInfoSection.module.css';
-import {PropertyFormInput} from "@/types/property-form.types";
-import {OperationEnum, PropertyTypeEnum} from "@/types/prisma"
+import { PropertyFormInput } from "@/types/property-form.types";
+import { OperationEnum, PropertyTypeEnum } from "@/types/prisma";
 
 interface BasicInfoSectionProps {
 	formData: PropertyFormInput;
@@ -9,16 +9,27 @@ interface BasicInfoSectionProps {
 }
 
 export default function BasicInfoSection({ formData, onChange, errors }: BasicInfoSectionProps) {
+	const formatPrice = (value: number | undefined) => {
+		if (!value || value <= 0) return "";
+		return new Intl.NumberFormat("es-AR", {
+			maximumFractionDigits: 0,
+		}).format(value);
+	};
+
+	const handlePriceChange = (rawValue: string) => {
+		const digitsOnly = rawValue.replace(/\D/g, "");
+		const numericValue = digitsOnly ? Number(digitsOnly) : 0;
+		onChange("price", numericValue);
+	};
+
 	return (
 		<section className={styles.section}>
-			<h2 className={styles.sectionTitle}>Datos Básicos</h2>
+			<h2 className={styles.sectionTitle}>Datos Basicos</h2>
 
 			<div className={styles.grid}>
-
-				{/* Tipo de operación */}
 				<div className={styles.formGroup}>
 					<label className={styles.label}>
-						Operación <span className={styles.required}>*</span>
+						Operacion <span className={styles.required}>*</span>
 					</label>
 					<div className={styles.radioGroup}>
 						<label className={styles.radioLabel}>
@@ -46,7 +57,6 @@ export default function BasicInfoSection({ formData, onChange, errors }: BasicIn
 					</div>
 				</div>
 
-				{/* Tipo de propiedad */}
 				<div className={styles.formGroup}>
 					<label className={styles.label} htmlFor="type">
 						Tipo de propiedad <span className={styles.required}>*</span>
@@ -63,37 +73,40 @@ export default function BasicInfoSection({ formData, onChange, errors }: BasicIn
 						<option value={PropertyTypeEnum.lote}>Lote</option>
 						<option value={PropertyTypeEnum.local_comercial}>Local</option>
 					</select>
-					{errors.type && (
-						<p className={styles.error}>{errors.type}</p>
-					)}
+					{errors.type && <p className={styles.error}>{errors.type}</p>}
 				</div>
 
-				{/* Precio */}
 				<div className={`${styles.formGroup} ${styles.fullWidth}`}>
 					<label className={styles.label} htmlFor="price">
 						Precio <span className={styles.required}>*</span>
 					</label>
 					<div className={styles.inputGroup}>
-						<span className={styles.currency}>USD</span>
+						<select
+							id="currency"
+							value={formData.currency ?? 'USD'}
+							onChange={(e) => onChange('currency', e.target.value)}
+							className={styles.selectCurrency}
+						>
+							<option value="USD">USD</option>
+							<option value="ARS">ARS</option>
+						</select>
 						<input
 							id="price"
-							type="number"
-							min="0"
-							step="1000"
+							type="text"
+							inputMode="numeric"
 							placeholder="0"
-							value={formData.price || ''}
-							onChange={(e) => onChange('price', Number(e.target.value))}
+							value={formatPrice(formData.price)}
+							onChange={(e) => handlePriceChange(e.target.value)}
 							className={errors.price ? styles.inputError : styles.input}
 						/>
 					</div>
-					{errors.price && (
-						<p className={styles.error}>{errors.price}</p>
-					)}
+					{errors.price && <p className={styles.error}>{errors.price}</p>}
 					<p className={styles.hint}>
-						Precio en dólares estadounidenses
+						{(formData.currency ?? 'USD') === 'USD'
+							? 'Precio en dolares estadounidenses'
+							: 'Precio en pesos argentinos'}
 					</p>
 				</div>
-
 			</div>
 		</section>
 	);

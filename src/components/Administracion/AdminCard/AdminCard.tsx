@@ -16,8 +16,8 @@ type Props = {
 export default function AdminCard({ property, onDelete }: Props) {
 	const router = useRouter();
 
-	const formatPrice = (price: number) =>
-		`USD ${price.toLocaleString('es-AR')}`;
+	const formatPrice = (price: number, currency: string) =>
+		`${currency} ${price.toLocaleString('es-AR')}`;
 
 	const typeLabel = TYPE_LABELS[property.type];
 	const operationLabel = OPERATION_LABELS[property.category];
@@ -52,7 +52,7 @@ export default function AdminCard({ property, onDelete }: Props) {
 			<div className={`${styles.infoProperties} ${cactus.className}`}>
 				<div className={styles.headerRow}>
 					<div className={styles.priceProperties}>
-						<h2>{formatPrice(property.price)}</h2>
+						<h2>{formatPrice(property.price, property.currency)}</h2>
 					</div>
 
 					<div className={styles.buttonsProperties}>
