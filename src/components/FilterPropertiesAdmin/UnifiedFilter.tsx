@@ -8,12 +8,21 @@ import { CurrencyEnum, OperationEnum, PropertyTypeEnum } from "@/types/prisma";
 import FiltroToggle from "../FilterButtons/FilterButtons";
 import styles from "./filterPropAdmin.module.css";
 
+const MAX_PRICE_FILTER = 2_147_483_647;
+
+const formatWithThousands = (digits: string): string => {
+	if (!digits) return "";
+	return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+
 const UnifiedFilter: React.FC = () => {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 
 	const [isOpen, setIsOpen] = useState(false);
+	const maxValueParam = searchParams.get("maxValue") || "";
+	const [maxValueInput, setMaxValueInput] = useState(maxValueParam);
 
 	const operacionLabels: Record<string, OperationEnum> = useMemo(
 		() => ({
@@ -28,6 +37,8 @@ const UnifiedFilter: React.FC = () => {
 			Casas: PropertyTypeEnum.casa,
 			Departamentos: PropertyTypeEnum.departamento,
 			Lotes: PropertyTypeEnum.lote,
+			Locales: ((PropertyTypeEnum as unknown as Record<string, string>).local ??
+				PropertyTypeEnum.local_comercial) as PropertyTypeEnum,
 		}),
 		[]
 	);
@@ -40,16 +51,18 @@ const UnifiedFilter: React.FC = () => {
 		[]
 	);
 
-	const propiedadLabelsReverse: Record<PropertyTypeEnum, string> = useMemo(
-		() => ({
+	const propiedadLabelsReverse: Record<string, string> = useMemo(() => {
+		const enumValues = PropertyTypeEnum as unknown as Record<string, string>;
+
+		return {
 			[PropertyTypeEnum.casa]: "Casas",
 			[PropertyTypeEnum.departamento]: "Departamentos",
 			[PropertyTypeEnum.lote]: "Lotes",
 			[PropertyTypeEnum.campo]: "Campos",
-			[PropertyTypeEnum.local_comercial]: "Locales comerciales",
-		}),
-		[]
-	);
+			[PropertyTypeEnum.local_comercial]: "Locales",
+			...(enumValues.local ? { [enumValues.local]: "Locales" } : {}),
+		};
+	}, []);
 
 	const operacionesEnUrl = searchParams.get("operacion")?.split(",").filter(Boolean) || [];
 	const tiposEnUrl = searchParams.get("tipo")?.split(",").filter(Boolean) || [];
@@ -88,6 +101,37 @@ const UnifiedFilter: React.FC = () => {
 		router.replace(`${pathname}?${params.toString()}`, { scroll: false });
 	}, 250);
 
+	const handleMaxValueInputChange = (rawValue: string) => {
+		const onlyDigits = rawValue.replace(/\D/g, "");
+		if (!onlyDigits) {
+			setMaxValueInput("");
+			handleMaxValueChange("");
+			return;
+		}
+
+		const safeValue = String(Math.min(Number(onlyDigits), MAX_PRICE_FILTER));
+		setMaxValueInput(safeValue);
+		handleMaxValueChange(safeValue);
+	};
+
+	const handleNumericKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		const allowedKeys = new Set([
+			"Backspace",
+			"Delete",
+			"ArrowLeft",
+			"ArrowRight",
+			"Tab",
+			"Home",
+			"End",
+		]);
+
+		if (e.ctrlKey || e.metaKey) return;
+		if (allowedKeys.has(e.key)) return;
+		if (/^\d$/.test(e.key)) return;
+
+		e.preventDefault();
+	};
+
 	const handleCurrencyChange = (currency: CurrencyEnum) => {
 		const params = new URLSearchParams(searchParams.toString());
 		params.set("currency", currency);
@@ -100,6 +144,7 @@ const UnifiedFilter: React.FC = () => {
 		params.delete("tipo");
 		params.delete("maxValue");
 		params.delete("currency");
+		setMaxValueInput("");
 		router.replace(`${pathname}?${params.toString()}`, { scroll: false });
 	};
 
@@ -112,10 +157,17 @@ const UnifiedFilter: React.FC = () => {
 		};
 	}, [isOpen]);
 
+	useEffect(() => {
+		const raw = maxValueParam.replace(/\D/g, "");
+		if (!raw) {
+			setMaxValueInput("");
+			return;
+		}
+		setMaxValueInput(String(Math.min(Number(raw), MAX_PRICE_FILTER)));
+	}, [maxValueParam]);
+
 	const filtrosOperacion = Object.keys(operacionLabels);
 	const filtrosPropiedad = Object.keys(propiedadLabels);
-	const maxValueDefault = searchParams.get("maxValue") || "";
-
 	return (
 		<aside className={styles.sidebar} aria-label="Filtros de propiedades">
 			<div className={styles.mobileBar}>
@@ -157,12 +209,14 @@ const UnifiedFilter: React.FC = () => {
 					</label>
 					<input
 						id="maxValueInputDesktop"
-						type="number"
+						type="text"
 						className={styles.input}
 						placeholder="Ej: 120000"
-						defaultValue={maxValueDefault}
-						onChange={(e) => handleMaxValueChange(e.target.value)}
-						min="0"
+						value={formatWithThousands(maxValueInput)}
+						inputMode="numeric"
+						pattern="[0-9]*"
+						onKeyDown={handleNumericKeyDown}
+						onChange={(e) => handleMaxValueInputChange(e.target.value)}
 					/>
 				</div>
 
@@ -233,12 +287,14 @@ const UnifiedFilter: React.FC = () => {
 							</label>
 							<input
 								id="maxValueInputMobile"
-								type="number"
+								type="text"
 								className={styles.input}
 								placeholder="Ej: 120000"
-								defaultValue={maxValueDefault}
-								onChange={(e) => handleMaxValueChange(e.target.value)}
-								min="0"
+								value={formatWithThousands(maxValueInput)}
+								inputMode="numeric"
+								pattern="[0-9]*"
+								onKeyDown={handleNumericKeyDown}
+								onChange={(e) => handleMaxValueInputChange(e.target.value)}
 							/>
 						</div>
 

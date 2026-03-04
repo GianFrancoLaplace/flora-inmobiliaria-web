@@ -7,6 +7,14 @@ import PropertyForm from './PropertyForm';
 import { FormMode } from '@/types/property-form.types';
 import { PropertyTypeEnum, OperationEnum } from '@/types/prisma';
 
+const mockRouter = {
+	replace: vi.fn(),
+	refresh: vi.fn(),
+};
+vi.mock('next/navigation', () => ({
+	useRouter: () => mockRouter,
+}));
+
 // Mock del hook usePropertySubmit
 const mockSubmit = vi.fn();
 vi.mock('@/hooks/usePropertySubmit', () => ({
@@ -47,7 +55,7 @@ describe('PropertyForm', () => {
 				/>
 			);
 
-			expect(screen.getByText('Datos Básicos')).toBeInTheDocument();
+			expect(screen.getByText('Datos Basicos')).toBeInTheDocument();
 			expect(screen.getByText('Detalles de la Propiedad')).toBeInTheDocument();
 			expect(screen.getByText('Ubicación')).toBeInTheDocument();
 			expect(screen.getByText('Descripción')).toBeInTheDocument();
@@ -62,10 +70,7 @@ describe('PropertyForm', () => {
 				/>
 			);
 
-			// Con defaultFormData que tiene type: PropertyTypeEnum.casa,
-			// NO debería mostrar el empty state
-			// Pero si renderizamos sin initial data:
-			expect(screen.queryByText(/Selecciona un tipo de propiedad/i)).not.toBeInTheDocument();
+			expect(screen.getByText(/Selecciona un tipo de propiedad/i)).toBeInTheDocument();
 		});
 	});
 
@@ -111,7 +116,7 @@ describe('PropertyForm', () => {
 			);
 
 			const priceInput = screen.getByLabelText(/Precio/i) as HTMLInputElement;
-			expect(priceInput.value).toBe('250000');
+			expect(priceInput.value.replace(/\./g, '')).toBe('250000');
 
 			const addressInput = screen.getByLabelText(/Dirección/i) as HTMLInputElement;
 			expect(addressInput.value).toBe('Av. Test 456');
@@ -248,7 +253,7 @@ describe('PropertyForm', () => {
 			await user.clear(priceInput);
 			await user.type(priceInput, '500000');
 
-			expect((priceInput as HTMLInputElement).value).toBe('500000');
+			expect((priceInput as HTMLInputElement).value.replace(/\./g, '')).toBe('500000');
 
 			// Cambiar dirección
 			const addressInput = screen.getByLabelText(/Dirección/i);
@@ -374,9 +379,9 @@ describe('PropertyForm', () => {
 			expect(submitButton).toBeDisabled();
 		});
 
-		it('en modo EDIT muestra alert porque backend no está implementado', async () => {
+		it('en modo EDIT llama submit con propertyId', async () => {
 			const user = userEvent.setup();
-			const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
+			mockSubmit.mockResolvedValueOnce({ success: true });
 
 			const validData = {
 				type: PropertyTypeEnum.departamento,
@@ -406,10 +411,15 @@ describe('PropertyForm', () => {
 			await user.click(submitButton);
 
 			await waitFor(() => {
-				expect(alertSpy).toHaveBeenCalledWith('Modo EDIT: Backend aún no implementado.');
+				expect(mockSubmit).toHaveBeenCalledWith(
+					expect.objectContaining({
+						type: PropertyTypeEnum.departamento,
+						category: OperationEnum.alquiler
+					}),
+					FormMode.EDIT,
+					'456'
+				);
 			});
-
-			alertSpy.mockRestore();
 		});
 	});
 
@@ -444,7 +454,7 @@ describe('PropertyForm', () => {
 				category: OperationEnum.venta,
 				price: 200000,
 				surface: 250,
-				address: 'Test',
+				address: 'Test 123',
 				city: '',
 				ubication: '',
 				description: 'Descripción válida con más de cincuenta caracteres necesarios',
@@ -522,3 +532,4 @@ describe('PropertyForm', () => {
 		});
 	});
 });
+

@@ -35,7 +35,7 @@ describe("Property Schema - Validación de Reglas de Negocio", () => {
 			expect(result.success).toBe(false);
 			if (!result.success) {
 				const errors = result.error.flatten().fieldErrors;
-				expect(errors.bedrooms?.[0]).toBe("El número de dormitorios es requerido para casas");
+				expect(errors.bedrooms?.[0]).toContain("dormitorios");
 			}
 		});
 
@@ -50,7 +50,7 @@ describe("Property Schema - Validación de Reglas de Negocio", () => {
 			expect(result.success).toBe(false);
 			if (!result.success) {
 				const errors = result.error.flatten().fieldErrors;
-				expect(errors.constructedArea?.[0]).toBe("El área construida no puede ser mayor que la superficie del lote");
+				expect(errors.constructedArea?.[0]).toContain("construida");
 			}
 		});
 

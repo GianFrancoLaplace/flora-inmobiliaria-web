@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { usePropertySubmit } from './usePropertySubmit';
 import { FormMode, PropertyFormInput } from '@/types/property-form.types';
 import { PropertyTypeEnum, OperationEnum, CurrencyEnum, ServiceEnum } from '@/types/prisma';
@@ -194,24 +194,37 @@ describe('usePropertySubmit', () => {
 		});
 
 		it('should manage loading states correctly', async () => {
-			mockFetch.mockResolvedValueOnce({
-				ok: true,
-				json: async () => ({ id: 4 })
-			});
+			let resolveFetch!: (value: { ok: boolean; json: () => Promise<{ id: number }> }) => void;
+			mockFetch.mockImplementationOnce(
+				() =>
+					new Promise((resolve) => {
+						resolveFetch = resolve as typeof resolveFetch;
+					})
+			);
 
 			const { result } = renderHook(() => usePropertySubmit());
 
 			expect(result.current.isLoading).toBe(false);
 
-			const submitPromise = result.current.submit(mockPropertyData, FormMode.CREATE);
+			let submitPromise!: Promise<unknown>;
+			act(() => {
+				submitPromise = result.current.submit(mockPropertyData, FormMode.CREATE);
+			});
 
 			await waitFor(() => {
 				expect(result.current.isLoading).toBe(true);
 			});
 
+			resolveFetch({
+				ok: true,
+				json: async () => ({ id: 4 })
+			});
+
 			await submitPromise;
 
-			expect(result.current.isLoading).toBe(false);
+			await waitFor(() => {
+				expect(result.current.isLoading).toBe(false);
+			});
 		});
 
 		it('should handle all PropertyTypeEnum values correctly', async () => {
@@ -538,7 +551,9 @@ describe('usePropertySubmit', () => {
 			await result.current.submit(basicData, FormMode.CREATE);
 
 			// Error should be cleared
-			expect(result.current.error).toBe(null);
+			await waitFor(() => {
+				expect(result.current.error).toBe(null);
+			});
 		});
 
 		it('should ensure isLoading=false even if error occurs (finally block)', async () => {
@@ -982,7 +997,9 @@ describe('usePropertySubmit', () => {
 			// Third submit succeeds
 			mockFetch.mockResolvedValueOnce({ ok: true, json: async () => ({ id: 24 }) });
 			await result.current.submit(data, FormMode.CREATE);
-			expect(result.current.error).toBe(null);
+			await waitFor(() => {
+				expect(result.current.error).toBe(null);
+			});
 		});
 	});
 });
