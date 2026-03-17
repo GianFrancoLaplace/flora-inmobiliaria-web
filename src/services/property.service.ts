@@ -49,11 +49,13 @@ export class PropertyService {
 
 		try {
 
-			uploadedImages = await this.imageService.uploadMultiple(
-				files,
-				0,
-				validatedImageMetadata
-			);
+			if (files.length > 0) {
+				uploadedImages = await this.imageService.uploadMultiple(
+					files,
+					0,
+					validatedImageMetadata
+				);
+			}
 
 			return await prisma.$transaction(async (tx) => {
 
@@ -78,14 +80,16 @@ export class PropertyService {
 					},
 				});
 
-				await tx.image.createMany({
-					data: uploadedImages.map((img, idx) => ({
-						url: img.url,
-						position: validatedImageMetadata[idx].position,
-						isMain: validatedImageMetadata[idx].isMain,
-						idProperty: property.idProperty
-					}))
-				});
+				if (uploadedImages.length > 0) {
+					await tx.image.createMany({
+						data: uploadedImages.map((img, idx) => ({
+							url: img.url,
+							position: validatedImageMetadata[idx].position,
+							isMain: validatedImageMetadata[idx].isMain,
+							idProperty: property.idProperty
+						}))
+					});
+				}
 
 				const slug = crearSlug(
 					`${property.category} ${property.description} ${property.idProperty}`

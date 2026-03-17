@@ -775,7 +775,7 @@ describe('POST /api/properties', () => {
 			const request = createMockRequest(formData);
 			const response = await POST(request);
 
-			expect(response.status).toBe(500); // JSON.parse throw error
+			expect(response.status).toBe(400);
 		});
 
 		it('should accept CASA with optional fields undefined', async () => {

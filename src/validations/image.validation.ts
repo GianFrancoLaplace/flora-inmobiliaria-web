@@ -61,8 +61,8 @@ export function validateImageFile(file: File): ImageValidationResult {
 export function validateImageFiles(files: File[]): ImagesValidationResult {
 	const errors: string[] = [];
 
-	// Validar cantidad
-	if (files.length < MIN_IMAGES) {
+	// Validar cantidad (solo si hay mÃ­nimo requerido)
+	if (MIN_IMAGES > 0 && files.length < MIN_IMAGES) {
 		errors.push(`Se requiere al menos ${MIN_IMAGES} imagen`);
 	}
 

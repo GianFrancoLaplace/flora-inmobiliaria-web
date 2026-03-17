@@ -197,7 +197,7 @@ export default function LocationSection({ formData, onChange, errors }: Location
 				{/* Ciudad */}
 				<div className={`${styles.formGroup} ${styles.fullWidth}`}>
 					<label className={styles.label} htmlFor="city">
-						Ciudad
+						Ciudad <span className={styles.required}>*</span>
 					</label>
 					<input
 						id="city"
@@ -205,13 +205,33 @@ export default function LocationSection({ formData, onChange, errors }: Location
 						placeholder="Ej: Tandil"
 						value={formData.city || ''}
 						onChange={(e) => onChange('city', e.target.value)}
-						className={styles.input}
+						className={errors.city ? styles.inputError : styles.input}
 					/>
-					<p className={styles.hint}>Opcional</p>
+					{errors.city && (
+						<p className={styles.error}>{errors.city}</p>
+					)}
 				</div>
 
-				{/* Coordenadas (hidden input para el form) */}
-				<input type="hidden" name="ubication" value={formData.ubication || ''} />
+				{/* Ubicación / Coordenadas */}
+				<div className={`${styles.formGroup} ${styles.fullWidth}`}>
+					<label className={styles.label} htmlFor="ubication">
+						UbicaciÃ³n / Coordenadas <span className={styles.required}>*</span>
+					</label>
+					<input
+						id="ubication"
+						type="text"
+						placeholder="Ej: -37.321700, -59.133200"
+						value={formData.ubication || ''}
+						onChange={(e) => onChange('ubication', e.target.value)}
+						className={errors.ubication ? styles.inputError : styles.input}
+					/>
+					{errors.ubication && (
+						<p className={styles.error}>{errors.ubication}</p>
+					)}
+					<p className={styles.hint}>
+						Se completa automÃ¡ticamente al buscar la direcciÃ³n. Si no se encuentra, puedes ingresarla manualmente.
+					</p>
+				</div>
 
 			</div>
 		</section>

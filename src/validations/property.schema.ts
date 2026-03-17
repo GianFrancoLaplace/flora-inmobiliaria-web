@@ -9,7 +9,7 @@ const serviceEnumSchema = z.nativeEnum(ServiceEnum);
 
 export const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB en bytes
 
-export const MIN_IMAGES = 1;
+export const MIN_IMAGES = 0;
 
 export const MAX_IMAGES = 10;
 
@@ -40,10 +40,10 @@ export const imageMetadataSchema = z.object({
  */
 export const imageMetadataArraySchema = z
 	.array(imageMetadataSchema)
-	.min(MIN_IMAGES, `Debe haber al menos ${MIN_IMAGES} imagen`)
 	.max(MAX_IMAGES, `No se permiten mÃ¡s de ${MAX_IMAGES} imÃ¡genes`)
 	.refine(
 		(metadata) => {
+			if (metadata.length === 0) return true;
 			const mainImages = metadata.filter((m) => m.isMain);
 			return mainImages.length === 1;
 		},
@@ -104,17 +104,15 @@ export const createPropertySchema = z.object({
 		.max(999999, 'La superficie excede el lÃ­mite permitido (999,999 mÂ²)')
 		.finite('La superficie debe ser un nÃºmero vÃ¡lido'),
 
-	// Campos opcionales (pueden ser undefined)
+	// Campos adicionales (obligatorios y opcionales)
 	ubication: z
 		.string()
 		.min(3, 'La ubicaciÃ³n debe tener al menos 3 caracteres')
-		.max(100, 'La ubicaciÃ³n no puede exceder 100 caracteres')
-		.optional(),
+		.max(100, 'La ubicaciÃ³n no puede exceder 100 caracteres'),
 	city: z
 		.string()
 		.min(2, 'La ciudad debe tener al menos 2 caracteres')
-		.max(100, 'La ciudad no puede exceder 100 caracteres')
-		.optional(),
+		.max(100, 'La ciudad no puede exceder 100 caracteres'),
 	constructedArea: z
 		.number()
 		.positive('El Ã¡rea construida debe ser mayor a 0')

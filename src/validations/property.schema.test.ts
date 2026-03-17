@@ -1,11 +1,11 @@
-import { describe, it, expect } from "vitest";
+﻿import { describe, it, expect } from "vitest";
 import { createPropertySchema } from "./property.schema";
 import { PropertyTypeEnum } from "@prisma/client";
 import { OperationEnum } from "@/types/prisma";
 
-describe("Property Schema - Validación de Reglas de Negocio", () => {
+describe("Property Schema - ValidaciÃ³n de Reglas de Negocio", () => {
 
-	// Datos base válidos para una casa
+	// Datos base vÃ¡lidos para una casa
 	const validHouseData = {
 		type: PropertyTypeEnum.casa,
 		category: OperationEnum.venta,
@@ -16,7 +16,7 @@ describe("Property Schema - Validación de Reglas de Negocio", () => {
 		address: "Calle de las catedrales 123",
 		city: "Tandil",
 		ubication: "Centro",
-		description: "Una propiedad construida con estándares de alta ingeniería.",
+		description: "Una propiedad construida con estÃ¡ndares de alta ingenierÃ­a.",
 		bedrooms: 3,
 		bathrooms: 2,
 	};
@@ -39,7 +39,7 @@ describe("Property Schema - Validación de Reglas de Negocio", () => {
 			}
 		});
 
-		it("debe fallar si el área construida es mayor a la superficie total del lote", () => {
+		it("debe fallar si el Ã¡rea construida es mayor a la superficie total del lote", () => {
 			const impossibleHouse = {
 				...validHouseData,
 				surface: 100,
@@ -54,7 +54,7 @@ describe("Property Schema - Validación de Reglas de Negocio", () => {
 			}
 		});
 
-		it("debe validar un LOTE sin requerir dormitorios ni baños", () => {
+		it("debe validar un LOTE sin requerir dormitorios ni baÃ±os", () => {
 			const validLand = {
 				type: PropertyTypeEnum.lote,
 				category: OperationEnum.venta,
@@ -62,7 +62,9 @@ describe("Property Schema - Validación de Reglas de Negocio", () => {
 				currency: "USD" as const,
 				surface: 1000,
 				address: "Ruta 226 Km 5",
-				description: "Terreno baldío listo para construir catedrales de software.",
+				city: "Tandil",
+				ubication: "Ruta 226 Km 5",
+				description: "Terreno baldÃ­o listo para construir catedrales de software.",
 			};
 
 			const result = createPropertySchema.safeParse(validLand);
@@ -71,7 +73,7 @@ describe("Property Schema - Validación de Reglas de Negocio", () => {
 	});
 
 	describe("Validaciones de Campos Base", () => {
-		it("debe fallar si la descripción es demasiado corta (< 10 caracteres)", () => {
+		it("debe fallar si la descripciÃ³n es demasiado corta (< 10 caracteres)", () => {
 			const data = { ...validHouseData, description: "Corta" };
 			const result = createPropertySchema.safeParse(data);
 
@@ -88,3 +90,5 @@ describe("Property Schema - Validación de Reglas de Negocio", () => {
 		});
 	});
 });
+
+
