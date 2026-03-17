@@ -18,6 +18,20 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 	const [isDragging, setIsDragging] = useState(false);
 	const PREVIEW_FALLBACK_SRC = '/backgrounds/notImage.jpg';
 
+	const moveToFront = <T,>(items: T[], index: number): T[] => {
+		if (index <= 0 || index >= items.length) {
+			return items.slice();
+		}
+		const selected = items[index];
+		return [selected, ...items.slice(0, index), ...items.slice(index + 1)];
+	};
+
+	const normalizeImages = (images: ImageItem[]): ImageItem[] =>
+		images.map((img, idx) => ({ ...img, position: idx }));
+
+	const normalizeMain = (images: ImageItem[], mainIndex: number): ImageItem[] =>
+		images.map((img, idx) => ({ ...img, isMain: idx === mainIndex }));
+
 	const canRenderImage = (src: string): Promise<boolean> => {
 		return new Promise((resolve) => {
 			let settled = false;
@@ -146,21 +160,25 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 	};
 
 	const handleRemoveImage = (index: number) => {
-		const newImages = value.filter((_, i) => i !== index);
+		const remaining = value.filter((_, i) => i !== index);
 
-		if (value[index].isMain && newImages.length > 0) {
-			newImages[0].isMain = true;
+		if (remaining.length === 0) {
+			onChange([]);
+			return;
 		}
 
-		onChange(newImages);
+		const existingMainIndex = remaining.findIndex((img) => img.isMain);
+		const mainIndex = existingMainIndex >= 0 ? existingMainIndex : 0;
+		const withMain = normalizeMain(remaining, mainIndex);
+		const reordered = moveToFront(withMain, mainIndex);
+
+		onChange(normalizeImages(reordered));
 	};
 
 	const handleSetMainImage = (index: number) => {
-		const updated = value.map((img, i) => ({
-			...img,
-			isMain: i === index
-		}));
-		onChange(updated);
+		const reordered = moveToFront(value, index);
+		const updated = normalizeMain(reordered, 0);
+		onChange(normalizeImages(updated));
 	};
 
 	const getImageSrc = (img: ImageItem): string => {
