@@ -24,6 +24,11 @@ export async function POST(request: NextRequest) {
 			if (typeof value !== "string") return "";
 			return value.trim();
 		};
+		const getOptionalString = (value: FormDataEntryValue | null) => {
+			if (typeof value !== "string") return undefined;
+			const trimmed = value.trim();
+			return trimmed.length > 0 ? trimmed : undefined;
+		};
 
 		const createPropertyDTO: CreatePropertyDto = {
 			address: String(formData.get("address") ?? ""),
@@ -33,7 +38,7 @@ export async function POST(request: NextRequest) {
 			price: Number(formData.get("price")),
 			currency: (formData.get("currency") as CurrencyEnum) || CurrencyEnum.USD,
 			description: formData.get("description") as string,
-			ubication: getRequiredString(formData.get("ubication")),
+			ubication: getOptionalString(formData.get("ubication")),
 			type: formData.get("type") as PropertyTypeEnum,
 			surface: Number(formData.get("surface")),
 

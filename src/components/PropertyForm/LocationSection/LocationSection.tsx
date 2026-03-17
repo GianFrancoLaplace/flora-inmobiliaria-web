@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { MapPin, AlertCircle, Info, Loader2 } from 'lucide-react';
@@ -17,7 +17,7 @@ export default function LocationSection({ formData, onChange, errors }: Location
 	const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
 	const [locationFound, setLocationFound] = useState(true);
 
-	// Geocoding: dirección → coordenadas
+	// Geocoding: direcciÃ³n â†’ coordenadas
 	const geocodeAddress = async (address: string, city?: string) => {
 		const fullAddress = [address, city]
 			.filter(Boolean)
@@ -27,6 +27,7 @@ export default function LocationSection({ formData, onChange, errors }: Location
 			setMapUrl('');
 			setCoordinates(null);
 			setLocationFound(true);
+			onChange('ubication', '');
 			return;
 		}
 
@@ -52,11 +53,11 @@ export default function LocationSection({ formData, onChange, errors }: Location
 				// Guardar coordenadas en ubication
 				onChange('ubication', `${lat.toFixed(6)}, ${lng.toFixed(6)}`);
 
-				// Crear URL con coordenadas (esto SÍ muestra marcador)
+				// Crear URL con coordenadas (esto SÃ muestra marcador)
 				const newUrl = `https://maps.google.com/maps?q=${lat},${lng}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
 				setMapUrl(newUrl);
 			} else {
-				// Si no encuentra la dirección exacta, intenta solo con ciudad
+				// Si no encuentra la direcciÃ³n exacta, intenta solo con ciudad
 				if (city) {
 					const cityResponse = await fetch(
 						`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`
@@ -79,22 +80,25 @@ export default function LocationSection({ formData, onChange, errors }: Location
 					} else {
 						setLocationFound(false);
 						setCoordinates(null);
+						onChange('ubication', '');
 					}
 				} else {
 					setLocationFound(false);
 					setCoordinates(null);
+					onChange('ubication', '');
 				}
 			}
 		} catch (error) {
 			console.error('Error geocoding:', error);
 			setLocationFound(false);
 			setCoordinates(null);
+			onChange('ubication', '');
 		} finally {
 			setIsUpdating(false);
 		}
 	};
 
-	// Actualizar mapa cuando cambia la dirección
+	// Actualizar mapa cuando cambia la direcciÃ³n
 	useEffect(() => {
 		const { address, city } = formData;
 
@@ -105,7 +109,7 @@ export default function LocationSection({ formData, onChange, errors }: Location
 			return;
 		}
 
-		// Debounce: esperar 1.5 segundos después de que el usuario deja de escribir
+		// Debounce: esperar 1.5 segundos despuÃ©s de que el usuario deja de escribir
 		const timeoutId = setTimeout(() => {
 			geocodeAddress(address, city);
 		}, 1500);
@@ -115,18 +119,18 @@ export default function LocationSection({ formData, onChange, errors }: Location
 
 	return (
 		<section className={styles.section}>
-			<h2 className={styles.sectionTitle}>Ubicación</h2>
+			<h2 className={styles.sectionTitle}>Ubicacion</h2>
 
 			<div className={styles.grid}>
 
 				{/* Mapa SIEMPRE visible */}
 				<div className={`${styles.formGroup} ${styles.fullWidth}`}>
 					<div className={styles.mapContainer}>
-						{/* Indicador de actualización */}
+						{/* Indicador de actualizaciÃ³n */}
 						{isUpdating && (
 							<div className={styles.mapUpdating}>
 								<Loader2 className={styles.spinnerIcon} />
-								<span>Buscando ubicación...</span>
+								<span>Buscando ubicacion...</span>
 							</div>
 						)}
 
@@ -151,18 +155,18 @@ export default function LocationSection({ formData, onChange, errors }: Location
 						)}
 					</div>
 
-					{/* Info de la ubicación */}
+					{/* Info de la ubicaciÃ³n */}
 					<div className={styles.mapInfo}>
 						<div className={styles.mapHint}>
 							<Info size={16} />
-							<span>La ubicación se actualiza automáticamente mientras escribes</span>
+							<span>La ubicación se actualiza automaticamente mientras escribes</span>
 						</div>
 
-						{/* Warning si no encuentra ubicación */}
+						{/* Warning si no encuentra ubicaciÃ³n */}
 						{!locationFound && formData.address && !isUpdating && (
 							<div className={styles.locationWarning}>
 								<AlertCircle size={16} />
-								<span>No se encontró esta dirección. Verifica que esté escrita correctamente.</span>
+								<span>No se encontrÃ³ esta direcciÃ³n. Verifica que estÃ© escrita correctamente.</span>
 							</div>
 						)}
 
@@ -176,7 +180,7 @@ export default function LocationSection({ formData, onChange, errors }: Location
 					</div>
 				</div>
 
-				{/* Dirección */}
+				{/* DirecciÃ³n */}
 				<div className={`${styles.formGroup} ${styles.fullWidth}`}>
 					<label className={styles.label} htmlFor="address">
 						Dirección <span className={styles.required}>*</span>
@@ -184,7 +188,7 @@ export default function LocationSection({ formData, onChange, errors }: Location
 					<input
 						id="address"
 						type="text"
-						placeholder="Ej: Av. San Martín 1234"
+						placeholder="Ej: Av. San MartÃ­n 1234"
 						value={formData.address || ''}
 						onChange={(e) => onChange('address', e.target.value)}
 						className={errors.address ? styles.inputError : styles.input}
@@ -212,28 +216,10 @@ export default function LocationSection({ formData, onChange, errors }: Location
 					)}
 				</div>
 
-				{/* Ubicación / Coordenadas */}
-				<div className={`${styles.formGroup} ${styles.fullWidth}`}>
-					<label className={styles.label} htmlFor="ubication">
-						UbicaciÃ³n / Coordenadas <span className={styles.required}>*</span>
-					</label>
-					<input
-						id="ubication"
-						type="text"
-						placeholder="Ej: -37.321700, -59.133200"
-						value={formData.ubication || ''}
-						onChange={(e) => onChange('ubication', e.target.value)}
-						className={errors.ubication ? styles.inputError : styles.input}
-					/>
-					{errors.ubication && (
-						<p className={styles.error}>{errors.ubication}</p>
-					)}
-					<p className={styles.hint}>
-						Se completa automÃ¡ticamente al buscar la direcciÃ³n. Si no se encuentra, puedes ingresarla manualmente.
-					</p>
-				</div>
-
+				{/* Coordenadas (hidden input para el form) */}
+				<input type="hidden" name="ubication" value={formData.ubication || ''} />
 			</div>
 		</section>
 	);
 }
+

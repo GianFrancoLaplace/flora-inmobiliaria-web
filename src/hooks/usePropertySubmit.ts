@@ -41,13 +41,20 @@ export function usePropertySubmit() {
 		data: PropertyFormInput,
 		mode: FormMode
 	): void => {
+		const appendIfFilled = (key: string, value?: string) => {
+			const trimmed = value?.trim();
+			if (trimmed) {
+				formData.append(key, trimmed);
+			}
+		};
+
 		formData.append('address', data.address);
 		formData.append('city', data.city.trim());
 		formData.append('price', data.price.toString());
 		formData.append('currency', data.currency ?? "USD");
 		formData.append('surface', data.surface.toString());
 		formData.append('description', data.description);
-		formData.append('ubication', data.ubication.trim());
+		appendIfFilled('ubication', data.ubication);
 		formData.append('type', data.type!);
 		formData.append('category', data.category!);
 

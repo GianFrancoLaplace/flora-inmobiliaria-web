@@ -107,8 +107,9 @@ export const createPropertySchema = z.object({
 	// Campos adicionales (obligatorios y opcionales)
 	ubication: z
 		.string()
-		.min(3, 'La ubicaciÃ³n debe tener al menos 3 caracteres')
-		.max(100, 'La ubicaciÃ³n no puede exceder 100 caracteres'),
+		.min(3, 'La ubicación debe tener al menos 3 caracteres')
+		.max(100, 'La ubicación no puede exceder 100 caracteres')
+		.optional(),
 	city: z
 		.string()
 		.min(2, 'La ciudad debe tener al menos 2 caracteres')
@@ -116,8 +117,8 @@ export const createPropertySchema = z.object({
 	constructedArea: z
 		.number()
 		.positive('El Ã¡rea construida debe ser mayor a 0')
-		.max(999999, 'El Ã¡rea construida excede el lÃ­mite (999,999 mÂ²)')
-		.finite('El Ã¡rea construida debe ser un nÃºmero vÃ¡lido')
+		.max(999999, 'El area construida excede el limite (999,999 mts²)')
+		.finite('El Ãrea construida debe ser un nÃºmero valido')
 		.optional(),
 	bedrooms: z.preprocess(
 		(val) => (typeof val === 'number' && isNaN(val)) ? undefined : val,

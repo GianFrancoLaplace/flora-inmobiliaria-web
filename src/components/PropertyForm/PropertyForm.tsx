@@ -121,7 +121,7 @@ export default function PropertyForm({
 		const dataToValidate = {
 			...formData,
 			city: formData.city?.trim() ?? '',
-			ubication: formData.ubication?.trim() ?? '',
+			ubication: formData.ubication?.trim() || undefined,
 			constructedArea: formData.constructedArea || undefined,
 			bedrooms: formData.bedrooms || undefined,
 			bathrooms: formData.bathrooms || undefined,
