@@ -41,13 +41,20 @@ export function usePropertySubmit() {
 		data: PropertyFormInput,
 		mode: FormMode
 	): void => {
+		const appendIfFilled = (key: string, value?: string) => {
+			const trimmed = value?.trim();
+			if (trimmed) {
+				formData.append(key, trimmed);
+			}
+		};
+
 		formData.append('address', data.address);
-		formData.append('city', data.city);
+		formData.append('city', data.city.trim());
 		formData.append('price', data.price.toString());
 		formData.append('currency', data.currency ?? "USD");
 		formData.append('surface', data.surface.toString());
 		formData.append('description', data.description);
-		formData.append('ubication', data.ubication);
+		appendIfFilled('ubication', data.ubication);
 		formData.append('type', data.type!);
 		formData.append('category', data.category!);
 
@@ -112,6 +119,21 @@ export function usePropertySubmit() {
 		}
 	};
 
+	const extractErrorMessage = async (response: Response, fallback: string) => {
+		try {
+			const data = await response.json();
+			if (data?.error) return String(data.error);
+			if (data?.message) return String(data.message);
+			if (Array.isArray(data?.errors) && data.errors.length > 0) {
+				const first = data.errors[0];
+				if (first?.message) return String(first.message);
+			}
+		} catch {
+			// Ignorar parse errors y usar fallback
+		}
+		return fallback;
+	};
+
 	const submitCreate = async (formData: FormData) => {
 		const response = await fetch('/api/properties', {
 			method: 'POST',
@@ -119,7 +141,8 @@ export function usePropertySubmit() {
 		});
 
 		if (!response.ok) {
-			throw new Error('Error al crear propiedad');
+			const message = await extractErrorMessage(response, 'Error al crear propiedad');
+			throw new Error(message);
 		}
 
 		return await response.json();
@@ -132,7 +155,8 @@ export function usePropertySubmit() {
 		});
 
 		if (!response.ok) {
-			throw new Error('Error al actualizar propiedad');
+			const message = await extractErrorMessage(response, 'Error al actualizar propiedad');
+			throw new Error(message);
 		}
 
 		return await response.json();

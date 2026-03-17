@@ -119,7 +119,7 @@ export default function PropertyForm({
 	const validate = (): boolean => {
 		const dataToValidate = {
 			...formData,
-			city: formData.city?.trim() || undefined,
+			city: formData.city?.trim() ?? '',
 			ubication: formData.ubication?.trim() || undefined,
 			constructedArea: formData.constructedArea || undefined,
 			bedrooms: formData.bedrooms || undefined,
@@ -174,7 +174,10 @@ export default function PropertyForm({
 			}, 2000);
 		} catch (error) {
 			console.error('Error al guardar:', error);
-			setErrors({ submit: 'Hubo un error al guardar la propiedad' });
+			const message = error instanceof Error
+				? error.message
+				: 'Hubo un error al guardar la propiedad';
+			setErrors({ submit: message });
 		} finally {
 			setIsSubmitting(false);
 		}

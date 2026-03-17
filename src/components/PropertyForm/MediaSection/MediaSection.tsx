@@ -306,7 +306,7 @@ export default function MediaSection({ value, onChange, errors }: MediaSectionPr
 
 				<p className={styles.hint}>
 					{value.length === 0
-						? 'Sube al menos una imagen de la propiedad'
+						? 'Puedes subir imágenes de la propiedad (opcional)'
 						: `${value.length} imagen${value.length > 1 ? 'es' : ''} cargada${value.length > 1 ? 's' : ''}`
 					}
 				</p>

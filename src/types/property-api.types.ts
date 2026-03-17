@@ -8,7 +8,7 @@ export interface CreatePropertyDto {
 	currency: CurrencyEnum;
 	description: string;
 	surface: number;
-	ubication: string;
+	ubication?: string;
 	type: PropertyTypeEnum;
 	garage?: number;
 	bedrooms?: number;

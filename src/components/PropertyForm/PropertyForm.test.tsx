@@ -1,4 +1,4 @@
-// src/components/PropertyForm/PropertyForm.test.tsx
+﻿// src/components/PropertyForm/PropertyForm.test.tsx
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
@@ -57,9 +57,9 @@ describe('PropertyForm', () => {
 
 			expect(screen.getByText('Datos Basicos')).toBeInTheDocument();
 			expect(screen.getByText('Detalles de la Propiedad')).toBeInTheDocument();
-			expect(screen.getByText('Ubicación')).toBeInTheDocument();
-			expect(screen.getByText('Descripción')).toBeInTheDocument();
-			expect(screen.getByText('Imágenes')).toBeInTheDocument();
+			expect(screen.getByText('UbicaciÃ³n')).toBeInTheDocument();
+			expect(screen.getByText('DescripciÃ³n')).toBeInTheDocument();
+			expect(screen.getByText('ImÃ¡genes')).toBeInTheDocument();
 		});
 
 		it('DetailsSection muestra empty state cuando no hay tipo seleccionado', () => {
@@ -83,7 +83,7 @@ describe('PropertyForm', () => {
 			address: 'Av. Test 456',
 			city: 'Tandil',
 			ubication: 'Centro',
-			description: 'Una hermosa casa para testear el formulario de edición con suficientes caracteres',
+			description: 'Una hermosa casa para testear el formulario de ediciÃ³n con suficientes caracteres',
 			bedrooms: 3,
 			bathrooms: 2,
 			images: [],
@@ -118,19 +118,19 @@ describe('PropertyForm', () => {
 			const priceInput = screen.getByLabelText(/Precio/i) as HTMLInputElement;
 			expect(priceInput.value.replace(/\./g, '')).toBe('250000');
 
-			const addressInput = screen.getByLabelText(/Dirección/i) as HTMLInputElement;
+			const addressInput = screen.getByLabelText(/DirecciÃ³n/i) as HTMLInputElement;
 			expect(addressInput.value).toBe('Av. Test 456');
 
-			const descriptionTextarea = screen.getByLabelText(/Descripción/i) as HTMLTextAreaElement;
+			const descriptionTextarea = screen.getByLabelText(/DescripciÃ³n/i) as HTMLTextAreaElement;
 			expect(descriptionTextarea.value).toBe(initialData.description);
 		});
 	});
 
-	describe('Validación', () => {
-		it('muestra errores cuando se intenta submit sin datos válidos', async () => {
+	describe('ValidaciÃ³n', () => {
+		it('muestra errores cuando se intenta submit sin datos vÃ¡lidos', async () => {
 			const user = userEvent.setup();
 
-			// Renderizar con formData vacío/inválido
+			// Renderizar con formData vacÃ­o/invÃ¡lido
 			render(
 				<PropertyForm
 					mode={FormMode.CREATE}
@@ -158,7 +158,7 @@ describe('PropertyForm', () => {
 				expect(screen.getByText(/errores que corregir/i)).toBeInTheDocument();
 			});
 
-			// No debe llamar al submit si hay errores de validación
+			// No debe llamar al submit si hay errores de validaciÃ³n
 			expect(mockSubmit).not.toHaveBeenCalled();
 
 			// Debe hacer scroll al top
@@ -178,8 +178,8 @@ describe('PropertyForm', () => {
 						price: 100000,
 						surface: 200,
 						address: 'Test',
-						city: '',
-						ubication: '',
+						city: 'Tandil',
+						ubication: 'Centro',
 						description: '',
 						images: [],
 						deletedImageIds: []
@@ -199,8 +199,8 @@ describe('PropertyForm', () => {
 			await user.selectOptions(typeSelect, PropertyTypeEnum.casa);
 
 			// El error de tipo debe desaparecer (aunque pueden quedar otros)
-			// Este test verifica que onChange limpia errores del campo específico
-			// No podemos verificar fácilmente sin ver el estado interno,
+			// Este test verifica que onChange limpia errores del campo especÃ­fico
+			// No podemos verificar fÃ¡cilmente sin ver el estado interno,
 			// pero podemos verificar que el select ahora tiene valor
 			expect((typeSelect as HTMLSelectElement).value).toBe(PropertyTypeEnum.casa);
 		});
@@ -231,13 +231,13 @@ describe('PropertyForm', () => {
 
 			await waitFor(() => {
 				const errorText = screen.getByText(/errores que corregir/i);
-				// Verifica que menciona múltiples errores
+				// Verifica que menciona mÃºltiples errores
 				expect(errorText.textContent).toMatch(/\d+\s+errores?/);
 			});
 		});
 	});
 
-	describe('Interacción con campos', () => {
+	describe('InteracciÃ³n con campos', () => {
 		it('actualiza formData cuando cambian los campos', async () => {
 			const user = userEvent.setup();
 
@@ -255,12 +255,12 @@ describe('PropertyForm', () => {
 
 			expect((priceInput as HTMLInputElement).value.replace(/\./g, '')).toBe('500000');
 
-			// Cambiar dirección
-			const addressInput = screen.getByLabelText(/Dirección/i);
+			// Cambiar direcciÃ³n
+			const addressInput = screen.getByLabelText(/DirecciÃ³n/i);
 			await user.clear(addressInput);
-			await user.type(addressInput, 'Nueva Dirección 123');
+			await user.type(addressInput, 'Nueva DirecciÃ³n 123');
 
-			expect((addressInput as HTMLInputElement).value).toBe('Nueva Dirección 123');
+			expect((addressInput as HTMLInputElement).value).toBe('Nueva DirecciÃ³n 123');
 		});
 
 		it('tipo de propiedad cambia campos visibles en DetailsSection', async () => {
@@ -279,24 +279,24 @@ describe('PropertyForm', () => {
 			await user.selectOptions(typeSelect, PropertyTypeEnum.lote);
 
 			await waitFor(() => {
-				// Lote NO debe mostrar dormitorios ni baños
+				// Lote NO debe mostrar dormitorios ni baÃ±os
 				expect(screen.queryByLabelText(/Dormitorios/i)).not.toBeInTheDocument();
-				expect(screen.queryByLabelText(/Baños/i)).not.toBeInTheDocument();
+				expect(screen.queryByLabelText(/BaÃ±os/i)).not.toBeInTheDocument();
 			});
 
 			// Cambiar a CASA
 			await user.selectOptions(typeSelect, PropertyTypeEnum.casa);
 
 			await waitFor(() => {
-				// Casa SÍ debe mostrar dormitorios y baños
+				// Casa SÃ debe mostrar dormitorios y baÃ±os
 				expect(screen.getByLabelText(/Dormitorios/i)).toBeInTheDocument();
-				expect(screen.getByLabelText(/Baños/i)).toBeInTheDocument();
+				expect(screen.getByLabelText(/BaÃ±os/i)).toBeInTheDocument();
 			});
 		});
 	});
 
 	describe('Submit del formulario', () => {
-		it('llama a submit con FormMode.CREATE cuando es válido', async () => {
+		it('llama a submit con FormMode.CREATE cuando es vÃ¡lido', async () => {
 			const user = userEvent.setup();
 			mockSubmit.mockResolvedValueOnce({ success: true });
 
@@ -305,10 +305,10 @@ describe('PropertyForm', () => {
 				category: OperationEnum.venta,
 				price: 200000,
 				surface: 250,
-				address: 'Calle válida 123',
+				address: 'Calle vÃ¡lida 123',
 				city: 'Tandil',
 				ubication: 'Centro',
-				description: 'Descripción válida con más de cincuenta caracteres para pasar la validación del schema',
+				description: 'DescripciÃ³n vÃ¡lida con mÃ¡s de cincuenta caracteres para pasar la validaciÃ³n del schema',
 				bedrooms: 3,
 				bathrooms: 2,
 				images: [],
@@ -331,7 +331,7 @@ describe('PropertyForm', () => {
 					expect.objectContaining({
 						type: PropertyTypeEnum.casa,
 						price: 200000,
-						address: 'Calle válida 123'
+						address: 'Calle vÃ¡lida 123'
 					}),
 					FormMode.CREATE
 				);
@@ -352,9 +352,9 @@ describe('PropertyForm', () => {
 				price: 100000,
 				surface: 500,
 				address: 'Lote Test 456',
-				city: '',
-				ubication: '',
-				description: 'Descripción de lote válida con caracteres suficientes para la validación',
+				city: 'Tandil',
+				ubication: 'Zona Norte',
+				description: 'DescripciÃ³n de lote vÃ¡lida con caracteres suficientes para la validaciÃ³n',
 				images: [],
 				deletedImageIds: []
 			};
@@ -375,7 +375,7 @@ describe('PropertyForm', () => {
 				expect(screen.getByText(/Creando.../i)).toBeInTheDocument();
 			});
 
-			// El botón debe estar disabled
+			// El botÃ³n debe estar disabled
 			expect(submitButton).toBeDisabled();
 		});
 
@@ -391,7 +391,7 @@ describe('PropertyForm', () => {
 				address: 'Depto Test 789',
 				city: 'Tandil',
 				ubication: 'Villa Italia',
-				description: 'Descripción de departamento válida con caracteres suficientes',
+				description: 'DescripciÃ³n de departamento vÃ¡lida con caracteres suficientes',
 				bedrooms: 2,
 				bathrooms: 1,
 				images: [],
@@ -423,8 +423,8 @@ describe('PropertyForm', () => {
 		});
 	});
 
-	describe('Botón Cancelar', () => {
-		it('botón cancelar ejecuta window.history.back()', async () => {
+	describe('BotÃ³n Cancelar', () => {
+		it('botÃ³n cancelar ejecuta window.history.back()', async () => {
 			const user = userEvent.setup();
 			const backSpy = vi.spyOn(window.history, 'back').mockImplementation(() => {});
 
@@ -442,7 +442,7 @@ describe('PropertyForm', () => {
 			backSpy.mockRestore();
 		});
 
-		it('botón cancelar está disabled durante submit', async () => {
+		it('botÃ³n cancelar estÃ¡ disabled durante submit', async () => {
 			const user = userEvent.setup();
 
 			mockSubmit.mockImplementation(() =>
@@ -455,9 +455,9 @@ describe('PropertyForm', () => {
 				price: 200000,
 				surface: 250,
 				address: 'Test 123',
-				city: '',
-				ubication: '',
-				description: 'Descripción válida con más de cincuenta caracteres necesarios',
+				city: 'Tandil',
+				ubication: 'Centro',
+				description: 'DescripciÃ³n vÃ¡lida con mÃ¡s de cincuenta caracteres necesarios',
 				bedrooms: 3,
 				bathrooms: 2,
 				images: [],
@@ -483,7 +483,7 @@ describe('PropertyForm', () => {
 		});
 	});
 
-	describe('Manejo de imágenes', () => {
+	describe('Manejo de imÃ¡genes', () => {
 		it('handleImagesChange actualiza formData.images', async () => {
 			render(
 				<PropertyForm
@@ -492,10 +492,10 @@ describe('PropertyForm', () => {
 				/>
 			);
 
-			// MediaSection está renderizado
-			expect(screen.getByText('Imágenes')).toBeInTheDocument();
+			// MediaSection estÃ¡ renderizado
+			expect(screen.getByText('ImÃ¡genes')).toBeInTheDocument();
 
-			// Este test es más complejo porque requeriría simular file upload
+			// Este test es mÃ¡s complejo porque requerirÃ­a simular file upload
 			// Lo dejamos como TODO para cuando implementes tests de MediaSection
 		});
 
@@ -516,9 +516,9 @@ describe('PropertyForm', () => {
 						price: 200000,
 						surface: 250,
 						address: 'Test',
-						city: '',
-						ubication: '',
-						description: 'Descripción válida con caracteres suficientes para validación',
+						city: 'Tandil',
+						ubication: 'Centro',
+						description: 'DescripciÃ³n vÃ¡lida con caracteres suficientes para validaciÃ³n',
 						bedrooms: 3,
 						bathrooms: 2,
 						images: initialImages,
@@ -527,9 +527,12 @@ describe('PropertyForm', () => {
 				/>
 			);
 
-			// Verificar que las imágenes existentes se muestran
+			// Verificar que las imÃ¡genes existentes se muestran
 			expect(screen.getByText('Principal')).toBeInTheDocument();
 		});
 	});
 });
+
+
+
 

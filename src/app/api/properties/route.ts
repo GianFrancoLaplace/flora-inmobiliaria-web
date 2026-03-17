@@ -1,4 +1,4 @@
-import {CurrencyEnum, OperationEnum, PropertyTypeEnum, ServiceEnum} from "@/types/prisma";
+﻿import {CurrencyEnum, OperationEnum, PropertyTypeEnum, ServiceEnum} from "@/types/prisma";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -20,15 +20,25 @@ export async function POST(request: NextRequest) {
 			? JSON.parse(String(servicesRaw)) as ServiceEnum[]
 			: undefined;
 
+		const getRequiredString = (value: FormDataEntryValue | null) => {
+			if (typeof value !== "string") return "";
+			return value.trim();
+		};
+		const getOptionalString = (value: FormDataEntryValue | null) => {
+			if (typeof value !== "string") return undefined;
+			const trimmed = value.trim();
+			return trimmed.length > 0 ? trimmed : undefined;
+		};
+
 		const createPropertyDTO: CreatePropertyDto = {
-			address: formData.get("address") as string,
-			city: formData.get("city") as string,
+			address: String(formData.get("address") ?? ""),
+			city: getRequiredString(formData.get("city")),
 			// Backward compatibility: some clients/tests still send "state"
 			category: (formData.get("category") ?? formData.get("state")) as OperationEnum,
 			price: Number(formData.get("price")),
 			currency: (formData.get("currency") as CurrencyEnum) || CurrencyEnum.USD,
 			description: formData.get("description") as string,
-			ubication: formData.get("ubication") as string,
+			ubication: getOptionalString(formData.get("ubication")),
 			type: formData.get("type") as PropertyTypeEnum,
 			surface: Number(formData.get("surface")),
 
@@ -59,21 +69,33 @@ export async function POST(request: NextRequest) {
 		const imageFiles = formData.getAll("images") as File[];
 
 		const rawMetadata = formData.get("imageMetadata");
+		let imageMetadata: ImageMetadata[] = [];
 
-		if (!rawMetadata || typeof rawMetadata !== "string") {
+		if (rawMetadata) {
+			if (typeof rawMetadata !== "string") {
+				return NextResponse.json(
+					{ error: "imageMetadata inválido" },
+					{ status: 400 }
+				);
+			}
+			try {
+				imageMetadata = JSON.parse(rawMetadata) as ImageMetadata[];
+			} catch {
+				return NextResponse.json(
+					{ error: "imageMetadata inválido" },
+					{ status: 400 }
+				);
+			}
+		} else if (imageFiles.length > 0) {
 			return NextResponse.json(
 				{ error: "imageMetadata inválido" },
 				{ status: 400 }
 			);
 		}
 
-		const imageMetadata: ImageMetadata[] = JSON.parse(
-			rawMetadata
-		);
-
-		if (imageFiles.length !== imageMetadata.length) {
+if (imageFiles.length !== imageMetadata.length) {
 			return NextResponse.json(
-				{error: "Cantidad de imágenes y metadata no coincide"},
+				{error: "Cantidad de imÃ¡genes y metadata no coincide"},
 				{status: 400}
 			);
 		}
@@ -106,3 +128,7 @@ export async function POST(request: NextRequest) {
 		);
 	}
 }
+
+
+
+
